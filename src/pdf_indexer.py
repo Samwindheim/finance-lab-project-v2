@@ -177,7 +177,7 @@ class PDFIndexer:
         Returns:
             List of dictionaries containing matched pages and metadata
         """
-        print(f"\n🔍 Searching for: '{query_text}'")
+        print(f"\n Searching for: '{query_text}'")
         
         if self.index.ntotal == 0:
             print("⚠ Index is empty. Please index some documents first.")

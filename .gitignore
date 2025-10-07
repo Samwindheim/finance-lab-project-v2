@@ -82,6 +82,7 @@ env.bak/
 .env/
 .env.*
 !/.env.example
+.env
 
 # Spyder project settings
 .spyderproject
@@ -115,3 +116,5 @@ Thumbs.db
 faiss_index.index
 faiss_index.metadata
 output_images/
+output_json/
+pdfs/
