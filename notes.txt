@@ -1,0 +1,16 @@
+
+V1: Query for underwriter data:
+./run.sh query -k 3 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK"
+
+./run.sh query -k 1 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK" --save-image 
+
+
+Thoughts...
+- Grab right page majority the time
+- Vast majority with top 3
+- In weird cases, it misses top 3
+
+9/10 reached top 3.
+So we could extract images from top 3 pages and feed to LLM.
+Hopefully this wouldnt be too cost heavy and continue to 
+work well at majority of PDFs.
