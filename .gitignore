@@ -113,8 +113,7 @@ cython_debug/
 Thumbs.db
 
 # Project-specific ignores
-faiss_index.index
-faiss_index.metadata
+faiss_index/
 output_images/
 output_json/
 pdfs/
