@@ -11,6 +11,8 @@ import os
 from pdf_indexer import PDFIndexer
 from vision_experiment import get_json_from_image
 
+# The semantic query to find the underwriter data, have it here for easy modification.
+underwriter_query = "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK"
 
 def index_command(args):
     """Index a PDF file."""
@@ -58,18 +60,18 @@ def extract_underwriters_command(args):
         print("❌ No documents indexed yet. Please index a PDF first.")
         return
 
-    query = "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK"
+    query = underwriter_query
     results = indexer.query(query, top_k=1)
 
     if results:
         top_result = results[0]
-        print(f" - Extracting image for top result (Page {top_result['page_number']})...")
+        print(f"Extracting image for top result (Page {top_result['page_number']})...")
         saved_path = indexer.extract_page_as_image(
             document_id=top_result['document_id'],
             page_number=top_result['page_number']
         )
         if saved_path:
-            print(f" - Successfully saved image to: {saved_path}")
+            print(f" \nSuccessfully saved image to: {saved_path}")
             json_data = get_json_from_image(saved_path)
             if json_data:
                 # Clean the response to ensure it's valid JSON
@@ -80,6 +82,9 @@ def extract_underwriters_command(args):
 
                 try:
                     parsed_json = json.loads(json_data)
+
+                    # Add the source page from the vector search result
+                    parsed_json['source_pages'] = [top_result['page_number']]
 
                     pdf_path = top_result['document_id']
                     pdf_filename = os.path.basename(pdf_path)
@@ -92,7 +97,7 @@ def extract_underwriters_command(args):
                     with open(output_path, 'w', encoding='utf-8') as f:
                         json.dump(parsed_json, f, indent=2, ensure_ascii=False)
                     
-                    print(f"✅ Successfully extracted and saved data to: {output_path}")
+                    print(f"✓ Successfully extracted and saved data to: {output_path}\n")
 
                 except json.JSONDecodeError:
                     print("❌ Error: Failed to decode JSON from model response.")
@@ -141,8 +146,8 @@ Examples:
     
     parser.add_argument(
         '--index',
-        default='faiss_index',
-        help='Path to the FAISS index (default: faiss_index)'
+        default='faiss_index/index',
+        help='Path to the FAISS index (default: faiss_index/index)'
     )
     
     subparsers = parser.add_subparsers(dest='command', help='Command to run')

@@ -1,5 +1,5 @@
 """
-This is an experimental script to test vision model capabilities for table extraction.
+This is a script to run vision model capabilities for data extraction from images.
 """
 import os
 import base64
@@ -38,7 +38,7 @@ def get_json_from_image(image_path: str):
     with open(prompt_file, "r") as f:
         prompt_text = f.read()
 
-    print("Sending request to Gemini...")
+    print("\nSending request to Gemini...")
 
     response = client.chat.completions.create(
         model="models/gemini-2.5-flash",

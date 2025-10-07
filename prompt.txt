@@ -8,7 +8,6 @@ You are an expert AI assistant specializing in Swedish financial data processing
     - `name`
     - `commitment`: {{ "amount", "percent" }}
     - `investor_level`
-    - Add `source_pages` from `--- Page X ---`.
 
     **Investor Levels:**
     - Underwriter (“Teckningsåtagare” or "Teckningsförbindelser" or similar) → level 0
@@ -42,7 +41,6 @@ You are an expert AI assistant specializing in Swedish financial data processing
     **Output Format Example:**
     ```json
     {{
-      "source_pages": [11],
       "investors": [
         {{
           "name": "Tuvedalen Ltd.",

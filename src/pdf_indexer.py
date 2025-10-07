@@ -23,7 +23,7 @@ class PDFIndexer:
     Handles text extraction, embedding generation, and storage.
     """
     
-    def __init__(self, index_path: str = "faiss_index"):
+    def __init__(self, index_path: str = "faiss_index/index"):
         """
         Initialize the PDFIndexer with OpenAI client and FAISS index.
         
@@ -60,6 +60,10 @@ class PDFIndexer:
     
     def _save_index(self):
         """Save FAISS index and metadata to disk."""
+        index_dir = os.path.dirname(self.index_path)
+        if index_dir:
+            os.makedirs(index_dir, exist_ok=True)
+            
         faiss.write_index(self.index, f"{self.index_path}.index")
         with open(f"{self.index_path}.metadata", "wb") as f:
             pickle.dump(self.metadata, f)
@@ -177,7 +181,7 @@ class PDFIndexer:
         Returns:
             List of dictionaries containing matched pages and metadata
         """
-        print(f"\n Searching for: '{query_text}'")
+        print(f"\nSearching for: '{query_text}'\n")
         
         if self.index.ntotal == 0:
             print("⚠ Index is empty. Please index some documents first.")
@@ -219,6 +223,16 @@ class PDFIndexer:
             os.remove(f"{self.index_path}.index")
         if os.path.exists(f"{self.index_path}.metadata"):
             os.remove(f"{self.index_path}.metadata")
+
+        # Attempt to remove the directory if it's empty
+        index_dir = os.path.dirname(self.index_path)
+        if index_dir and os.path.exists(index_dir):
+            try:
+                os.rmdir(index_dir)
+                print(f"✓ Removed empty index directory: {index_dir}")
+            except OSError:
+                # Directory is not empty, so we leave it.
+                pass
         
         print("✓ Index reset")
 
