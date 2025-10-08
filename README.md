@@ -31,28 +31,29 @@ Indexes all pages of a PDF document for semantic search.
 ### Query the database
 Performs a semantic search over the indexed documents.
 ```bash
-./run.sh query "Your query text" -n 5
+./run.sh query pdfs/your_document.pdf "query text" -n 5
 ```
 *   The `-n` flag specifies the number of top results to return. (Default is 3)
 
 ### Extract Underwriter Data
 Automatically finds the most relevant page for underwriter data, extracts it as an image, and uses a vision model to return structured JSON.
 ```bash
-./run.sh extract_underwriters
+./run.sh extract_underwriters pdfs/your_document.pdf
 ```
 *   The output is saved to a file in the `output_json/` directory.
 
 ### Clear the vector database
-Deletes the existing index.
+Deletes the existing index for a specific pdf.
 ```bash
-./run.sh clear
+./run.sh clear pdfs/your_document.pdf
 ```
 
 ## Architecture
 
 -   **`pdf_indexer.py`**: Core class for PDF parsing, text embedding, and FAISS indexing.
 -   **`cli.py`**: Command-line interface for all user interactions.
--   **`vision_experiment.py`**: Module for vision-based data extraction using the Gemini API.
+-   **`vision.py`**: Module for vision-based data extraction using the Gemini API.
+-   **`config.py`**: Configuration file.
 -   **FAISS**: Vector database for efficient similarity search.
 -   **OpenAI Embeddings**: `text-embedding-3-large` for semantic text representation.
 -   **Gemini 2.5 Flash**: Vision model for structured data extraction from images.
