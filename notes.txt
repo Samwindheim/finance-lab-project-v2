@@ -1,6 +1,6 @@
 
 V1: Query for underwriter data:
-./run.sh query -k 3 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK"
+./run.sh query "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK"
 
 ./run.sh query -k 1 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK" --save-image 
 
