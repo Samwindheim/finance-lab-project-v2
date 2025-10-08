@@ -6,6 +6,13 @@ import base64
 from openai import OpenAI
 from dotenv import load_dotenv
 import mimetypes
+import config
+
+# --- Constants ---
+PROMPT_FILE = config.PROMPT_FILE
+GEMINI_MODEL = config.GEMINI_MODEL
+GEMINI_API_BASE_URL = config.GEMINI_API_BASE_URL
+# -----------------
 
 def encode_image(image_path):
   with open(image_path, "rb") as image_file:
@@ -13,7 +20,6 @@ def encode_image(image_path):
 
 def get_json_from_image(image_path: str):
     load_dotenv()
-    prompt_file = "prompt.txt"
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         print("Error: GEMINI_API_KEY not found in .env file.")
@@ -21,27 +27,27 @@ def get_json_from_image(image_path: str):
 
     client = OpenAI(
         api_key=api_key,
-        base_url="https://generativelanguage.googleapis.com/v1beta",
+        base_url=GEMINI_API_BASE_URL,
     )
 
     if not os.path.exists(image_path):
         print(f"Error: Image file not found at '{image_path}'")
         return None
 
-    if not os.path.exists(prompt_file):
-        print(f"Error: Prompt file not found at '{prompt_file}'")
+    if not os.path.exists(PROMPT_FILE):
+        print(f"Error: Prompt file not found at '{PROMPT_FILE}'")
         return None
 
     base64_image = encode_image(image_path)
     mime_type = mimetypes.guess_type(image_path)[0]
 
-    with open(prompt_file, "r") as f:
+    with open(PROMPT_FILE, "r") as f:
         prompt_text = f.read()
 
     print("\nSending request to Gemini...")
 
     response = client.chat.completions.create(
-        model="models/gemini-2.5-flash",
+        model=GEMINI_MODEL,
         messages=[
             {
                 "role": "user",

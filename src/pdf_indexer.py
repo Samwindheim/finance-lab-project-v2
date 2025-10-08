@@ -12,6 +12,7 @@ import numpy as np
 import faiss
 from openai import OpenAI
 from dotenv import load_dotenv
+import config
 
 # Load environment variables
 load_dotenv()
@@ -32,8 +33,8 @@ class PDFIndexer:
         """
         # Initialize OpenAI client for embeddings
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.embedding_model = "text-embedding-3-large"
-        self.embedding_dimension = 1536  # Dimension for text-embedding-3-small
+        self.embedding_model = config.EMBEDDING_MODEL
+        self.embedding_dimension = config.EMBEDDING_DIMENSION
         
         # Initialize FAISS index
         self.index_path = index_path
@@ -44,8 +45,6 @@ class PDFIndexer:
         
         # Try to load existing index
         self._load_index()
-        
-        print(f"✓ Initialized PDFIndexer with FAISS index at: {index_path}")
     
     def _load_index(self):
         """Load existing FAISS index and metadata if available."""
@@ -54,9 +53,9 @@ class PDFIndexer:
                 self.index = faiss.read_index(f"{self.index_path}.index")
                 with open(f"{self.index_path}.metadata", "rb") as f:
                     self.metadata = pickle.load(f)
-                print(f"✓ Loaded existing index with {len(self.metadata)} documents")
+                print(f"\nLoaded existing index with {len(self.metadata)} documents")
             except Exception as e:
-                print(f"⚠ Could not load existing index: {e}")
+                print(f"\nCould not load existing index: {e}")
     
     def _save_index(self):
         """Save FAISS index and metadata to disk."""
@@ -67,7 +66,7 @@ class PDFIndexer:
         faiss.write_index(self.index, f"{self.index_path}.index")
         with open(f"{self.index_path}.metadata", "wb") as f:
             pickle.dump(self.metadata, f)
-        print(f"✓ Saved index to {self.index_path}")
+        print(f"\nSaved index for {self.index_path}")
     
     def extract_text_from_pdf(self, pdf_path: str) -> List[Dict[str, any]]:
         """
@@ -85,8 +84,7 @@ class PDFIndexer:
         pdf_document = fitz.open(pdf_path)
         document_id = os.path.basename(pdf_path)
         
-        print(f"📄 Processing PDF: {document_id}")
-        print(f"   Total pages: {len(pdf_document)}")
+        print(f"\nProcessing PDF: {document_id}")
         
         # Iterate through each page
         for page_num in range(len(pdf_document)):
@@ -98,6 +96,7 @@ class PDFIndexer:
             # Store page data with metadata
             page_data = {
                 "document_id": document_id,
+                "pdf_path": pdf_path,
                 "page_number": page_num + 1,  # 1-indexed for readability
                 "text": text.strip()
             }
@@ -105,7 +104,7 @@ class PDFIndexer:
             pages_data.append(page_data)
         
         pdf_document.close()
-        print(f"✓ Extracted text from {len(pages_data)} pages")
+        print(f"\nExtracted text")
         
         return pages_data
     
@@ -143,11 +142,17 @@ class PDFIndexer:
         Returns:
             Number of pages indexed
         """
+        # If the index is not empty, it implies a re-indexing operation.
+        # We clear it to ensure a fresh start.
+        if self.index.ntotal > 0:
+            print(f"\nIndex already contains data. Clearing for re-indexing...")
+            self.reset_index()
+
         # Step 1: Extract text from all pages
         pages_data = self.extract_text_from_pdf(pdf_path)
         
         # Step 2: Generate embeddings and add to FAISS
-        print("🔄 Generating embeddings...")
+        print("\nGenerating embeddings...")
         embeddings_list = []
         
         for page_data in pages_data:
@@ -162,7 +167,7 @@ class PDFIndexer:
         embeddings_array = np.array(embeddings_list, dtype='float32')
         
         # Step 3: Add to FAISS index
-        print("💾 Storing in vector database...")
+        print("\nStoring in vector database...")
         self.index.add(embeddings_array)
         
         # Save index to disk
@@ -181,10 +186,9 @@ class PDFIndexer:
         Returns:
             List of dictionaries containing matched pages and metadata
         """
-        print(f"\nSearching for: '{query_text}'\n")
         
         if self.index.ntotal == 0:
-            print("⚠ Index is empty. Please index some documents first.")
+            print("\nIndex is empty. Please index some documents first.")
             return []
         
         # Generate embedding for the query
@@ -202,6 +206,7 @@ class PDFIndexer:
                 matched_page = {
                     "rank": i + 1,
                     "document_id": metadata["document_id"],
+                    "pdf_path": metadata.get("pdf_path", ""), # Add pdf_path for backward compatibility
                     "page_number": metadata["page_number"],
                     "text": metadata["text"],
                     "distance": float(distance)  # L2 distance (lower is better)
@@ -223,25 +228,15 @@ class PDFIndexer:
             os.remove(f"{self.index_path}.index")
         if os.path.exists(f"{self.index_path}.metadata"):
             os.remove(f"{self.index_path}.metadata")
-
-        # Attempt to remove the directory if it's empty
-        index_dir = os.path.dirname(self.index_path)
-        if index_dir and os.path.exists(index_dir):
-            try:
-                os.rmdir(index_dir)
-                print(f"✓ Removed empty index directory: {index_dir}")
-            except OSError:
-                # Directory is not empty, so we leave it.
-                pass
         
-        print("✓ Index reset")
+        print("\nIndex reset")
 
-    def extract_page_as_image(self, document_id: str, page_number: int, output_dir: str = "output_images", zoom: int = 2) -> str:
+    def extract_page_as_image(self, pdf_path: str, page_number: int, output_dir: str = config.OUTPUT_IMAGE_DIR, zoom: int = 2) -> str:
         """
         Extracts a specific page from a PDF as a high-resolution image.
 
         Args:
-            document_id: The filename of the PDF document.
+            pdf_path: The path to the PDF document.
             page_number: The 1-indexed page number to extract.
             output_dir: The directory to save the image in.
             zoom: The zoom factor for rendering (higher zoom = higher resolution).
@@ -249,9 +244,8 @@ class PDFIndexer:
         Returns:
             The path to the saved image file, or an empty string on failure.
         """
-        pdf_path = os.path.join("pdfs", document_id)
         if not os.path.exists(pdf_path):
-            print(f"❌ Error: PDF file not found at {pdf_path}")
+            print(f"\nError: PDF file not found at {pdf_path}")
             return ""
 
         # Create output directory if it doesn't exist
@@ -267,6 +261,7 @@ class PDFIndexer:
             pix = page.get_pixmap(matrix=mat)
 
             # Define output path
+            document_id = os.path.basename(pdf_path)
             output_filename = f"{os.path.splitext(document_id)[0]}_page_{page_number}.png"
             output_path = os.path.join(output_dir, output_filename)
             
@@ -277,5 +272,5 @@ class PDFIndexer:
             return output_path
 
         except Exception as e:
-            print(f"❌ Error extracting image from page {page_number}: {e}")
+            print(f"\nError extracting image from page {page_number}: {e}")
             return ""
