@@ -25,6 +25,8 @@ PROMPTS_DIR = BASE_DIR / "prompts"
 
 # --- Extraction Queries ---
 EXTRACTION_QUERIES = {
-    "underwriters": "Tabell över teckningsförbindelser, teckningsåtaganden och garantiåtaganden med kolumner för namn, belopp i SEK, och andel i procent (%)",
-    "handle": "future query text"
+    "underwriters": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), guarantee commitments (garantiåtaganden or garanti)",
+    "temp": "future query text"
 }
+
+#Old under writere query: "Tabell över teckningsförbindelser, teckningsåtaganden och garantiåtaganden med kolumner för namn, belopp i SEK, och andel i procent (%)",

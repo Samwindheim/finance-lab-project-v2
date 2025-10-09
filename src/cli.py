@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 PDF RAG Pipeline CLI
-Run this script to index PDFs and query the vector database.
+Script to index PDFs and query the vector database.
+You can use run.sh to run the script with all arguments.
 """
 
 import argparse
@@ -91,39 +92,60 @@ def extract_command(args):
     if not indexer:
         return
 
-    results = indexer.query(query, top_k=1)
+    results = indexer.query(query, top_k=5)
 
     if results:
+        # --- Continuity Check Logic ---
+        # Identify consecutive pages from the top search results
         top_result = results[0]
-        print(f"\nExtracting image for top result (Page {top_result['page_number']})...")
+        pages_to_extract = [top_result]
+        results_by_page = {res['page_number']: res for res in results}
         
+        current_page = top_result['page_number'] + 1
+        while current_page in results_by_page:
+            pages_to_extract.append(results_by_page[current_page])
+            current_page += 1
+
+        page_numbers = [p['page_number'] for p in pages_to_extract]
+        print(f"\nFound {len(page_numbers)} consecutive pages to analyze: {page_numbers}")
+
         # --- Fallback logic for PDF path ---
         # Use the path from metadata if available, otherwise use the path from CLI args
+        # We check the top result, assuming all consecutive pages are from the same PDF
         pdf_path_for_extraction = top_result.get('pdf_path') or args.pdf_path
         
         if not pdf_path_for_extraction:
             print("\nError: Could not determine PDF path for extraction. Please re-index the document or provide a valid path.")
             return
 
-        saved_path = indexer.extract_page_as_image(
-            pdf_path=pdf_path_for_extraction,
-            page_number=top_result['page_number']
-        )
-        if saved_path:
-            print(f"\nSuccessfully saved image to: {saved_path}")
-            json_data = get_json_from_image(saved_path, extraction_type)
-            if json_data:
-                parsed_json = clean_and_parse_json(json_data)
-                if parsed_json:
-                    parsed_json['source_pages'] = [top_result['page_number']]
-                    pdf_filename = os.path.basename(pdf_path_for_extraction)
-                    json_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_type}.json"
-                    output_dir = config.OUTPUT_JSON_DIR
-                    os.makedirs(output_dir, exist_ok=True)
-                    output_path = os.path.join(output_dir, json_filename)
-                    with open(output_path, 'w', encoding='utf-8') as f:
-                        json.dump(parsed_json, f, indent=2, ensure_ascii=False)
-                    print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
+        # --- Extract images for all identified pages ---
+        saved_image_paths = []
+        for page in pages_to_extract:
+            print(f"Extracting image for page {page['page_number']}...")
+            saved_path = indexer.extract_page_as_image(
+                pdf_path=pdf_path_for_extraction,
+                page_number=page['page_number']
+            )
+            if saved_path:
+                saved_image_paths.append(saved_path)
+        
+        if not saved_image_paths:
+            print("\nError: Could not extract any images for the identified pages.")
+            return
+
+        json_data = get_json_from_image(saved_image_paths, extraction_type)
+        if json_data:
+            parsed_json = clean_and_parse_json(json_data)
+            if parsed_json:
+                parsed_json['source_pages'] = page_numbers
+                pdf_filename = os.path.basename(pdf_path_for_extraction)
+                json_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_type}.json"
+                output_dir = config.OUTPUT_JSON_DIR
+                os.makedirs(output_dir, exist_ok=True)
+                output_path = os.path.join(output_dir, json_filename)
+                with open(output_path, 'w', encoding='utf-8') as f:
+                    json.dump(parsed_json, f, indent=2, ensure_ascii=False)
+                print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
     else:
         print(f"\nCould not find any relevant pages for '{extraction_type}'.")
 
