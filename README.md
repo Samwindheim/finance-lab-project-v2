@@ -35,10 +35,13 @@ Performs a semantic search over the indexed documents.
 ```
 *   The `-n` flag specifies the number of top results to return. (Default is 3)
 
-### Extract Underwriter Data
-Automatically finds the most relevant page for underwriter data, extracts it as an image, and uses a vision model to return structured JSON.
+### Extract Structured Data
+Extracts specific data types from a PDF using a vision model.
+
+It takes an extraction type (e.g., `underwriters`, `handle`) and a path to the PDF file.
+
 ```bash
-./run.sh extract_underwriters pdfs/your_document.pdf
+./run.sh extract underwriters pdfs/your_document.pdf
 ```
 *   The output is saved to a file in the `output_json/` directory.
 
@@ -65,3 +68,4 @@ Deletes the existing index for a specific pdf.
 ✅ Vision-based data extraction with Gemini  
 ✅ Persistent vector storage with FAISS  
 ✅ Clean, simplified CLI for core operations
+
