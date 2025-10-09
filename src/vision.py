@@ -9,7 +9,7 @@ import mimetypes
 import config
 
 # --- Constants ---
-PROMPT_FILE = config.PROMPT_FILE
+PROMPTS_DIR = config.PROMPTS_DIR
 GEMINI_MODEL = config.GEMINI_MODEL
 GEMINI_API_BASE_URL = config.GEMINI_API_BASE_URL
 # -----------------
@@ -18,7 +18,7 @@ def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
-def get_json_from_image(image_path: str):
+def get_json_from_image(image_path: str, extraction_type: str):
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -34,14 +34,15 @@ def get_json_from_image(image_path: str):
         print(f"Error: Image file not found at '{image_path}'")
         return None
 
-    if not os.path.exists(PROMPT_FILE):
-        print(f"Error: Prompt file not found at '{PROMPT_FILE}'")
+    prompt_file_path = os.path.join(PROMPTS_DIR, f"{extraction_type}.txt")
+    if not os.path.exists(prompt_file_path):
+        print(f"Error: Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
         return None
 
     base64_image = encode_image(image_path)
     mime_type = mimetypes.guess_type(image_path)[0]
 
-    with open(PROMPT_FILE, "r") as f:
+    with open(prompt_file_path, "r") as f:
         prompt_text = f.read()
 
     print("\nSending request to Gemini...")
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     # Example usage:
     # This allows running the script directly for testing
     test_image_path = "output_images/QCORE_2025‑08‑08_Memorandum_page_13.png"
-    json_data = get_json_from_image(test_image_path)
+    json_data = get_json_from_image(test_image_path, "underwriters")
     if json_data:
         print("\n--- Gemini Response ---")
         print(json_data)

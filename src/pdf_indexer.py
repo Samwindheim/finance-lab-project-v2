@@ -1,5 +1,5 @@
 """
-PDF Indexer for RAG Pipeline - Step 1: Text Extraction and Vector Storage
+PDF Indexer for RAG Pipeline - Text Extraction and Vector Storage
 This module handles loading PDFs, extracting text by page, generating embeddings,
 and storing chunks in FAISS for semantic search.
 """
@@ -12,6 +12,8 @@ import numpy as np
 import faiss
 from openai import OpenAI
 from dotenv import load_dotenv
+from tqdm import tqdm
+import tiktoken
 import config
 
 # Load environment variables
@@ -32,9 +34,17 @@ class PDFIndexer:
             index_path: Path to save/load the FAISS index and metadata
         """
         # Initialize OpenAI client for embeddings
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            timeout=30.0,  # Set a 30-second timeout for API requests
+            max_retries=2, # Retry up to 2 times on failure
+        )
         self.embedding_model = config.EMBEDDING_MODEL
         self.embedding_dimension = config.EMBEDDING_DIMENSION
+        self.chunk_size = config.CHUNK_SIZE
+        self.chunk_overlap = config.CHUNK_OVERLAP
+        self.embedding_batch_size = config.EMBEDDING_BATCH_SIZE
+        self.tokenizer = tiktoken.encoding_for_model(config.EMBEDDING_MODEL)
         
         # Initialize FAISS index
         self.index_path = index_path
@@ -68,21 +78,42 @@ class PDFIndexer:
             pickle.dump(self.metadata, f)
         print(f"\nSaved index for {self.index_path}")
     
+    def _chunk_text(self, text: str) -> List[str]:
+        """Splits a long text into smaller, overlapping chunks based on tokens."""
+        if not text:
+            return []
+        
+        tokens = self.tokenizer.encode(text)
+
+        chunks = []
+        start_index = 0
+        while start_index < len(tokens):
+            end_index = start_index + self.chunk_size
+            token_chunk = tokens[start_index:end_index]
+            chunk_text = self.tokenizer.decode(token_chunk)
+            chunks.append(chunk_text)
+            start_index += self.chunk_size - self.chunk_overlap
+            
+        return chunks
+
     def extract_text_from_pdf(self, pdf_path: str) -> List[Dict[str, any]]:
         """
-        Extract text from each page of a PDF document.
+        Extract text from each page of a PDF document and split it into chunks.
         
         Args:
             pdf_path: Path to the PDF file
             
         Returns:
-            List of dictionaries containing page text and metadata
+            List of dictionaries containing chunk text and metadata
         """
-        pages_data = []
+        all_chunks_data = []
         
         # Open the PDF
         pdf_document = fitz.open(pdf_path)
         document_id = os.path.basename(pdf_path)
+        
+        # --- Store the absolute path for robustness ---
+        absolute_pdf_path = os.path.abspath(pdf_path)
         
         print(f"\nProcessing PDF: {document_id}")
         
@@ -91,22 +122,29 @@ class PDFIndexer:
             page = pdf_document[page_num]
             
             # Extract text from the page
-            text = page.get_text("text")
-            
-            # Store page data with metadata
-            page_data = {
-                "document_id": document_id,
-                "pdf_path": pdf_path,
-                "page_number": page_num + 1,  # 1-indexed for readability
-                "text": text.strip()
-            }
-            
-            pages_data.append(page_data)
+            text = page.get_text("text").strip()
+
+            if not text:
+                continue
+
+            # Split text into chunks
+            chunks = self._chunk_text(text)
+
+            # Store each chunk with its metadata
+            for i, chunk_text in enumerate(chunks):
+                chunk_data = {
+                    "document_id": document_id,
+                    "pdf_path": absolute_pdf_path,
+                    "page_number": page_num + 1,  # 1-indexed for readability
+                    "chunk_number": i + 1,
+                    "text": chunk_text,
+                }
+                all_chunks_data.append(chunk_data)
         
         pdf_document.close()
-        print(f"\nExtracted text")
+        print(f"\nExtracted {len(all_chunks_data)} text chunks")
         
-        return pages_data
+        return all_chunks_data
     
     def generate_embedding(self, text: str) -> np.ndarray:
         """
@@ -149,21 +187,36 @@ class PDFIndexer:
             self.reset_index()
 
         # Step 1: Extract text from all pages
-        pages_data = self.extract_text_from_pdf(pdf_path)
+        chunks_data = self.extract_text_from_pdf(pdf_path)
         
-        # Step 2: Generate embeddings and add to FAISS
-        print("\nGenerating embeddings...")
+        # Step 2: Generate embeddings in batches and add to FAISS
         embeddings_list = []
         
-        for page_data in pages_data:
-            # Generate embedding for this page's text
-            embedding = self.generate_embedding(page_data["text"])
-            embeddings_list.append(embedding)
-            
-            # Store metadata
-            self.metadata.append(page_data)
+        for i in tqdm(range(0, len(chunks_data), self.embedding_batch_size), desc="Generating embeddings", unit="batch"):
+            batch_chunks = chunks_data[i:i + self.embedding_batch_size]
+            batch_texts = [chunk['text'] for chunk in batch_chunks]
+
+            try:
+                response = self.client.embeddings.create(
+                    model=self.embedding_model,
+                    input=batch_texts,
+                    dimensions=self.embedding_dimension
+                )
+                batch_embeddings = [np.array(embedding.embedding, dtype='float32') for embedding in response.data]
+                
+                embeddings_list.extend(batch_embeddings)
+                self.metadata.extend(batch_chunks)
+
+            except Exception as e:
+                print(f"\n\nError generating embeddings for batch starting at chunk {i}: {e}")
+                print("Aborting indexing process. No changes were saved.")
+                return 0
         
         # Convert list of embeddings to numpy array
+        if not embeddings_list:
+            print("\nNo embeddings were generated. Aborting.")
+            return 0
+            
         embeddings_array = np.array(embeddings_list, dtype='float32')
         
         # Step 3: Add to FAISS index
@@ -173,7 +226,7 @@ class PDFIndexer:
         # Save index to disk
         self._save_index()
         
-        return len(pages_data)
+        return len(chunks_data)
     
     def query(self, query_text: str, top_k: int = 3) -> List[Dict[str, any]]:
         """
