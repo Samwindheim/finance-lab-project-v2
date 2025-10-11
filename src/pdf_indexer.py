@@ -284,6 +284,19 @@ class PDFIndexer:
         
         print("\nIndex reset")
 
+    def get_text_for_page(self, pdf_path: str, page_number: int) -> str:
+        """Extracts the full text from a single page of a PDF."""
+        try:
+            pdf_document = fitz.open(pdf_path)
+            # page_number is 1-indexed, but PyMuPDF is 0-indexed
+            page = pdf_document.load_page(page_number - 1)
+            text = page.get_text("text")
+            pdf_document.close()
+            return text.strip()
+        except Exception as e:
+            print(f"\nError extracting text from page {page_number}: {e}")
+            return ""
+
     def extract_page_as_image(self, pdf_path: str, page_number: int, output_dir: str = config.OUTPUT_IMAGE_DIR, zoom: int = 2) -> str:
         """
         Extracts a specific page from a PDF as a high-resolution image.

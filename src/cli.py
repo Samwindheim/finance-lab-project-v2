@@ -120,20 +120,32 @@ def extract_command(args):
 
         # --- Extract images for all identified pages ---
         saved_image_paths = []
+        page_texts = []
         for page in pages_to_extract:
-            print(f"Extracting image for page {page['page_number']}...")
+            print(f"Extracting image and text for page {page['page_number']}...")
+            
+            # Extract image
             saved_path = indexer.extract_page_as_image(
                 pdf_path=pdf_path_for_extraction,
                 page_number=page['page_number']
             )
             if saved_path:
                 saved_image_paths.append(saved_path)
+
+            # Extract text
+            text = indexer.get_text_for_page(
+                pdf_path=pdf_path_for_extraction,
+                page_number=page['page_number']
+            )
+            if text:
+                page_texts.append(text)
         
         if not saved_image_paths:
             print("\nError: Could not extract any images for the identified pages.")
             return
 
-        json_data = get_json_from_image(saved_image_paths, extraction_type)
+        combined_text = "\n\n--- Page Separator ---\n\n".join(page_texts)
+        json_data = get_json_from_image(saved_image_paths, combined_text, extraction_type)
         if json_data:
             parsed_json = clean_and_parse_json(json_data)
             if parsed_json:

@@ -19,7 +19,7 @@ def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
-def get_json_from_image(image_paths: List[str], extraction_type: str):
+def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type: str):
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -31,7 +31,7 @@ def get_json_from_image(image_paths: List[str], extraction_type: str):
         base_url=GEMINI_API_BASE_URL,
     )
 
-    # --- Prepare content for multi-image request ---
+    # --- Prepare content for multi-modal request ---
     content = []
     
     # Add the prompt text first
@@ -42,6 +42,11 @@ def get_json_from_image(image_paths: List[str], extraction_type: str):
     with open(prompt_file_path, "r") as f:
         prompt_text = f.read()
     content.append({"type": "text", "text": prompt_text})
+
+    # Add the extracted page text
+    content.append({"type": "text", "text": "--- OCR TEXT ---"})
+    content.append({"type": "text", "text": page_texts})
+    content.append({"type": "text", "text": "--- END OCR TEXT ---"})
 
     # Add each image
     for image_path in image_paths:
@@ -57,6 +62,8 @@ def get_json_from_image(image_paths: List[str], extraction_type: str):
         })
 
     print(f"\nSending request to Gemini with {len(image_paths)} image(s)...")
+    # print page texts
+    # print(f"\nPage texts: {page_texts}")
 
     response = client.chat.completions.create(
         model=GEMINI_MODEL,
@@ -74,7 +81,9 @@ if __name__ == "__main__":
     # Example usage:
     # This allows running the script directly for testing
     test_image_path = "output_images/QCORE_2025‑08‑08_Memorandum_page_13.png"
-    json_data = get_json_from_image([test_image_path], "underwriters")
+    # A dummy text is added here for testing purposes
+    dummy_text = "This is the extracted text from the page."
+    json_data = get_json_from_image([test_image_path], dummy_text, "underwriters")
     if json_data:
         print("\n--- Gemini Response ---")
         print(json_data)
