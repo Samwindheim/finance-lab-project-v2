@@ -22,7 +22,7 @@ You will be given one or more images of a document page and the raw text extract
 - Underwriter (“Teckningsåtagare”, “Teckningsförbindelser” or similar) → 0
 - Guarantor (“Garantier” or similar) → 1
 - If a tiered guarantee system is specified (e.g., “Botten-garantier”, “Bottom-up garantiåtaganden”), assign      level 1 to bottom-tier guarantors and level 2 to top-tier guarantors (“Toppgarantier”, “Top-down garantiåtaganden”)
-- Default to 0 if ambiguous or not specified
+- Default to Null if it is ambiguous
 
 **Data Cleaning Rules:**
 - Amount:
