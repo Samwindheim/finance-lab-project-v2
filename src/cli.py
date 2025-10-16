@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """
-PDF RAG Pipeline CLI
-Script to index PDFs and query the vector database.
-You can use run.sh to run the script with all arguments.
+Command-Line Interface for the PDF RAG Pipeline.
+
+This script serves as the main user entry point for the entire application. It uses Python's `argparse` to create a robust command-line interface with distinct commands for different operations:
+- `index`: Processes a PDF, generates embeddings, and saves them to a FAISS index.
+- `query`: Performs a semantic search on an indexed PDF to find relevant text chunks.
+- `extract`: A multi-step process that first finds relevant pages using semantic search, converts them to images, and then uses the vision module to extract structured JSON data.
+- `clear`: Deletes the FAISS index for a specific PDF.
+
+It coordinates the functionality of the `pdf_indexer` and `vision` modules to execute user requests.
 """
 
 import argparse

@@ -1,7 +1,11 @@
 """
-PDF Indexer for RAG Pipeline - Text Extraction and Vector Storage
-This module handles loading PDFs, extracting text by page, generating embeddings,
-and storing chunks in FAISS for semantic search.
+The PDFIndexer class powers the retrieval component of the RAG pipeline, handling:
+
+- Text Extraction: Loads PDFs with PyMuPDF, extracts text, and splits it into token-based chunks.
+- Embedding Generation: Converts text chunks into vector embeddings via the OpenAI API.
+- Vector Storage: Builds, saves, and loads FAISS indexes with metadata for fast retrieval.
+- Semantic Search: Generates embeddings for queries and finds the most similar text chunks.
+- Utilities: Provides page image extraction and index reset functions.
 """
 
 import os

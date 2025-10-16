@@ -1,5 +1,7 @@
 """
-This is a script to run vision model capabilities for data extraction from images.
+Vision Model Interaction for Structured Data Extraction.
+
+This module is responsible for interfacing with the Google Gemini vision model to extract structured data (JSON) from PDF page images. It takes one or more images, combines them with a textual prompt and page text, and sends them to the Gemini API. The primary function, get_json_from_image, orchestrates this process, handling API key management, request payload construction, and returning the raw JSON response from the model.
 """
 import os
 import base64
