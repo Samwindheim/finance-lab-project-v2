@@ -83,6 +83,7 @@ def extract_command(args):
     extraction_type = args.extraction_type
     pdf_path = args.pdf_path
 
+    # get the query for the extraction type, defined in config.py
     query = config.EXTRACTION_QUERIES.get(extraction_type)
 
     if not query:
@@ -98,12 +99,13 @@ def extract_command(args):
     if not indexer:
         return
 
+    # 1. query the index for top 5 relevant pages
     results = indexer.query(query, top_k=5)
 
     if results:
         # --- Continuity Check Logic ---
         # Identify consecutive pages from the top search results
-        top_result = results[0]
+        top_result = results[0] # get the top result
         pages_to_extract = [top_result]
         results_by_page = {res['page_number']: res for res in results}
         
@@ -124,7 +126,7 @@ def extract_command(args):
             print("\nError: Could not determine PDF path for extraction. Please re-index the document or provide a valid path.")
             return
 
-        # --- Extract images for all identified pages ---
+        # 2. extract the images and text for all identified pages
         saved_image_paths = []
         page_texts = []
         for page in pages_to_extract:
@@ -151,6 +153,7 @@ def extract_command(args):
             return
 
         combined_text = "\n\n--- Page Separator ---\n\n".join(page_texts)
+        # 3. get the json data from the images & text using the vision model
         json_data = get_json_from_image(saved_image_paths, combined_text, extraction_type)
         if json_data:
             parsed_json = clean_and_parse_json(json_data)
@@ -201,11 +204,11 @@ Examples:
   # Index a PDF (creates a specific index for this PDF)
   ./run.sh index pdfs/document.pdf
   
-  # Query the index for a specific PDF
+  # Query the index for a specific PDF, n is the number of top results to return
   ./run.sh query pdfs/document.pdf "Find underwriter section" -n 5
 
   # Extract underwriter data from a specific PDF
-  ./run.sh extract_underwriters pdfs/document.pdf
+  ./run.sh extract underwriters pdfs/document.pdf
 
   # Clear the index for a specific PDF
   ./run.sh clear pdfs/document.pdf

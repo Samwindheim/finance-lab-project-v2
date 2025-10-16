@@ -46,9 +46,9 @@ def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type
     content.append({"type": "text", "text": prompt_text})
 
     # Add the extracted page text
-    content.append({"type": "text", "text": "--- OCR TEXT ---"})
+    content.append({"type": "text", "text": "--- TEXT ---"})
     content.append({"type": "text", "text": page_texts})
-    content.append({"type": "text", "text": "--- END OCR TEXT ---"})
+    content.append({"type": "text", "text": "--- END TEXT ---"})
 
     # Add each image
     for image_path in image_paths:

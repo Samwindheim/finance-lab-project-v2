@@ -10,14 +10,14 @@ The PDFIndexer class powers the retrieval component of the RAG pipeline, handlin
 
 import os
 import fitz  # PyMuPDF
-import pickle
+import pickle # for saving and loading the index and metadata
 from typing import List, Dict
-import numpy as np
-import faiss
+import numpy as np # for storing the embeddings
+import faiss # for storing the index
 from openai import OpenAI
 from dotenv import load_dotenv
-from tqdm import tqdm
-import tiktoken
+from tqdm import tqdm # for progress bar
+import tiktoken # for tokenizing the text
 import config
 
 # Load environment variables
@@ -174,6 +174,7 @@ class PDFIndexer:
         embedding = np.array(response.data[0].embedding, dtype='float32')
         return embedding
     
+    # *** Complete indexing pipeline: extract text, generate embeddings, and store in FAISS ***
     def index_pdf(self, pdf_path: str) -> int:
         """
         Complete indexing pipeline: extract text, generate embeddings, and store in FAISS.
@@ -196,6 +197,7 @@ class PDFIndexer:
         # Step 2: Generate embeddings in batches and add to FAISS
         embeddings_list = []
         
+        # tqdm is a progress bar
         for i in tqdm(range(0, len(chunks_data), self.embedding_batch_size), desc="Generating embeddings", unit="batch"):
             batch_chunks = chunks_data[i:i + self.embedding_batch_size]
             batch_texts = [chunk['text'] for chunk in batch_chunks]
@@ -232,6 +234,7 @@ class PDFIndexer:
         
         return len(chunks_data)
     
+    # *** Query the vector database for pages most relevant to the query ***
     def query(self, query_text: str, top_k: int = 3) -> List[Dict[str, any]]:
         """
         Search the vector database for pages most relevant to the query.
