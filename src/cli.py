@@ -19,6 +19,20 @@ from pdf_indexer import PDFIndexer
 from vision import get_json_from_image
 import config
 
+# --- Load sources data once for performance ---
+SOURCES_FILE = os.path.join(config.BASE_DIR, "tests", "sources.json")
+SOURCES_DATA = []
+if os.path.exists(SOURCES_FILE):
+    with open(SOURCES_FILE, 'r') as f:
+        SOURCES_DATA = json.load(f)
+
+def get_issue_id_for_pdf(pdf_filename: str) -> str | None:
+    """Finds the issue_id for a given PDF filename from the loaded sources data."""
+    for source in SOURCES_DATA:
+        if source.get("source_url") == pdf_filename:
+            return source.get("issue_id")
+    return None
+
 def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
     """Generates a unique index path from a PDF filename."""
     pdf_filename = os.path.basename(pdf_path)
@@ -158,14 +172,38 @@ def extract_command(args):
         if json_data:
             parsed_json = clean_and_parse_json(json_data)
             if parsed_json:
-                parsed_json['source_pages'] = page_numbers
+                # --- Create the final output structure ---
+                pdf_filename_for_lookup = os.path.basename(pdf_path_for_extraction)
+                issue_id = get_issue_id_for_pdf(pdf_filename_for_lookup)
+
+                if not issue_id:
+                    print(f"\nWarning: Could not find issue_id for '{pdf_filename_for_lookup}' in sources.json. The final file will be missing it.")
+
+                # The parsed_json from the model should now be {"investors": [...]}
+                # We wrap it in the final structure with the issue_id
+                
+                # --- Post-process to match manual data format ---
+                processed_investors = []
+                for investor in parsed_json.get("investors", []):
+                    amount = investor.get("amount_in_cash")
+                    if isinstance(amount, (int, float)):
+                        # Format to a string with 3 decimal places
+                        investor["amount_in_cash"] = f"{amount:.3f}"
+                    processed_investors.append(investor)
+
+                final_output = {
+                    "issue_id": issue_id,
+                    "investors": processed_investors,
+                    "source_pages": page_numbers
+                }
+
                 pdf_filename = os.path.basename(pdf_path_for_extraction)
                 json_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_type}.json"
                 output_dir = config.OUTPUT_JSON_DIR
                 os.makedirs(output_dir, exist_ok=True)
                 output_path = os.path.join(output_dir, json_filename)
                 with open(output_path, 'w', encoding='utf-8') as f:
-                    json.dump(parsed_json, f, indent=2, ensure_ascii=False)
+                    json.dump(final_output, f, indent=2, ensure_ascii=False)
                 print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
     else:
         print(f"\nCould not find any relevant pages for '{extraction_type}'.")

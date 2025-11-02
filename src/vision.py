@@ -23,6 +23,7 @@ def encode_image(image_path):
 
 def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type: str):
     load_dotenv()
+    # (and text from the page)
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         print("Error: GEMINI_API_KEY not found in .env file.")

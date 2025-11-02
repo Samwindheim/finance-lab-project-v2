@@ -1,0 +1,336 @@
+[
+  {
+    "document_name": "ITAB_Prospekt.pdf",
+    "issue_id": "467ba3df-7ead-4914-9011-d84707be1f4c",
+    "correct": 5,
+    "incorrect": 0,
+    "missing": 13,
+    "false_positives": 4,
+    "discrepancies": [
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Erik Olsson",
+          "amount_in_cash": "100000.000",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Per-Olof Svanberg",
+          "amount_in_cash": "500000.000",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Ingvar Johansson",
+          "amount_in_cash": null,
+          "amount_in_percentage": null,
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Ulf Rosén",
+          "amount_in_cash": null,
+          "amount_in_percentage": null,
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Anders Moberg",
+          "level": 0,
+          "amount_in_percentage": "1.00",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "?",
+          "level": 1,
+          "amount_in_percentage": "12.00",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "ISTMO AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "1888823.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Övre Kullen AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "19999995.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Andréas Elgaard",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "2250000.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "SOMACHE AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "5789063.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Aeternum Capital AS",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "407283720.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Fredrik Rapp",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "486600.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Fredrik Rapp",
+          "level": 1,
+          "amount_in_percentage": "8.00",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Petter Fägersten",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "10000005.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "VIEM Invest AB",
+          "level": 1,
+          "amount_in_percentage": "4.00",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Svolder AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "43774508.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Stig-Olof Simonsson",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "31293652.000"
+        }
+      }
+    ]
+  },
+  {
+    "document_name": "ALZ_2024-06-05_Prospekt.pdf",
+    "issue_id": "98a4c8da-e2b7-4fa7-aad2-2fc1abede2ef",
+    "correct": 11,
+    "incorrect": 8,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Maida Vale Capital AB",
+          "amount_in_cash": "4960148.400",
+          "amount_in_percentage": 14.4,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Maida Vale Capital AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "4960148.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 4960148.400, expected 4960148.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Joakim Bjärkeback",
+          "amount_in_cash": "154380.600",
+          "amount_in_percentage": 0.4,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Joakim Bjärkeback",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "154380.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 154380.600, expected 154380.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Kristina Torfgård",
+          "amount_in_cash": "38566.800",
+          "amount_in_percentage": 0.1,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Kristina Torfgård",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "38566.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 38566.800, expected 38566.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Scientific Intelligence Consulting Öresund AB",
+          "amount_in_cash": "9255.600",
+          "amount_in_percentage": 0.0,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Scientific Intelligence Consulting Öresund AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "9255.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 9255.600, expected 9255.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "TYTO Competitive Intelligence Solutions AB",
+          "amount_in_cash": "13111.200",
+          "amount_in_percentage": 0.0,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "TYTO Competitive Intelligence Solutions AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "13111.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 13111.200, expected 13111.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Stefan Pierrou",
+          "amount_in_cash": "6112.800",
+          "amount_in_percentage": 0.0,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Stefan Pierrou",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "6112.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 6112.800, expected 6112.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Mangold Fondkommission AB",
+          "amount_in_cash": "4744826.800",
+          "amount_in_percentage": 13.8,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Mangold Fondkommission AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "4744826.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 4744826.800, expected 4744826.000"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Joakim Bjärkeback",
+          "amount_in_cash": "845619.400",
+          "amount_in_percentage": 2.5,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Joakim Bjärkeback",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "845619.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 845619.400, expected 845619.000"
+        ]
+      }
+    ]
+  }
+]

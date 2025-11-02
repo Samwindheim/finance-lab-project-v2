@@ -13,23 +13,22 @@ You will be given one or more images of a document page and the raw text extract
 
 **Fields to Extract:**
 - name
-- commitment:
-    - amount
-    - percent
-- investor_level
+- amount_in_cash: The monetary commitment (e.g., SEK, EUR).
+- amount_in_percentage: The percentage commitment (e.g., %).
+- level: The investor level as defined below.
 
 **Investor Levels:**
 - Underwriter (“Teckningsåtagare”, “Teckningsförbindelser” or similar) → 0
 - Guarantor (“Garantier” or similar) → 1
-- If a tiered guarantee system is specified (e.g., “Botten-garantier”, “Bottom-up garantiåtaganden”), assign      level 1 to bottom-tier guarantors and level 2 to top-tier guarantors (“Toppgarantier”, “Top-down garantiåtaganden”)
+- If a tiered guarantee system is specified (e.g., “Botten-garantier”, “Bottom-up garantiåtaganden”), assign level 1 to bottom-tier guarantors and level 2 to top-tier guarantors (“Toppgarantier”, “Top-down garantiåtaganden”)
 - Default to Null if it is ambiguous
 
 **Data Cleaning Rules:**
-- Amount:
+- amount_in_cash:
   - Remove spaces, currency symbols, letters
   - Ranges → keep as strings (apply unit multiplication if numeric)
   - Commas in decimals → convert to periods (e.g., “123 456,10” → 123456.10)
-- Percent:
+- amount_in_percentage:
   - Remove % symbol, replace commas with periods, store as float
 - Names:
   - Preserve original spelling, punctuation, and capitalization
@@ -50,11 +49,9 @@ IMPORTANT: Do not invent data. If a value for a specific field is not clear, you
   "investors": [
     {
       "name": "Tuvedalen Ltd.",
-      "commitment": {
-        "amount": 1652367,
-        "percent": 9.4
-      },
-      "investor_level": 0
+      "amount_in_cash": 1652367.00,
+      "amount_in_percentage": 9.4,
+      "level": 0
     }
   ]
 }
