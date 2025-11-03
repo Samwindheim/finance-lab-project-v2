@@ -5,23 +5,27 @@ V1: Query for underwriter data:
 ./run.sh query -k 1 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK" --save-image 
 
 
-Next steps:
+TESTING
 
-Feed in top 2 pages as images.
+Fail cases:
 
-Make extracting modular, to easily run for different data types
+- Inconsistent decimal usage in manual data. Some round down, some don't.
 
-Idea:
-We have separate extract shell script.
-./extract.sh underwriters
-./extract.sh handelsstatistik
-./extract.sh Villkor
+- Data under different headers decriptions like "Aktieägare"
 
+- Manual data not present in the pdfs.
+id: f5c8d679-3ccf-4a4c-a761-b9fc7fc50fac
 
-Or...
-./run.sh for everything
+- Image pdfs, first source in sources.json is like this.
+id: 467ba3df-7ead-4914-9011-d84707be1f4c
 
-./run.sh index pathtopdf
-./run.sh extract underwriters pathtopdf
-./run.sh extract handell pathtopdf
-./run.sh query pathtopfd "query text"
+- Inconsistent naming of investors 
+ex: AB vs Aktieägare
+
+- Manual data maybe wrong?
+id: de4cf075-3c66-4f47-a16f-d788611e97ae
+Kenneth Lindvist value 
+
+- Wrong investor level, not sure why
+id: aaf556c3-344a-4f3d-8786-82407c25689b
+Fjärde AP-fonden 
