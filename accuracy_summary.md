@@ -1,26 +1,31 @@
 # Extraction Accuracy Summary
 
 ## Overall Metrics
-- **Total Documents Processed:** 25
-- **Total Investors Extracted (Predicted):** 391
-- **Correct Datapoint Extractions:** 275
-- **Incorrect Datapoint Extractions:** 41
-- **Missing Datapoint Extractions:** 78
-- **False Positives:** 75
-- **Documents with 100% Accuracy:** 4
-- **Documents with < 100% Accuracy:** 21
+- **Total Documents Processed:** 10
+- **Total Investors Extracted (Predicted):** 93
+- **Correct Datapoint Extractions:** 65
+- **Incorrect Datapoint Extractions:** 15
+- **Missing Datapoint Extractions:** 55
+- **False Positives:** 13
+- **Documents with 100% Accuracy:** 2
+- **Documents with < 100% Accuracy:** 8
 
 ## Discrepancy Details
 
 ### 📄 ITAB_Prospekt.pdf
 - **Type:** False Positive
-  - **Extracted:** `Erik Olsson`
+  - **Extracted:** `Erik Selin Fastigheter AB`
+- **Type:** Incorrect Value
+  - **Investor:** `Svolder AB`
+  - **Errors:** Amount mismatch: Did not extract an amount where one was expected (43774508.000)
+- **Type:** Incorrect Value
+  - **Investor:** `Stig-Olof Simonsson`
+  - **Errors:** Amount mismatch: Did not extract an amount where one was expected (31293652.000)
 - **Type:** False Positive
-  - **Extracted:** `Per-Olof Svanberg`
-- **Type:** False Positive
-  - **Extracted:** `Ingvar Johansson`
-- **Type:** False Positive
-  - **Extracted:** `Ulf Rosén`
+  - **Extracted:** `Investeraren`
+- **Type:** Incorrect Value
+  - **Investor:** `Andréas Elgaard`
+  - **Errors:** Level mismatch: Got 0, expected 1
 - **Type:** Missing
   - **Expected:** `Anders Moberg`
 - **Type:** Missing
@@ -43,40 +48,14 @@
   - **Expected:** `Petter Fägersten`
 - **Type:** Missing
   - **Expected:** `VIEM Invest AB`
-- **Type:** Missing
-  - **Expected:** `Svolder AB`
-- **Type:** Missing
-  - **Expected:** `Stig-Olof Simonsson`
 
-### 📄 ALZ_2024-06-05_Prospekt.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Maida Vale Capital AB`
-  - **Errors:** Amount mismatch: Got 4960148.400, expected 4960148.000
-- **Type:** Incorrect Value
-  - **Investor:** `Joakim Bjärkeback`
-  - **Errors:** Amount mismatch: Got 154380.600, expected 154380.000
-- **Type:** Incorrect Value
-  - **Investor:** `Kristina Torfgård`
-  - **Errors:** Amount mismatch: Got 38566.800, expected 38566.000
-- **Type:** Incorrect Value
-  - **Investor:** `Scientific Intelligence Consulting Öresund AB`
-  - **Errors:** Amount mismatch: Got 9255.600, expected 9255.000
-- **Type:** Incorrect Value
-  - **Investor:** `TYTO Competitive Intelligence Solutions AB`
-  - **Errors:** Amount mismatch: Got 13111.200, expected 13111.000
-- **Type:** Incorrect Value
-  - **Investor:** `Stefan Pierrou`
-  - **Errors:** Amount mismatch: Got 6112.800, expected 6112.000
-- **Type:** Incorrect Value
-  - **Investor:** `Mangold Fondkommission AB`
-  - **Errors:** Amount mismatch: Got 4744826.800, expected 4744826.000
-- **Type:** Incorrect Value
-  - **Investor:** `Joakim Bjärkeback`
-  - **Errors:** Amount mismatch: Got 845619.400, expected 845619.000
+### 📄 GTG_2023-11-08_Memorandum.pdf
+- **Type:** False Positive
+  - **Extracted:** `Esseff Fastigheter Aktiebolag`
+- **Type:** Missing
+  - **Expected:** `Esseff Fastigheter AB`
 
 ### 📄 PURE_2022‑01‑27_Prospekt.pdf
-- **Type:** False Positive
-  - **Extracted:** `Övriga`
 - **Type:** Missing
   - **Expected:** `Money Never Sleeps Holding AB`
 - **Type:** Missing
@@ -150,335 +129,82 @@
 - **Type:** Missing
   - **Expected:** `Dan Brander`
 
-### 📄 IMSYS_2022-06-21_Prospekt.pdf
+### 📄 REDW_2023-08-25_Prospekt.pdf
 - **Type:** Incorrect Value
-  - **Investor:** `Magnus Stuart`
-  - **Errors:** Amount mismatch: Got 2000000.800, expected 2000000.000
-- **Type:** False Positive
-  - **Extracted:** `Henry Sténson`
+  - **Investor:** `Johan Waldhe`
+  - **Errors:** Amount mismatch: Got 2599999.000, expected 2599999.800
 - **Type:** Incorrect Value
-  - **Investor:** `Stefan Mårtensson`
-  - **Errors:** Amount mismatch: Got 500001.600, expected 500001.000
+  - **Investor:** `Sutjagin Capital AB`
+  - **Errors:** Amount mismatch: Got 1749999.000, expected 1749999.900
 - **Type:** Incorrect Value
-  - **Investor:** `Anders Malmqvist`
-  - **Errors:** Amount mismatch: Got 250000.800, expected 250000.000
-- **Type:** Incorrect Value
-  - **Investor:** `Marcus Risland`
-  - **Errors:** Amount mismatch: Got 120002.400, expected 120002.000
-- **Type:** Incorrect Value
-  - **Investor:** `Frank Schubert`
-  - **Errors:** Amount mismatch: Got 100004.800, expected 100004.000
-- **Type:** Incorrect Value
-  - **Investor:** `Jan Wäreby`
-  - **Errors:** Amount mismatch: Got 100004.800, expected 100004.000
-- **Type:** Incorrect Value
-  - **Investor:** `Formue Nord Marknadsneutral A/S`
-  - **Errors:** Amount mismatch: Got 12000004.800, expected 12000004.000
-- **Type:** Missing
-  - **Expected:** `Henry Stenson`
-
-### 📄 POLAR_2022-04-19_Memorandum.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Exsultat AB`
-  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 140400.000, expected 359600.000
-- **Type:** False Positive
-  - **Extracted:** `Exsultat AB`
-- **Type:** Missing
-  - **Expected:** `Mohammad Fazel`
-- **Type:** Missing
-  - **Expected:** `Roger Henriksson`
-- **Type:** Missing
-  - **Expected:** `Eva Redhe`
-- **Type:** Missing
-  - **Expected:** `Exsusltat AB`
-- **Type:** Missing
-  - **Expected:** `Jamie Bache`
-
-### 📄 ADDV-B_2025‑03‑24_Prospekt.pdf
-- **Type:** False Positive
-  - **Extracted:** `Amplex AB`
-- **Type:** False Positive
-  - **Extracted:** `Per Åhlgren`
-- **Type:** False Positive
-  - **Extracted:** `Staffan Torstensson`
-- **Type:** Incorrect Value
-  - **Investor:** `Kenneth Lindqvist`
-  - **Errors:** Amount mismatch: Got 47000000.000, expected 32244196.000
-- **Type:** Missing
-  - **Expected:** `Amplex Aktiebolag`
-- **Type:** Missing
-  - **Expected:** `Tuida Holding AB`
-- **Type:** Missing
-  - **Expected:** `GoMobile nu AB`
-
-### 📄 NILAR_2022-06-02_Prospekt.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Fjärde AP-fonden`
-  - **Errors:** Level mismatch: Got 1, expected 2
-
-### 📄 VISC_Prospekt.pdf
-- **Type:** False Positive
-  - **Extracted:** `Ozoneair AB / Johan Lundberg`
-- **Type:** Missing
-  - **Expected:** `Ozoneair AB`
-
-### 📄 BPCINS_2021‑11‑17_Memorandum.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Polynom Investment AB`
-  - **Errors:** Amount mismatch: Got 2999990.500, expected 2999991.000
-- **Type:** Incorrect Value
-  - **Investor:** `Kent Eklund`
-  - **Errors:** Amount mismatch: Got 1049989.500, expected 1049990.000
-- **Type:** Incorrect Value
-  - **Investor:** `Alexander Schoeneck`
-  - **Errors:** Amount mismatch: Got 749992.500, expected 749993.000
-- **Type:** Incorrect Value
-  - **Investor:** `Jinderman & Partners AB`
-  - **Errors:** Amount mismatch: Got 749992.500, expected 749993.000
-- **Type:** Incorrect Value
-  - **Investor:** `BPCI Holding AB`
-  - **Errors:** Amount mismatch: Got 149998.500, expected 149999.000
-- **Type:** Incorrect Value
-  - **Investor:** `Harry Matilainen`
-  - **Errors:** Amount mismatch: Got 149998.500, expected 149999.000
-- **Type:** Incorrect Value
-  - **Investor:** `Martin Erlandsson`
-  - **Errors:** Amount mismatch: Got 149998.500, expected 149999.000
-- **Type:** Incorrect Value
-  - **Investor:** `Gustaf Olsson`
-  - **Errors:** Amount mismatch: Got 124988.500, expected 124989.000
-
-### 📄 PRISMA_2024‑06‑10_Prospekt.pdf
-- **Type:** False Positive
-  - **Extracted:** `Fonder som förvaltas och rådges av Capital World Investors`
-- **Type:** False Positive
-  - **Extracted:** `Fond förvaltad av ODIN Forvaltning`
-- **Type:** Missing
-  - **Expected:** `ALPECT Holding AB`
-- **Type:** Missing
-  - **Expected:** `Alma Växjö I Holding AB`
-- **Type:** Missing
-  - **Expected:** `ODIN Forvaltning`
-- **Type:** Missing
-  - **Expected:** `Capital World Investors`
-
-### 📄 APTA_2025‑09‑10_Informationsdokument.pdf
-- **Type:** Missing
-  - **Expected:** `Admensys ApS`
-
-### 📄 DANCAN_2024-06-11_Memorandum.pdf
-- **Type:** Missing
-  - **Expected:** `Capmate AB`
-- **Type:** Missing
-  - **Expected:** `Buntel AB`
-- **Type:** Missing
-  - **Expected:** `?`
-
-### 📄 FING-B_2022-11-10_Prospekt.pdf
-- **Type:** False Positive
-  - **Extracted:** `Carnegie Investment Bank AB`
-- **Type:** False Positive
-  - **Extracted:** `Christian Lagerling`
-- **Type:** Missing
-  - **Expected:** `Carnegie Investment Bank AB (publ)`
-
-### 📄 VPLAY-B_2024-01-19_Prospekt.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Groupe Canal+ SA`
-  - **Errors:** Amount mismatch: Got 1228833333.000, expected 104500000.000
-- **Type:** False Positive
-  - **Extracted:** `Groupe Canal+ SA`
-- **Type:** Incorrect Value
-  - **Investor:** `PPF Cyprus Management Limited`
-  - **Errors:** Amount mismatch: Got 1246705187.000, expected 86628146.000
-- **Type:** False Positive
-  - **Extracted:** `PPF Cyprus Management Limited`
-- **Type:** False Positive
-  - **Extracted:** `Nordea Asset Management`
-- **Type:** False Positive
-  - **Extracted:** `Innehavare av Viaplay Groups MTN-obligationer och vissa andra särskilt vidtalade investerare`
-- **Type:** False Positive
-  - **Extracted:** `Anavio Equity Capital Markets Master Fund Ltd.`
-- **Type:** False Positive
-  - **Extracted:** `Arbona AB`
-- **Type:** Missing
-  - **Expected:** `Anavio Equity Capital Markets Master Fund Limited`
-- **Type:** Missing
-  - **Expected:** `Arbona AB (publ)`
-
-### 📄 DMYD-B_2023-06-02_Supplement.pdf
-- **Type:** False Positive
-  - **Extracted:** `Formue Nord Markedsneutral A/S`
-- **Type:** False Positive
-  - **Extracted:** `Selandia Alpha Invest A/S`
-- **Type:** False Positive
-  - **Extracted:** `Patrik Hansen`
-- **Type:** False Positive
-  - **Extracted:** `Bernhard Osten Sacken`
-- **Type:** False Positive
-  - **Extracted:** `Capono AB`
-- **Type:** False Positive
-  - **Extracted:** `Nowo Global Fund`
-- **Type:** False Positive
-  - **Extracted:** `Carl Rosvall`
-- **Type:** False Positive
-  - **Extracted:** `Martin Bjäringer`
-- **Type:** False Positive
-  - **Extracted:** `Buntel AB`
-- **Type:** False Positive
-  - **Extracted:** `Nolsterby Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Lusam Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Wilhelm Risberg`
-- **Type:** False Positive
-  - **Extracted:** `Arne Grundström`
-- **Type:** False Positive
-  - **Extracted:** `G&W Holding AB`
-- **Type:** False Positive
-  - **Extracted:** `Excelity AB`
-- **Type:** False Positive
-  - **Extracted:** `QQM Hedge Master`
-- **Type:** False Positive
-  - **Extracted:** `Gryningskust Holding AB`
-- **Type:** False Positive
-  - **Extracted:** `Spikarna Förvaltning AB`
-- **Type:** False Positive
-  - **Extracted:** `Oliver Molse`
-- **Type:** False Positive
-  - **Extracted:** `Oscar Molse`
-- **Type:** False Positive
-  - **Extracted:** `Anders Johansson`
-- **Type:** False Positive
-  - **Extracted:** `ATH Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Accrelium AB`
-- **Type:** False Positive
-  - **Extracted:** `Bearpeak AB`
-- **Type:** False Positive
-  - **Extracted:** `Pegroco Holding AB`
-- **Type:** False Positive
-  - **Extracted:** `Visa Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Pronator Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Strategic Wisdom Nordic AB`
-- **Type:** False Positive
-  - **Extracted:** `Haldran AB`
-- **Type:** False Positive
-  - **Extracted:** `Consentia Group AB`
-- **Type:** False Positive
-  - **Extracted:** `Cordouan Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Ghanen Chouha`
-- **Type:** False Positive
-  - **Extracted:** `Hans Wernstedt`
-- **Type:** False Positive
-  - **Extracted:** `Hälsa Invest Sweden AB`
-- **Type:** False Positive
-  - **Extracted:** `Johan Waldhe`
-- **Type:** False Positive
-  - **Extracted:** `Lycksele Telemarketing AB`
-- **Type:** False Positive
-  - **Extracted:** `Mats Carlsson`
-- **Type:** False Positive
-  - **Extracted:** `MIHAB AB`
-- **Type:** False Positive
-  - **Extracted:** `Tony Chouha`
-- **Type:** False Positive
-  - **Extracted:** `XC Invest AB`
-- **Type:** False Positive
-  - **Extracted:** `Erik Lundin`
-- **Type:** False Positive
-  - **Extracted:** `Jan Robert Pärsson`
-- **Type:** False Positive
-  - **Extracted:** `Maria Eldrot Lundmark`
-- **Type:** False Positive
-  - **Extracted:** `P&M CF AB`
-- **Type:** False Positive
-  - **Extracted:** `Peter Lundmark`
-- **Type:** False Positive
-  - **Extracted:** `Rune Löderup`
-- **Type:** False Positive
-  - **Extracted:** `Max Björs`
-
-### 📄 HDW-B_2024‑11‑05_Memorandum.pdf
+  - **Investor:** `Arne Andersson`
+  - **Errors:** Amount mismatch: Got 999999.000, expected 999999.900
 - **Type:** Incorrect Value
   - **Investor:** `Consentia Group AB`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
+  - **Errors:** Amount mismatch: Got 999999.000, expected 999999.900
 - **Type:** Incorrect Value
-  - **Investor:** `Capmate AB`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
-- **Type:** Incorrect Value
-  - **Investor:** `Tony Chouha`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
-- **Type:** Incorrect Value
-  - **Investor:** `Ghanem Chouha`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
+  - **Investor:** `AD94 Holding AB`
+  - **Errors:** Amount mismatch: Got 799999.000, expected 799999.800
 - **Type:** Incorrect Value
   - **Investor:** `Pronator Invest AB`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
+  - **Errors:** Amount mismatch: Got 699999.000, expected 699999.900
 - **Type:** Incorrect Value
-  - **Investor:** `Arne Grundström`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
+  - **Investor:** `Elvil AB`
+  - **Errors:** Amount mismatch: Got 499999.000, expected 499999.800
 - **Type:** Incorrect Value
-  - **Investor:** `Torna Kapital AB`
-  - **Errors:** Amount mismatch: Extracted an amount where none was expected
-- **Type:** Missing
-  - **Expected:** `Infinitum Aktiebolag`
-- **Type:** Missing
-  - **Expected:** `Capmate AB`
-- **Type:** Missing
-  - **Expected:** `G&W Kapitalförvaltning AB`
-- **Type:** Missing
-  - **Expected:** `Råsunda Förvaltning AB`
+  - **Investor:** `Mattias Wachtmeister`
+  - **Errors:** Amount mismatch: Got 368524.000, expected 368524.800
+- **Type:** Incorrect Value
+  - **Investor:** `Erik Svensson`
+  - **Errors:** Amount mismatch: Got 349999.000, expected 349999.800
+- **Type:** Incorrect Value
+  - **Investor:** `Pierre Heneen`
+  - **Errors:** Amount mismatch: Got 199999.000, expected 199999.800
+- **Type:** Incorrect Value
+  - **Investor:** `Rickard Danielsson`
+  - **Errors:** Amount mismatch: Got 199999.000, expected 199999.800
+- **Type:** Incorrect Value
+  - **Investor:** `Arne Andersson`
+  - **Errors:** Amount mismatch: Got 645126.000, expected 645126.600
 
-### 📄 DANCAN_2022-10-31_Prospekt.pdf
+### 📄 IMSYS_2022-06-21_Prospekt.pdf
 - **Type:** False Positive
-  - **Extracted:** `Jeppe Krog Rasmussen indirectly through Xignotus Capital ApS`
+  - **Extracted:** `Magnus Stuart, VD och styrelseledamot`
 - **Type:** False Positive
-  - **Extracted:** `Christian Carlsen indirectly through Carlsen Holdin ApS`
+  - **Extracted:** `Stefan Blixt, CTO, advisor och styrelseledamot`
 - **Type:** False Positive
-  - **Extracted:** `Carsten Trads indirectly through C-Plus Consult`
+  - **Extracted:** `Henry Sténson, Styrelseordförande`
 - **Type:** False Positive
-  - **Extracted:** `Louise Conradsen, indirectly through L Conradsen Holding ApS`
+  - **Extracted:** `Stefan Mårtensson, aktieägare`
 - **Type:** False Positive
-  - **Extracted:** `Other (32 persons)`
-- **Type:** Missing
-  - **Expected:** `Xignotus Capital ApS`
-- **Type:** Missing
-  - **Expected:** `C-Plus Consult`
-- **Type:** Missing
-  - **Expected:** `Carlsen Holdin ApS`
-- **Type:** Missing
-  - **Expected:** `?`
-- **Type:** Missing
-  - **Expected:** `L Conradsen Holding ApS`
-
-### 📄 LAIR_2022-11-29_Memorandum.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Göran Wikström`
-  - **Errors:** Amount mismatch: Got 2499999.600, expected 2499999.000
+  - **Extracted:** `Anders Malmqvist, aktieägare`
 - **Type:** False Positive
-  - **Extracted:** `Sven Olof Kulldorf / Handelsbanken Luxemburg`
+  - **Extracted:** `Samosa Consulting AB, aktieägare`
 - **Type:** False Positive
-  - **Extracted:** `Sven Olof Kulldorf / Handelsbanken Luxemburg`
-- **Type:** Incorrect Value
-  - **Investor:** `Health Runner AB`
-  - **Errors:** Amount mismatch: Got 4999999.200, expected 4999999.000
-- **Type:** Incorrect Value
-  - **Investor:** `Stockholm Asset Management AB`
-  - **Errors:** Amount mismatch: Got 599999.400, expected 599999.000
-- **Type:** Incorrect Value
-  - **Investor:** `Exelity AB`
-  - **Errors:** Amount mismatch: Got 499998.800, expected 499998.000
-- **Type:** Incorrect Value
-  - **Investor:** `Hemo Spray & Pump AB`
-  - **Errors:** Amount mismatch: Got 499998.800, expected 499998.000
-- **Type:** Incorrect Value
-  - **Investor:** `Tellus Equity Partners AB`
-  - **Errors:** Amount mismatch: Got 499998.800, expected 499998.000
+  - **Extracted:** `Anders Gradén, aktieägare`
+- **Type:** False Positive
+  - **Extracted:** `Marcus Risland, f.d styrelseledamot`
+- **Type:** False Positive
+  - **Extracted:** `Frank Schubert, styrelseledamot`
+- **Type:** False Positive
+  - **Extracted:** `Jan Wäreby, styrelseledamot`
 - **Type:** Missing
-  - **Expected:** `Sven Olof Kulldorf`
+  - **Expected:** `Stefan Mårtensson`
 - **Type:** Missing
-  - **Expected:** `Sven Olof Kulldorf`
+  - **Expected:** `Stefan Blixt`
+- **Type:** Missing
+  - **Expected:** `Samosa Consulting AB`
+- **Type:** Missing
+  - **Expected:** `Magnus Stuart`
+- **Type:** Missing
+  - **Expected:** `Marcus Risland`
+- **Type:** Missing
+  - **Expected:** `Jan Wäreby`
+- **Type:** Missing
+  - **Expected:** `Frank Schubert`
+- **Type:** Missing
+  - **Expected:** `Anders Gradén`
+- **Type:** Missing
+  - **Expected:** `Anders Malmqvist`
+- **Type:** Missing
+  - **Expected:** `Henry Stenson`

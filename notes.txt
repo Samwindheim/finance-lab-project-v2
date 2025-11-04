@@ -9,14 +9,17 @@ TESTING
 
 Fail cases:
 
-- Inconsistent decimal usage in manual data. Some round down, some don't.
+- Inconsistent decimal usage in manual data. Most round down, some don't.
+id: c7d40245-fea1-4c49-9f40-9e454dc6e16e - doesn't round down
 
 - Data under different headers decriptions like "Aktieägare"
+id: 99102636-5e9b-456d-a87b-479d223fe922 - grabs wrong page, data is under "större aktieägare"
+id: 5b602395-7655-4183-818c-71a556481a59 - maybe include "Övriga" (others) as "?"
 
 - Manual data not present in the pdfs.
 id: f5c8d679-3ccf-4a4c-a761-b9fc7fc50fac
 
-- Image pdfs, first source in sources.json is like this.
+- Image pdfs, first source in sources.json is like this. Will add OCR option to get text
 id: 467ba3df-7ead-4914-9011-d84707be1f4c
 
 - Inconsistent naming of investors 
@@ -29,3 +32,8 @@ Kenneth Lindvist value
 - Wrong investor level, not sure why
 id: aaf556c3-344a-4f3d-8786-82407c25689b
 Fjärde AP-fonden 
+
+
+Todo:
+
+Add "get rid of styrelseledamot for names" in llm prompt

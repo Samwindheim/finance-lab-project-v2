@@ -187,8 +187,9 @@ def extract_command(args):
                 for investor in parsed_json.get("investors", []):
                     amount = investor.get("amount_in_cash")
                     if isinstance(amount, (int, float)):
-                        # Format to a string with 3 decimal places
-                        investor["amount_in_cash"] = f"{amount:.3f}"
+                        # *** Round down to integer *** 
+                        # Truncate to an integer, then format to a string with 3 decimal places
+                        investor["amount_in_cash"] = f"{int(amount):.3f}"
                     processed_investors.append(investor)
 
                 final_output = {

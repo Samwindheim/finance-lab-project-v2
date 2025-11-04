@@ -2,50 +2,84 @@
   {
     "document_name": "ITAB_Prospekt.pdf",
     "issue_id": "467ba3df-7ead-4914-9011-d84707be1f4c",
-    "correct": 5,
-    "incorrect": 0,
-    "missing": 13,
-    "false_positives": 4,
+    "correct": 4,
+    "incorrect": 3,
+    "missing": 11,
+    "false_positives": 2,
     "discrepancies": [
       {
         "type": "False Positive",
         "predicted": {
-          "name": "Erik Olsson",
-          "amount_in_cash": "100000.000",
+          "name": "Erik Selin Fastigheter AB",
+          "amount_in_cash": null,
           "amount_in_percentage": null,
           "level": 0
         },
         "ground_truth": null
       },
       {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Svolder AB",
+          "amount_in_cash": null,
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Svolder AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "43774508.000"
+        },
+        "errors": [
+          "Amount mismatch: Did not extract an amount where one was expected (43774508.000)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Stig-Olof Simonsson",
+          "amount_in_cash": null,
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Stig-Olof Simonsson",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "31293652.000"
+        },
+        "errors": [
+          "Amount mismatch: Did not extract an amount where one was expected (31293652.000)"
+        ]
+      },
+      {
         "type": "False Positive",
         "predicted": {
-          "name": "Per-Olof Svanberg",
-          "amount_in_cash": "500000.000",
+          "name": "Investeraren",
+          "amount_in_cash": null,
           "amount_in_percentage": null,
           "level": 0
         },
         "ground_truth": null
       },
       {
-        "type": "False Positive",
+        "type": "Incorrect Value",
         "predicted": {
-          "name": "Ingvar Johansson",
+          "name": "Andréas Elgaard",
           "amount_in_cash": null,
           "amount_in_percentage": null,
-          "level": 1
+          "level": 0
         },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Ulf Rosén",
-          "amount_in_cash": null,
-          "amount_in_percentage": null,
-          "level": 1
+        "ground_truth": {
+          "name": "Andréas Elgaard",
+          "level": 1,
+          "amount_in_percentage": "1.00",
+          "amount_in_cash": null
         },
-        "ground_truth": null
+        "errors": [
+          "Level mismatch: Got 0, expected 1"
+        ]
       },
       {
         "type": "Missing",
@@ -156,182 +190,17 @@
           "amount_in_percentage": "4.00",
           "amount_in_cash": null
         }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Svolder AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "43774508.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Stig-Olof Simonsson",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "31293652.000"
-        }
       }
     ]
   },
   {
     "document_name": "ALZ_2024-06-05_Prospekt.pdf",
     "issue_id": "98a4c8da-e2b7-4fa7-aad2-2fc1abede2ef",
-    "correct": 11,
-    "incorrect": 8,
+    "correct": 19,
+    "incorrect": 0,
     "missing": 0,
     "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Maida Vale Capital AB",
-          "amount_in_cash": "4960148.400",
-          "amount_in_percentage": 14.4,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Maida Vale Capital AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "4960148.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 4960148.400, expected 4960148.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Joakim Bjärkeback",
-          "amount_in_cash": "154380.600",
-          "amount_in_percentage": 0.4,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Joakim Bjärkeback",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "154380.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 154380.600, expected 154380.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Kristina Torfgård",
-          "amount_in_cash": "38566.800",
-          "amount_in_percentage": 0.1,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Kristina Torfgård",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "38566.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 38566.800, expected 38566.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Scientific Intelligence Consulting Öresund AB",
-          "amount_in_cash": "9255.600",
-          "amount_in_percentage": 0.0,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Scientific Intelligence Consulting Öresund AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "9255.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 9255.600, expected 9255.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "TYTO Competitive Intelligence Solutions AB",
-          "amount_in_cash": "13111.200",
-          "amount_in_percentage": 0.0,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "TYTO Competitive Intelligence Solutions AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "13111.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 13111.200, expected 13111.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Stefan Pierrou",
-          "amount_in_cash": "6112.800",
-          "amount_in_percentage": 0.0,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Stefan Pierrou",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "6112.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 6112.800, expected 6112.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Mangold Fondkommission AB",
-          "amount_in_cash": "4744826.800",
-          "amount_in_percentage": 13.8,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Mangold Fondkommission AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "4744826.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 4744826.800, expected 4744826.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Joakim Bjärkeback",
-          "amount_in_cash": "845619.400",
-          "amount_in_percentage": 2.5,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Joakim Bjärkeback",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "845619.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 845619.400, expected 845619.000"
-        ]
-      }
-    ]
+    "discrepancies": []
   },
   {
     "document_name": "SYNC-B_2024‑11‑22_Prospekt.pdf",
@@ -345,11 +214,32 @@
   {
     "document_name": "GTG_2023-11-08_Memorandum.pdf",
     "issue_id": "23a6ae4b-8406-419e-92ab-f56747f17f9f",
-    "correct": 6,
+    "correct": 5,
     "incorrect": 0,
-    "missing": 0,
-    "false_positives": 0,
-    "discrepancies": []
+    "missing": 1,
+    "false_positives": 1,
+    "discrepancies": [
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Esseff Fastigheter Aktiebolag",
+          "amount_in_cash": "1199696.000",
+          "amount_in_percentage": 100.0,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Esseff Fastigheter AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "1199696.000"
+        }
+      }
+    ]
   },
   {
     "document_name": "PURE_2022‑01‑27_Prospekt.pdf",
@@ -357,18 +247,8 @@
     "correct": 4,
     "incorrect": 0,
     "missing": 2,
-    "false_positives": 1,
+    "false_positives": 0,
     "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Övriga",
-          "amount_in_cash": "22900000.000",
-          "amount_in_percentage": 40.4,
-          "level": 0
-        },
-        "ground_truth": null
-      },
       {
         "type": "Missing",
         "predicted": null,
@@ -734,155 +614,426 @@
   {
     "document_name": "REDW_2023-08-25_Prospekt.pdf",
     "issue_id": "c7d40245-fea1-4c49-9f40-9e454dc6e16e",
-    "correct": 19,
-    "incorrect": 0,
+    "correct": 7,
+    "incorrect": 12,
     "missing": 0,
     "false_positives": 0,
-    "discrepancies": []
-  },
-  {
-    "document_name": "IMSYS_2022-06-21_Prospekt.pdf",
-    "issue_id": "a8e3fd57-cb06-4977-b9b2-9ad8f8a09d5c",
-    "correct": 4,
-    "incorrect": 7,
-    "missing": 1,
-    "false_positives": 1,
     "discrepancies": [
       {
         "type": "Incorrect Value",
         "predicted": {
-          "name": "Magnus Stuart",
-          "amount_in_cash": "2000000.800",
-          "amount_in_percentage": 4.62,
+          "name": "Johan Waldhe",
+          "amount_in_cash": "2599999.000",
+          "amount_in_percentage": 8.2,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Johan Waldhe",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "2599999.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 2599999.000, expected 2599999.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Sutjagin Capital AB",
+          "amount_in_cash": "1749999.000",
+          "amount_in_percentage": 5.5,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Sutjagin Capital AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "1749999.900"
+        },
+        "errors": [
+          "Amount mismatch: Got 1749999.000, expected 1749999.900"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Arne Andersson",
+          "amount_in_cash": "999999.000",
+          "amount_in_percentage": 3.2,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Arne Andersson",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "999999.900"
+        },
+        "errors": [
+          "Amount mismatch: Got 999999.000, expected 999999.900"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Consentia Group AB",
+          "amount_in_cash": "999999.000",
+          "amount_in_percentage": 3.2,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Consentia Group AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "999999.900"
+        },
+        "errors": [
+          "Amount mismatch: Got 999999.000, expected 999999.900"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "AD94 Holding AB",
+          "amount_in_cash": "799999.000",
+          "amount_in_percentage": 2.5,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "AD94 Holding AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "799999.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 799999.000, expected 799999.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Pronator Invest AB",
+          "amount_in_cash": "699999.000",
+          "amount_in_percentage": 2.2,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Pronator Invest AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "699999.900"
+        },
+        "errors": [
+          "Amount mismatch: Got 699999.000, expected 699999.900"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Elvil AB",
+          "amount_in_cash": "499999.000",
+          "amount_in_percentage": 1.6,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Elvil AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "499999.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 499999.000, expected 499999.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Mattias Wachtmeister",
+          "amount_in_cash": "368524.000",
+          "amount_in_percentage": 1.2,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Mattias Wachtmeister",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "368524.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 368524.000, expected 368524.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Erik Svensson",
+          "amount_in_cash": "349999.000",
+          "amount_in_percentage": 1.1,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Erik Svensson",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "349999.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 349999.000, expected 349999.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Pierre Heneen",
+          "amount_in_cash": "199999.000",
+          "amount_in_percentage": 0.6,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Pierre Heneen",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "199999.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 199999.000, expected 199999.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Rickard Danielsson",
+          "amount_in_cash": "199999.000",
+          "amount_in_percentage": 0.6,
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Rickard Danielsson",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "199999.800"
+        },
+        "errors": [
+          "Amount mismatch: Got 199999.000, expected 199999.800"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Arne Andersson",
+          "amount_in_cash": "645126.000",
+          "amount_in_percentage": 2.0,
           "level": 0
         },
         "ground_truth": {
-          "name": "Magnus Stuart",
+          "name": "Arne Andersson",
           "level": 0,
           "amount_in_percentage": null,
-          "amount_in_cash": "2000000.000"
+          "amount_in_cash": "645126.600"
         },
         "errors": [
-          "Amount mismatch: Got 2000000.800, expected 2000000.000"
+          "Amount mismatch: Got 645126.000, expected 645126.600"
         ]
+      }
+    ]
+  },
+  {
+    "document_name": "IMSYS_2022-06-21_Prospekt.pdf",
+    "issue_id": "a8e3fd57-cb06-4977-b9b2-9ad8f8a09d5c",
+    "correct": 2,
+    "incorrect": 0,
+    "missing": 10,
+    "false_positives": 10,
+    "discrepancies": [
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Magnus Stuart, VD och styrelseledamot",
+          "amount_in_cash": "2000000.000",
+          "amount_in_percentage": 4.62,
+          "level": 0
+        },
+        "ground_truth": null
       },
       {
         "type": "False Positive",
         "predicted": {
-          "name": "Henry Sténson",
-          "amount_in_cash": "500001.600",
+          "name": "Stefan Blixt, CTO, advisor och styrelseledamot",
+          "amount_in_cash": "700000.000",
+          "amount_in_percentage": 1.62,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Henry Sténson, Styrelseordförande",
+          "amount_in_cash": "500001.000",
           "amount_in_percentage": 1.15,
           "level": 0
         },
         "ground_truth": null
       },
       {
-        "type": "Incorrect Value",
+        "type": "False Positive",
         "predicted": {
-          "name": "Stefan Mårtensson",
-          "amount_in_cash": "500001.600",
+          "name": "Stefan Mårtensson, aktieägare",
+          "amount_in_cash": "500001.000",
           "amount_in_percentage": 1.15,
           "level": 0
         },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Anders Malmqvist, aktieägare",
+          "amount_in_cash": "250000.000",
+          "amount_in_percentage": 0.58,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Samosa Consulting AB, aktieägare",
+          "amount_in_cash": "200004.000",
+          "amount_in_percentage": 0.46,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Anders Gradén, aktieägare",
+          "amount_in_cash": "200004.000",
+          "amount_in_percentage": 0.46,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Marcus Risland, f.d styrelseledamot",
+          "amount_in_cash": "120002.000",
+          "amount_in_percentage": 0.28,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Frank Schubert, styrelseledamot",
+          "amount_in_cash": "100004.000",
+          "amount_in_percentage": 0.23,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Jan Wäreby, styrelseledamot",
+          "amount_in_cash": "100004.000",
+          "amount_in_percentage": 0.23,
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
         "ground_truth": {
           "name": "Stefan Mårtensson",
           "level": 0,
           "amount_in_percentage": null,
           "amount_in_cash": "500001.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 500001.600, expected 500001.000"
-        ]
+        }
       },
       {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Anders Malmqvist",
-          "amount_in_cash": "250000.800",
-          "amount_in_percentage": 0.58,
-          "level": 0
-        },
+        "type": "Missing",
+        "predicted": null,
         "ground_truth": {
-          "name": "Anders Malmqvist",
+          "name": "Stefan Blixt",
           "level": 0,
           "amount_in_percentage": null,
-          "amount_in_cash": "250000.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 250000.800, expected 250000.000"
-        ]
+          "amount_in_cash": "700000.000"
+        }
       },
       {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Marcus Risland",
-          "amount_in_cash": "120002.400",
-          "amount_in_percentage": 0.28,
-          "level": 0
-        },
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Samosa Consulting AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "200004.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Magnus Stuart",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "2000000.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
         "ground_truth": {
           "name": "Marcus Risland",
           "level": 0,
           "amount_in_percentage": null,
           "amount_in_cash": "120002.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 120002.400, expected 120002.000"
-        ]
+        }
       },
       {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Frank Schubert",
-          "amount_in_cash": "100004.800",
-          "amount_in_percentage": 0.23,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Frank Schubert",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "100004.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 100004.800, expected 100004.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Jan Wäreby",
-          "amount_in_cash": "100004.800",
-          "amount_in_percentage": 0.23,
-          "level": 0
-        },
+        "type": "Missing",
+        "predicted": null,
         "ground_truth": {
           "name": "Jan Wäreby",
           "level": 0,
           "amount_in_percentage": null,
           "amount_in_cash": "100004.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 100004.800, expected 100004.000"
-        ]
+        }
       },
       {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Formue Nord Marknadsneutral A/S",
-          "amount_in_cash": "12000004.800",
-          "amount_in_percentage": 27.71,
-          "level": 1
-        },
+        "type": "Missing",
+        "predicted": null,
         "ground_truth": {
-          "name": "Formue Nord Marknadsneutral A/S",
-          "level": 1,
+          "name": "Frank Schubert",
+          "level": 0,
           "amount_in_percentage": null,
-          "amount_in_cash": "12000004.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 12000004.800, expected 12000004.000"
-        ]
+          "amount_in_cash": "100004.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Anders Gradén",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "200004.000"
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Anders Malmqvist",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "250000.000"
+        }
       },
       {
         "type": "Missing",
@@ -892,1624 +1043,6 @@
           "level": 0,
           "amount_in_percentage": null,
           "amount_in_cash": "500001.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "POLAR_2022-04-19_Memorandum.pdf",
-    "issue_id": "22461505-852f-413d-8cf5-ff3a4f5f5b64",
-    "correct": 22,
-    "incorrect": 1,
-    "missing": 5,
-    "false_positives": 1,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Exsultat AB",
-          "amount_in_cash": "140400.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Exsultat AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "359600.000"
-        },
-        "errors": [
-          "Level mismatch: Got 0, expected 1",
-          "Amount mismatch: Got 140400.000, expected 359600.000"
-        ]
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Exsultat AB",
-          "amount_in_cash": "359600.000",
-          "amount_in_percentage": null,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Mohammad Fazel",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "326000.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Roger Henriksson",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "75000.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Eva Redhe",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "374605.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Exsusltat AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "140400.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Jamie Bache",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "60000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "ADDV-B_2025‑03‑24_Prospekt.pdf",
-    "issue_id": "de4cf075-3c66-4f47-a16f-d788611e97ae",
-    "correct": 6,
-    "incorrect": 1,
-    "missing": 3,
-    "false_positives": 3,
-    "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Amplex AB",
-          "amount_in_cash": "150000000.000",
-          "amount_in_percentage": 32.8,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Per Åhlgren",
-          "amount_in_cash": "40000000.000",
-          "amount_in_percentage": 8.7,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Staffan Torstensson",
-          "amount_in_cash": "8000000.000",
-          "amount_in_percentage": 1.7,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Kenneth Lindqvist",
-          "amount_in_cash": "47000000.000",
-          "amount_in_percentage": 10.3,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Kenneth Lindqvist",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "32244196.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 47000000.000, expected 32244196.000"
-        ]
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Amplex Aktiebolag",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "150000000.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Tuida Holding AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "8000000.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "GoMobile nu AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "40000000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "NILAR_2022-06-02_Prospekt.pdf",
-    "issue_id": "aaf556c3-344a-4f3d-8786-82407c25689b",
-    "correct": 27,
-    "incorrect": 1,
-    "missing": 0,
-    "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Fjärde AP-fonden",
-          "amount_in_cash": "9000000.000",
-          "amount_in_percentage": 3.0,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Fjärde AP-fonden",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "9000000.000"
-        },
-        "errors": [
-          "Level mismatch: Got 1, expected 2"
-        ]
-      }
-    ]
-  },
-  {
-    "document_name": "VISC_Prospekt.pdf",
-    "issue_id": "f26ba257-2c44-4324-9443-11915b0c4fc4",
-    "correct": 22,
-    "incorrect": 0,
-    "missing": 1,
-    "false_positives": 1,
-    "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Ozoneair AB / Johan Lundberg",
-          "amount_in_cash": "5000000.000",
-          "amount_in_percentage": 3.2,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Ozoneair AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "5000000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "BPCINS_2021‑11‑17_Memorandum.pdf",
-    "issue_id": "d1a20442-9517-4fca-9a0e-06a6c6f2e327",
-    "correct": 15,
-    "incorrect": 8,
-    "missing": 0,
-    "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Polynom Investment AB",
-          "amount_in_cash": "2999990.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Polynom Investment AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "2999991.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 2999990.500, expected 2999991.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Kent Eklund",
-          "amount_in_cash": "1049989.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Kent Eklund",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "1049990.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 1049989.500, expected 1049990.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Alexander Schoeneck",
-          "amount_in_cash": "749992.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Alexander Schoeneck",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "749993.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 749992.500, expected 749993.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Jinderman & Partners AB",
-          "amount_in_cash": "749992.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Jinderman & Partners AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "749993.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 749992.500, expected 749993.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "BPCI Holding AB",
-          "amount_in_cash": "149998.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "BPCI Holding AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "149999.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 149998.500, expected 149999.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Harry Matilainen",
-          "amount_in_cash": "149998.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Harry Matilainen",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "149999.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 149998.500, expected 149999.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Martin Erlandsson",
-          "amount_in_cash": "149998.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Martin Erlandsson",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "149999.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 149998.500, expected 149999.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Gustaf Olsson",
-          "amount_in_cash": "124988.500",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Gustaf Olsson",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "124989.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 124988.500, expected 124989.000"
-        ]
-      }
-    ]
-  },
-  {
-    "document_name": "PRISMA_2024‑06‑10_Prospekt.pdf",
-    "issue_id": "a4cbb243-f65a-4479-9ec1-a82b05a938e3",
-    "correct": 2,
-    "incorrect": 0,
-    "missing": 4,
-    "false_positives": 2,
-    "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Fonder som förvaltas och rådges av Capital World Investors",
-          "amount_in_cash": "269000000.000",
-          "amount_in_percentage": 5.9,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Fond förvaltad av ODIN Forvaltning",
-          "amount_in_cash": "80000000.000",
-          "amount_in_percentage": 1.8,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "ALPECT Holding AB",
-          "level": null,
-          "amount_in_percentage": null,
-          "amount_in_cash": null
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Alma Växjö I Holding AB",
-          "level": null,
-          "amount_in_percentage": null,
-          "amount_in_cash": null
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "ODIN Forvaltning",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "80000000.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Capital World Investors",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "269000000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "APTA_2025‑09‑10_Informationsdokument.pdf",
-    "issue_id": "55bd284c-30f9-4f5c-9e0b-ae4a1dea86f5",
-    "correct": 0,
-    "incorrect": 0,
-    "missing": 1,
-    "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Admensys ApS",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "162000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "DANCAN_2024-06-11_Memorandum.pdf",
-    "issue_id": "855dee92-6c3d-4ad6-8c92-07552a800a82",
-    "correct": 11,
-    "incorrect": 0,
-    "missing": 3,
-    "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Capmate AB",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "1037157.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Buntel AB",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "2442035.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "?",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "625000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "FING-B_2022-11-10_Prospekt.pdf",
-    "issue_id": "50898375-798c-4242-bcde-1aeddd914a55",
-    "correct": 23,
-    "incorrect": 0,
-    "missing": 1,
-    "false_positives": 2,
-    "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Carnegie Investment Bank AB",
-          "amount_in_cash": "20000000.000",
-          "amount_in_percentage": 6.7,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Christian Lagerling",
-          "amount_in_cash": "0.000",
-          "amount_in_percentage": 0.0,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Carnegie Investment Bank AB (publ)",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "20000000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "VPLAY-B_2024-01-19_Prospekt.pdf",
-    "issue_id": "2fe59d50-6f6b-47f0-9a9b-fc336cfe3424",
-    "correct": 13,
-    "incorrect": 2,
-    "missing": 2,
-    "false_positives": 6,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Groupe Canal+ SA",
-          "amount_in_cash": "1228833333.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "Groupe Canal+ SA",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "104500000.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 1228833333.000, expected 104500000.000"
-        ]
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Groupe Canal+ SA",
-          "amount_in_cash": "104500000.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "PPF Cyprus Management Limited",
-          "amount_in_cash": "1246705187.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": {
-          "name": "PPF Cyprus Management Limited",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "86628146.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 1246705187.000, expected 86628146.000"
-        ]
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "PPF Cyprus Management Limited",
-          "amount_in_cash": "86628146.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Nordea Asset Management",
-          "amount_in_cash": null,
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Innehavare av Viaplay Groups MTN-obligationer och vissa andra särskilt vidtalade investerare",
-          "amount_in_cash": "286600000.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Anavio Equity Capital Markets Master Fund Ltd.",
-          "amount_in_cash": "70000000.000",
-          "amount_in_percentage": null,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Arbona AB",
-          "amount_in_cash": "20000000.000",
-          "amount_in_percentage": null,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Anavio Equity Capital Markets Master Fund Limited",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "70000000.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Arbona AB (publ)",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "20000000.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "DMYD-B_2023-06-02_Supplement.pdf",
-    "issue_id": "0dc16d36-2678-42a7-a4a4-061d9f8188d7",
-    "correct": 6,
-    "incorrect": 0,
-    "missing": 0,
-    "false_positives": 47,
-    "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Formue Nord Markedsneutral A/S",
-          "amount_in_cash": "25000000.000",
-          "amount_in_percentage": 15.29,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Selandia Alpha Invest A/S",
-          "amount_in_cash": "6160000.000",
-          "amount_in_percentage": 3.77,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Patrik Hansen",
-          "amount_in_cash": "4500000.000",
-          "amount_in_percentage": 2.75,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Bernhard Osten Sacken",
-          "amount_in_cash": "4400000.000",
-          "amount_in_percentage": 2.69,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Capono AB",
-          "amount_in_cash": "4400000.000",
-          "amount_in_percentage": 2.69,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Nowo Global Fund",
-          "amount_in_cash": "4400000.000",
-          "amount_in_percentage": 2.69,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Carl Rosvall",
-          "amount_in_cash": "4250000.000",
-          "amount_in_percentage": 2.6,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Martin Bjäringer",
-          "amount_in_cash": "4250000.000",
-          "amount_in_percentage": 2.6,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Buntel AB",
-          "amount_in_cash": "4000000.000",
-          "amount_in_percentage": 2.45,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Nolsterby Invest AB",
-          "amount_in_cash": "3520000.000",
-          "amount_in_percentage": 2.15,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Lusam Invest AB",
-          "amount_in_cash": "3175000.000",
-          "amount_in_percentage": 1.94,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Wilhelm Risberg",
-          "amount_in_cash": "3175000.000",
-          "amount_in_percentage": 1.94,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Arne Grundström",
-          "amount_in_cash": "2650000.000",
-          "amount_in_percentage": 1.62,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "G&W Holding AB",
-          "amount_in_cash": "2500000.000",
-          "amount_in_percentage": 1.53,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Excelity AB",
-          "amount_in_cash": "2400000.000",
-          "amount_in_percentage": 1.47,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "QQM Hedge Master",
-          "amount_in_cash": "2200000.000",
-          "amount_in_percentage": 1.35,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Gryningskust Holding AB",
-          "amount_in_cash": "1800000.000",
-          "amount_in_percentage": 1.1,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Spikarna Förvaltning AB",
-          "amount_in_cash": "1760000.000",
-          "amount_in_percentage": 1.08,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Oliver Molse",
-          "amount_in_cash": "1600000.000",
-          "amount_in_percentage": 0.98,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Oscar Molse",
-          "amount_in_cash": "1600000.000",
-          "amount_in_percentage": 0.98,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Anders Johansson",
-          "amount_in_cash": "1580000.000",
-          "amount_in_percentage": 0.97,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "ATH Invest AB",
-          "amount_in_cash": "1500000.000",
-          "amount_in_percentage": 0.92,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Accrelium AB",
-          "amount_in_cash": "1320000.000",
-          "amount_in_percentage": 0.81,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Bearpeak AB",
-          "amount_in_cash": "1320000.000",
-          "amount_in_percentage": 0.81,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Pegroco Holding AB",
-          "amount_in_cash": "1320000.000",
-          "amount_in_percentage": 0.81,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Visa Invest AB",
-          "amount_in_cash": "1320000.000",
-          "amount_in_percentage": 0.81,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Pronator Invest AB",
-          "amount_in_cash": "1300000.000",
-          "amount_in_percentage": 0.8,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Strategic Wisdom Nordic AB",
-          "amount_in_cash": "1250000.000",
-          "amount_in_percentage": 0.76,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Haldran AB",
-          "amount_in_cash": "1060000.000",
-          "amount_in_percentage": 0.65,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Consentia Group AB",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Cordouan Invest AB",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Ghanen Chouha",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Hans Wernstedt",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Hälsa Invest Sweden AB",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Johan Waldhe",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Lycksele Telemarketing AB",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Mats Carlsson",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "MIHAB AB",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Tony Chouha",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "XC Invest AB",
-          "amount_in_cash": "900000.000",
-          "amount_in_percentage": 0.55,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Erik Lundin",
-          "amount_in_cash": "825000.000",
-          "amount_in_percentage": 0.5,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Jan Robert Pärsson",
-          "amount_in_cash": "825000.000",
-          "amount_in_percentage": 0.5,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Maria Eldrot Lundmark",
-          "amount_in_cash": "825000.000",
-          "amount_in_percentage": 0.5,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "P&M CF AB",
-          "amount_in_cash": "825000.000",
-          "amount_in_percentage": 0.5,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Peter Lundmark",
-          "amount_in_cash": "825000.000",
-          "amount_in_percentage": 0.5,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Rune Löderup",
-          "amount_in_cash": "825000.000",
-          "amount_in_percentage": 0.5,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Max Björs",
-          "amount_in_cash": "640000.000",
-          "amount_in_percentage": 0.39,
-          "level": 1
-        },
-        "ground_truth": null
-      }
-    ]
-  },
-  {
-    "document_name": "HDW-B_2024‑11‑05_Memorandum.pdf",
-    "issue_id": "a5f42b66-6299-44a1-bf8e-7b7be25bb129",
-    "correct": 0,
-    "incorrect": 7,
-    "missing": 4,
-    "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Consentia Group AB",
-          "amount_in_cash": "700000.000",
-          "amount_in_percentage": 7.42,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Consentia Group AB",
-          "level": 1,
-          "amount_in_percentage": "7.42",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Capmate AB",
-          "amount_in_cash": "350000.000",
-          "amount_in_percentage": 3.71,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Capmate AB",
-          "level": 1,
-          "amount_in_percentage": "3.71",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Tony Chouha",
-          "amount_in_cash": "300000.000",
-          "amount_in_percentage": 3.18,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Tony Chouha",
-          "level": 1,
-          "amount_in_percentage": "3.18",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Ghanem Chouha",
-          "amount_in_cash": "300000.000",
-          "amount_in_percentage": 3.18,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Ghanem Chouha",
-          "level": 1,
-          "amount_in_percentage": "3.18",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Pronator Invest AB",
-          "amount_in_cash": "300000.000",
-          "amount_in_percentage": 3.18,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Pronator Invest AB",
-          "level": 1,
-          "amount_in_percentage": "3.18",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Arne Grundström",
-          "amount_in_cash": "300000.000",
-          "amount_in_percentage": 3.18,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Arne Grundström",
-          "level": 1,
-          "amount_in_percentage": "3.18",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Torna Kapital AB",
-          "amount_in_cash": "250000.000",
-          "amount_in_percentage": 2.65,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Torna Kapital AB",
-          "level": 1,
-          "amount_in_percentage": "2.65",
-          "amount_in_cash": null
-        },
-        "errors": [
-          "Amount mismatch: Extracted an amount where none was expected"
-        ]
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Infinitum Aktiebolag",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "70164.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Capmate AB",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "920508.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "G&W Kapitalförvaltning AB",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "186480.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Råsunda Förvaltning AB",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "234214.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "QBRICK_2023-12-07_Memorandum.pdf",
-    "issue_id": "9190cffe-68dd-4e05-ad22-cf5e9a01fcf7",
-    "correct": 28,
-    "incorrect": 0,
-    "missing": 0,
-    "false_positives": 0,
-    "discrepancies": []
-  },
-  {
-    "document_name": "DANCAN_2022-10-31_Prospekt.pdf",
-    "issue_id": "e9f595d6-b28d-47fa-abce-919f5bb55873",
-    "correct": 14,
-    "incorrect": 0,
-    "missing": 5,
-    "false_positives": 5,
-    "discrepancies": [
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Jeppe Krog Rasmussen indirectly through Xignotus Capital ApS",
-          "amount_in_cash": "100002.000",
-          "amount_in_percentage": 0.35,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Christian Carlsen indirectly through Carlsen Holdin ApS",
-          "amount_in_cash": "250002.000",
-          "amount_in_percentage": 0.88,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Carsten Trads indirectly through C-Plus Consult",
-          "amount_in_cash": "100002.000",
-          "amount_in_percentage": 0.35,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Louise Conradsen, indirectly through L Conradsen Holding ApS",
-          "amount_in_cash": "200004.000",
-          "amount_in_percentage": 0.7,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Other (32 persons)",
-          "amount_in_cash": "11550108.000",
-          "amount_in_percentage": 40.57,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Xignotus Capital ApS",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "100002.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "C-Plus Consult",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "100002.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Carlsen Holdin ApS",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "250002.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "?",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "10850106.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "L Conradsen Holding ApS",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "200004.000"
-        }
-      }
-    ]
-  },
-  {
-    "document_name": "LAIR_2022-11-29_Memorandum.pdf",
-    "issue_id": "641b2a4e-f929-4e70-9b90-890b80135549",
-    "correct": 13,
-    "incorrect": 6,
-    "missing": 2,
-    "false_positives": 2,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Göran Wikström",
-          "amount_in_cash": "2499999.600",
-          "amount_in_percentage": null,
-          "level": 2
-        },
-        "ground_truth": {
-          "name": "Göran Wikström",
-          "level": 2,
-          "amount_in_percentage": null,
-          "amount_in_cash": "2499999.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 2499999.600, expected 2499999.000"
-        ]
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Sven Olof Kulldorf / Handelsbanken Luxemburg",
-          "amount_in_cash": "611631.000",
-          "amount_in_percentage": null,
-          "level": 0
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "False Positive",
-        "predicted": {
-          "name": "Sven Olof Kulldorf / Handelsbanken Luxemburg",
-          "amount_in_cash": "1499999.200",
-          "amount_in_percentage": null,
-          "level": 1
-        },
-        "ground_truth": null
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Health Runner AB",
-          "amount_in_cash": "4999999.200",
-          "amount_in_percentage": 20.26,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Health Runner AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "4999999.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 4999999.200, expected 4999999.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Stockholm Asset Management AB",
-          "amount_in_cash": "599999.400",
-          "amount_in_percentage": 2.43,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Stockholm Asset Management AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "599999.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 599999.400, expected 599999.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Exelity AB",
-          "amount_in_cash": "499998.800",
-          "amount_in_percentage": 2.03,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Exelity AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "499998.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 499998.800, expected 499998.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Hemo Spray & Pump AB",
-          "amount_in_cash": "499998.800",
-          "amount_in_percentage": 2.03,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Hemo Spray & Pump AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "499998.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 499998.800, expected 499998.000"
-        ]
-      },
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Tellus Equity Partners AB",
-          "amount_in_cash": "499998.800",
-          "amount_in_percentage": 2.03,
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Tellus Equity Partners AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "499998.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 499998.800, expected 499998.000"
-        ]
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Sven Olof Kulldorf",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "1499999.000"
-        }
-      },
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Sven Olof Kulldorf",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "611631.000"
         }
       }
     ]

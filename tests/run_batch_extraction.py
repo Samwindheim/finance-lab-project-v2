@@ -19,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCES_FILE = os.path.join(BASE_DIR, "tests", "sources.json")
 PDF_DIR = os.path.join(BASE_DIR, "pdfs")
 OUTPUT_JSON_DIR = os.path.join(BASE_DIR, "output_json")
+FAISS_INDEX_DIR = os.path.join(BASE_DIR, "faiss_index")
 EXTRACTION_TYPE = "underwriters"
 
 # --- ANSI Color Codes for Logging ---
@@ -146,13 +147,19 @@ def main(limit: int | None):
             failed_count += 1
             continue
 
-        # --- Step 2c: Index PDF to ensure it exists ---
-        log(bcolors.OKBLUE, "  Step 1: Indexing PDF...")
-        index_command_args = ["index", pdf_path]
-        if not run_pipeline_command(index_command_args):
-            log(bcolors.FAIL, "  Indexing process failed. Moving to next document.")
-            failed_count += 1
-            continue
+        # --- Step 2c: Check for and create index if it doesn't exist ---
+        index_basename = os.path.splitext(pdf_filename)[0]
+        index_path_prefix = os.path.join(FAISS_INDEX_DIR, index_basename)
+        
+        if os.path.exists(f"{index_path_prefix}.index") and os.path.exists(f"{index_path_prefix}.metadata"):
+            log(bcolors.OKGREEN, "  Index already exists. Skipping indexing.")
+        else:
+            log(bcolors.OKBLUE, "  Step 1: Index not found. Indexing PDF...")
+            index_command_args = ["index", pdf_path]
+            if not run_pipeline_command(index_command_args):
+                log(bcolors.FAIL, "  Indexing process failed. Moving to next document.")
+                failed_count += 1
+                continue
 
         # --- Step 2d: Run Extraction ---
         log(bcolors.OKBLUE, "  Step 2: Extracting data...")
