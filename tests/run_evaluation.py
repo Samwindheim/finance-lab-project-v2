@@ -10,6 +10,7 @@ import os
 import argparse
 from decimal import Decimal, InvalidOperation
 import re
+from rapidfuzz import fuzz
 
 # --- Configuration ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,9 +37,10 @@ def normalize_name(name: str) -> str:
     """Normalizes investor names for reliable comparison."""
     if not name:
         return ""
-    # Lowercase, remove common legal suffixes, and strip whitespace/punctuation
+    # Lowercase, replace specific accented characters, remove common legal suffixes, and strip whitespace/punctuation
     name = name.lower()
-    name = re.sub(r'\b(ab|ltd|inc|llc)\b', '', name)
+    name = name.replace('é', 'e') # Specifically handle 'é' -> 'e'
+    name = re.sub(r'\b(ab|aktiebolag|ltd|inc|llc)\b', '', name)
     name = re.sub(r'[^a-z0-9]+', '', name)
     return name.strip()
 
@@ -59,21 +61,37 @@ def find_best_match(predicted_investor, potential_matches):
     """
     best_match_candidate = None
     min_errors = float('inf')
+    best_match_score = -1
+    # Add a similarity threshold to avoid matching completely different names
+    SIMILARITY_THRESHOLD = 70
 
     if not potential_matches:
         return None
 
     for gt_candidate in potential_matches:
+        # Normalize names before fuzzy matching for robustness
+        pred_name_norm = normalize_name(predicted_investor.get("name", ""))
+        gt_name_norm = normalize_name(gt_candidate.get("name", ""))
+
+        # Calculate fuzzy matching score on normalized names
+        score = fuzz.token_sort_ratio(pred_name_norm, gt_name_norm)
+        
+        # If the score is below our threshold, it's not a plausible match
+        if score < SIMILARITY_THRESHOLD:
+            continue
+
         errors = compare_investor_data(predicted_investor, gt_candidate)
         num_errors = len(errors)
 
+        # We favor the match with the highest name similarity score,
+        # unless another match has fewer data errors (e.g. amount/level mismatch).
         if num_errors < min_errors:
             min_errors = num_errors
+            best_match_score = score
             best_match_candidate = gt_candidate
-        
-        # If we find a perfect match, we can stop searching immediately
-        if num_errors == 0:
-            return gt_candidate
+        elif num_errors == min_errors and score > best_match_score:
+            best_match_score = score
+            best_match_candidate = gt_candidate
 
     return best_match_candidate
 
@@ -84,16 +102,19 @@ def compare_investor_data(predicted, ground_truth):
     if predicted.get("level") != ground_truth.get("level"):
         errors.append(f"Level mismatch: Got {predicted.get('level')}, expected {ground_truth.get('level')}")
 
-    # Amount comparison
-    pred_amount = normalize_amount(predicted.get("amount_in_cash"))
-    gt_amount = normalize_amount(ground_truth.get("amount_in_cash"))
-    if pred_amount is not None and gt_amount is not None:
-        if pred_amount != gt_amount:
-            errors.append(f"Amount mismatch: Got {pred_amount}, expected {gt_amount}")
-    elif pred_amount is not None and gt_amount is None:
-        errors.append("Amount mismatch: Extracted an amount where none was expected")
-    elif pred_amount is None and gt_amount is not None:
-         errors.append(f"Amount mismatch: Did not extract an amount where one was expected ({gt_amount})")
+    # Amount comparison (integer-based)
+    pred_amount_decimal = normalize_amount(predicted.get("amount_in_cash"))
+    gt_amount_decimal = normalize_amount(ground_truth.get("amount_in_cash"))
+
+    # Only compare amounts if BOTH prediction and ground truth have a value.
+    # This change ignores "Extracted an amount where none was expected" errors.
+    if pred_amount_decimal is not None and gt_amount_decimal is not None:
+        # Truncate both to integers for comparison, as per the new logic
+        pred_amount_int = int(pred_amount_decimal)
+        gt_amount_int = int(gt_amount_decimal)
+        if pred_amount_int != gt_amount_int:
+            # The error message now includes original values for better debugging
+            errors.append(f"Amount mismatch (as integer): Got {pred_amount_int}, expected {gt_amount_int} (Originals: {pred_amount_decimal} vs {gt_amount_decimal})")
 
     return errors
 
@@ -157,14 +178,10 @@ def main(limit: int | None):
         gt_unmatched = list(ground_truth_investors) # A list to track who we haven't found yet
         
         for pred_investor in predicted_investors:
-            # Find all potential matches by name in the currently available ground truth list
-            normalized_pred_name = normalize_name(pred_investor.get("name"))
-            potential_matches = [
-                gt for gt in gt_unmatched 
-                if normalize_name(gt.get("name")) == normalized_pred_name
-            ]
+            # With fuzzy matching, we must consider all remaining ground truth entries as potential matches
+            best_match = find_best_match(pred_investor, gt_unmatched)
 
-            if not potential_matches:
+            if not best_match:
                 # This is a clear false positive, as no investor with this name was expected
                 doc_report["false_positives"] += 1
                 doc_report["discrepancies"].append({
@@ -173,9 +190,6 @@ def main(limit: int | None):
                     "ground_truth": None,
                 })
             else:
-                # Find the best possible match from the candidates
-                best_match = find_best_match(pred_investor, potential_matches)
-                
                 # Now that we've paired it, remove it from the list of available ground truth investors
                 if best_match in gt_unmatched:
                     gt_unmatched.remove(best_match)

@@ -118,12 +118,28 @@ def extract_command(args):
 
     if results:
         # --- Continuity Check Logic ---
-        # Identify consecutive pages from the top search results
+        # Identify consecutive pages from the top search results. This is useful for
+        # tables that span multiple pages.
         top_result = results[0] # get the top result
         pages_to_extract = [top_result]
         results_by_page = {res['page_number']: res for res in results}
         
+        # Start checking from the page after the top result.
         current_page = top_result['page_number'] + 1
+
+        # Always include the page immediately following the top result.
+        # This helps capture content that continues onto the next page, even if
+        # that page didn't rank high in the search results.
+        if current_page in results_by_page:
+            # If the next page was in our search results, add it.
+            pages_to_extract.append(results_by_page[current_page])
+        else:
+            # Otherwise, create a synthetic result for it to ensure it gets processed.
+            pages_to_extract.append({'page_number': current_page})
+
+        # Now, continue checking for any other pages that are both consecutive
+        # and were in our initial search results.
+        current_page += 1
         while current_page in results_by_page:
             pages_to_extract.append(results_by_page[current_page])
             current_page += 1
@@ -185,11 +201,19 @@ def extract_command(args):
                 # --- Post-process to match manual data format ---
                 processed_investors = []
                 for investor in parsed_json.get("investors", []):
+                    # --- Format amount_in_cash ---
                     amount = investor.get("amount_in_cash")
                     if isinstance(amount, (int, float)):
-                        # *** Round down to integer *** 
+                        # *** We round amounts down to integer *** 3.9 -> 3, 3.1 -> 3
                         # Truncate to an integer, then format to a string with 3 decimal places
                         investor["amount_in_cash"] = f"{int(amount):.3f}"
+                    
+                    # --- Format amount_in_percentage ---
+                    percent = investor.get("amount_in_percentage")
+                    if isinstance(percent, (int, float)):
+                        # Format to a string, e.g., "9.7"
+                        investor["amount_in_percentage"] = str(percent)
+
                     processed_investors.append(investor)
 
                 final_output = {

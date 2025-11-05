@@ -2,8 +2,21 @@
 V1: Query for underwriter data:
 ./run.sh query "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK"
 
-./run.sh query -k 1 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK" --save-image 
+V2:
+./run.sh query -k 1 "Tabell med teckningsåtaganden och garantiåtaganden, med namn, belopp, andel % och totalsumma i SEK" --save-image
 
+Venv: source venv/bin/activate
+Batch extraction: python3 tests/run_batch_extraction.py --limit 10  
+Batch test: python3 tests/run_evaluation.py --limit 10     
+
+
+Important:
+My test script rounds both my data and manual data down to 
+the integer. My extraction actually outputs with the decimal places.
+But this testing strategy accounts for the manual data sometimes 
+being rounded and sometimes not.
+
+Maybe do the same for Aktiebolag vs AB? Change that part of the string to always be AB
 
 TESTING
 
@@ -34,6 +47,67 @@ id: aaf556c3-344a-4f3d-8786-82407c25689b
 Fjärde AP-fonden 
 
 
-Todo:
+1. Image problem *
 
-Add "get rid of styrelseledamot for names" in llm prompt
+2. Perfect
+
+3. Perfect
+
+4. Perfect
+
+5. 1 investor missing
+
+6. Missing all, don't think the data is in the pdf
+
+7. Missing all, query not grabbing right page, it is labelled differently *
+
+8. Missing all, which is just 1 investor *
+
+9. Perfect
+
+10. Perfect
+
+11. Perfect
+
+12. Manual data wrong? Kenneth Lindqvist amount, inconsistent naming scheme as well
+
+13. Manual data on Fjärde AP-fonden investor level seems wrong, otherwise perfect
+aaf556c3-344a-4f3d-8786-82407c25689b
+
+14. Perfect, but naming inconsistency so it shows as wrong
+
+15. Manual data rounded up instead of down. But looks accurate
+
+16. Naming, missing 2 investors, finance lab app doesn't show those investors as underwriters though?
+
+17. Missing all, it is 1 investor and I don't see it in the pdf
+
+18. Perfect, but manual data has wrong amount for Buntel AB
+
+19. Perfect, but manual data doesn't include 1 for some reason? Otherwise accurate
+
+20. Perfect
+
+21. Good, but manual data doesn't include garantiers? Weird table
+
+22. Good, but missing data that I dont't know where it came from
+
+23. Perfect
+
+24. Good, but naming, "others" amount seems wrong in manual data
+
+25. Perfect, but naming issue
+
+26. Perfect
+
+27. Perfect
+
+28. Missing all, don't see data in pdf
+
+29. Perfect but 1 name inconsistency
+
+30. Good, but extra investors that have 0%, manual didn't grab these ones
+
+Thoughts:
+Inconsistent naming schemes makes it difficult to test programmatically. Some cases
+where I think manual data is wrong. Cases where I can't even find the data in the pdfs - don't know where it came from.

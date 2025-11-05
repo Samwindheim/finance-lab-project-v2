@@ -24,6 +24,7 @@ You will be given one or more images of a document page and the raw text extract
 
 - Guarantor (“Garantier” or "Brygglån") → 1
 - If a tiered guarantee system is specified (e.g., “Botten-garantier”, “Bottom-up garantiåtaganden”), assign level 1 to bottom-tier guarantors and level 2 to top-tier guarantors (“Toppgarantier”, “Top-down garantiåtaganden”)
+- It is important to ensure gaurantor levels are accurate
 - Default to Null if it is ambiguous
 
 **Data Cleaning Rules:**
@@ -39,6 +40,8 @@ You will be given one or more images of a document page and the raw text extract
   - Remove ending asterisks
   - Replace newlines with spaces (e.g., “Svanberg & Co\nInvest AB” → “Svanberg & Co Invest AB”)
   - Remove things like "(privat och via bolag)"
+  - Remove titles or descriptions like "styrelseledamot" or "CTO, advisor" or "as Trustee of"
+  - Write "Övriga" (Others) data as "?" for the name
 
 **Processing Instructions:**
 1. Work row by row, extracting all fields according to rules.
