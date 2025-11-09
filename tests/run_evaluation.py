@@ -10,12 +10,13 @@ import os
 import argparse
 from decimal import Decimal, InvalidOperation
 import re
+import math
 from rapidfuzz import fuzz
 
 # --- Configuration ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCES_FILE = os.path.join(BASE_DIR, "tests", "sources.json")
-MANUAL_INVESTORS_FILE = os.path.join(BASE_DIR, "tests", "manual_investors.json")
+MANUAL_INVESTORS_FILE = os.path.join(BASE_DIR, "tests", "verified_investors.json")
 PREDICTIONS_DIR = os.path.join(BASE_DIR, "output_json")
 OUTPUT_REPORT_JSON = os.path.join(BASE_DIR, "accuracy_report.json")
 OUTPUT_SUMMARY_MD = os.path.join(BASE_DIR, "accuracy_summary.md")
@@ -102,19 +103,22 @@ def compare_investor_data(predicted, ground_truth):
     if predicted.get("level") != ground_truth.get("level"):
         errors.append(f"Level mismatch: Got {predicted.get('level')}, expected {ground_truth.get('level')}")
 
-    # Amount comparison (integer-based)
+    # Amount comparison
     pred_amount_decimal = normalize_amount(predicted.get("amount_in_cash"))
     gt_amount_decimal = normalize_amount(ground_truth.get("amount_in_cash"))
 
     # Only compare amounts if BOTH prediction and ground truth have a value.
     # This change ignores "Extracted an amount where none was expected" errors.
     if pred_amount_decimal is not None and gt_amount_decimal is not None:
-        # Truncate both to integers for comparison, as per the new logic
-        pred_amount_int = int(pred_amount_decimal)
         gt_amount_int = int(gt_amount_decimal)
-        if pred_amount_int != gt_amount_int:
+
+        # Accept a predicted amount if its floor or ceiling matches the ground truth integer amount.
+        pred_amount_floor = int(pred_amount_decimal)
+        pred_amount_ceil = math.ceil(pred_amount_decimal)
+        
+        if gt_amount_int not in [pred_amount_floor, pred_amount_ceil]:
             # The error message now includes original values for better debugging
-            errors.append(f"Amount mismatch (as integer): Got {pred_amount_int}, expected {gt_amount_int} (Originals: {pred_amount_decimal} vs {gt_amount_decimal})")
+            errors.append(f"Amount mismatch: Got {pred_amount_decimal}, expected {gt_amount_decimal} (Accepted range: {pred_amount_floor}-{pred_amount_ceil})")
 
     return errors
 

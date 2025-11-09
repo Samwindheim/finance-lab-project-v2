@@ -204,9 +204,7 @@ def extract_command(args):
                     # --- Format amount_in_cash ---
                     amount = investor.get("amount_in_cash")
                     if isinstance(amount, (int, float)):
-                        # *** We round amounts down to integer *** 3.9 -> 3, 3.1 -> 3
-                        # Truncate to an integer, then format to a string with 3 decimal places
-                        investor["amount_in_cash"] = f"{int(amount):.3f}"
+                        investor["amount_in_cash"] = f"{(amount):.3f}"
                     
                     # --- Format amount_in_percentage ---
                     percent = investor.get("amount_in_percentage")
