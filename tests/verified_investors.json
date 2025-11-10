@@ -1,118 +1,5 @@
 [
   {
-    "issue_id": "467ba3df-7ead-4914-9011-d84707be1f4c",
-    "investors": [
-      {
-        "name": "Anders Moberg",
-        "level": 0,
-        "amount_in_percentage": "1.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "?",
-        "level": 1,
-        "amount_in_percentage": "12.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "ISTMO AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "ISTMO AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "1888823.000"
-      },
-      {
-        "name": "SOMACHE AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Övre Kullen AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "19999995.000"
-      },
-      {
-        "name": "Andréas Elgaard",
-        "level": 1,
-        "amount_in_percentage": "1.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "Andréas Elgaard",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "2250000.000"
-      },
-      {
-        "name": "SOMACHE AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "5789063.000"
-      },
-      {
-        "name": "Aeternum Capital AS",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "407283720.000"
-      },
-      {
-        "name": "Fredrik Rapp",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "486600.000"
-      },
-      {
-        "name": "Fredrik Rapp",
-        "level": 1,
-        "amount_in_percentage": "8.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "Petter Fägersten",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "10000005.000"
-      },
-      {
-        "name": "VIEM Invest AB",
-        "level": 1,
-        "amount_in_percentage": "4.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "Svolder AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "43774508.000"
-      },
-      {
-        "name": "Svolder AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Stig-Olof Simonsson",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "31293652.000"
-      },
-      {
-        "name": "Stig-Olof Simonsson",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      }
-    ]
-  },
-  {
     "issue_id": "98a4c8da-e2b7-4fa7-aad2-2fc1abede2ef",
     "investors": [
       {
@@ -431,12 +318,6 @@
         "amount_in_cash": "4000000.000"
       },
       {
-        "name": "Money Never Sleeps Holding AB",
-        "level": null,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
         "name": "Andreas Bergström",
         "level": 0,
         "amount_in_percentage": null,
@@ -459,155 +340,6 @@
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "5000000.000"
-      }
-    ]
-  },
-  {
-    "issue_id": "f5c8d679-3ccf-4a4c-a761-b9fc7fc50fac",
-    "investors": [
-      {
-        "name": "Consentia Group AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "700000.000"
-      },
-      {
-        "name": "Martin Jonsson",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "1500000.000"
-      },
-      {
-        "name": "Fields of Gold Holding AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "100000.000"
-      },
-      {
-        "name": "Martin Olauson",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "200000.000"
-      },
-      {
-        "name": "Christer Hager",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "187604.000"
-      },
-      {
-        "name": "Seventh Sense Adventures Holding AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "100000.000"
-      },
-      {
-        "name": "Marcus Andersson",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "149727.000"
-      },
-      {
-        "name": "Nestero Holding",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "100000.000"
-      },
-      {
-        "name": "Björn Wallin",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "420000.000"
-      },
-      {
-        "name": "Per Nellgård",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "250007.000"
-      },
-      {
-        "name": "Red one and red two AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "263772.000"
-      },
-      {
-        "name": "Pronator Invest AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "300000.000"
-      },
-      {
-        "name": "Paginera Invest AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "200000.000"
-      },
-      {
-        "name": "Andreas Poike",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "250000.000"
-      },
-      {
-        "name": "Anders Haskel",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "200000.000"
-      },
-      {
-        "name": "Nils Berg",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "500000.000"
-      },
-      {
-        "name": "Meriti Neutral",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "300000.000"
-      },
-      {
-        "name": "John Andersson Moll",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "500000.000"
-      },
-      {
-        "name": "Karkas Capital",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "500000.000"
-      },
-      {
-        "name": "Jens Miöen",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "400000.000"
-      },
-      {
-        "name": "UBB Consulting AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "500000.000"
-      },
-      {
-        "name": "Aktia Bank Plc",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "532580.000"
-      },
-      {
-        "name": "Anders Husmark",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "100000.000"
-      },
-      {
-        "name": "Viktor Westman",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": "500000.000"
       }
     ]
   },
@@ -1081,16 +813,16 @@
         "name": "Kenneth Lindqvist",
         "level": 0,
         "amount_in_percentage": null,
-        "amount_in_cash": "32244196.000"
+        "amount_in_cash": "47000000.000"
       },
       {
-        "name": "Tuida Holding AB",
+        "name": "Staffan Torstensson",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "8000000.000"
       },
       {
-        "name": "GoMobile nu AB",
+        "name": "Per Åhlgren",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "40000000.000"
@@ -1560,18 +1292,6 @@
     "issue_id": "a4cbb243-f65a-4479-9ec1-a82b05a938e3",
     "investors": [
       {
-        "name": "ALPECT Holding AB",
-        "level": null,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Alma Växjö I Holding AB",
-        "level": null,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
         "name": "Clearance Capital Limited",
         "level": 0,
         "amount_in_percentage": null,
@@ -1598,17 +1318,6 @@
     ]
   },
   {
-    "issue_id": "55bd284c-30f9-4f5c-9e0b-ae4a1dea86f5",
-    "investors": [
-      {
-        "name": "Admensys ApS",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": "162000.000"
-      }
-    ]
-  },
-  {
     "issue_id": "855dee92-6c3d-4ad6-8c92-07552a800a82",
     "investors": [
       {
@@ -1621,7 +1330,7 @@
         "name": "Buntel AB",
         "level": 2,
         "amount_in_percentage": null,
-        "amount_in_cash": "2442035.000"
+        "amount_in_cash": "2422035.000"
       },
       {
         "name": "Niklas Estensson",
@@ -1843,6 +1552,12 @@
         "level": 1,
         "amount_in_percentage": null,
         "amount_in_cash": "20000000.000"
+      },
+      {
+        "name": "Christian Lagerling",
+        "level": 0,
+        "amount_in_percentage": "0.0",
+        "amount_in_cash": "0.000"
       }
     ]
   },
@@ -2004,18 +1719,6 @@
         "amount_in_cash": null
       },
       {
-        "name": "Infinitum Aktiebolag",
-        "level": 2,
-        "amount_in_percentage": null,
-        "amount_in_cash": "70164.000"
-      },
-      {
-        "name": "Capmate AB",
-        "level": 2,
-        "amount_in_percentage": null,
-        "amount_in_cash": "920508.000"
-      },
-      {
         "name": "Arne Grundström",
         "level": 1,
         "amount_in_percentage": "3.18",
@@ -2040,22 +1743,10 @@
         "amount_in_cash": null
       },
       {
-        "name": "G&W Kapitalförvaltning AB",
-        "level": 2,
-        "amount_in_percentage": null,
-        "amount_in_cash": "186480.000"
-      },
-      {
         "name": "Pronator Invest AB",
         "level": 1,
         "amount_in_percentage": "3.18",
         "amount_in_cash": null
-      },
-      {
-        "name": "Råsunda Förvaltning AB",
-        "level": 2,
-        "amount_in_percentage": null,
-        "amount_in_cash": "234214.000"
       },
       {
         "name": "Consentia Group AB",
@@ -2242,7 +1933,7 @@
     "issue_id": "e9f595d6-b28d-47fa-abce-919f5bb55873",
     "investors": [
       {
-        "name": "Xignotus Capital ApS",
+        "name": "Jeppe Krog Rasmussen",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "100002.000"
@@ -2284,7 +1975,7 @@
         "amount_in_cash": "1400004.000"
       },
       {
-        "name": "C-Plus Consult",
+        "name": "Carsten Trads",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "100002.000"
@@ -2302,7 +1993,7 @@
         "amount_in_cash": "1000002.000"
       },
       {
-        "name": "Carlsen Holdin ApS",
+        "name": "Christian Carlsen",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "250002.000"
@@ -2317,7 +2008,7 @@
         "name": "?",
         "level": 1,
         "amount_in_percentage": null,
-        "amount_in_cash": "10850106.000"
+        "amount_in_cash": "11550108.000"
       },
       {
         "name": "Per Wester",
@@ -2350,7 +2041,7 @@
         "amount_in_cash": "50004.000"
       },
       {
-        "name": "L Conradsen Holding ApS",
+        "name": "Louise Conradsen",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "200004.000"
@@ -2445,13 +2136,13 @@
         "amount_in_cash": "499998.000"
       },
       {
-        "name": "Sven Olof Kulldorf",
+        "name": "Sven Olof Kulldorf / Handelsbanken Luxemburg",
         "level": 1,
         "amount_in_percentage": null,
         "amount_in_cash": "1499999.000"
       },
       {
-        "name": "Sven Olof Kulldorf",
+        "name": "Sven Olof Kulldorf / Handelsbanken Luxemburg",
         "level": 0,
         "amount_in_percentage": null,
         "amount_in_cash": "611631.000"
@@ -2793,71 +2484,6 @@
     ]
   },
   {
-    "issue_id": "9fff9ce4-455d-424a-ab32-42314f3efa2c",
-    "investors": [
-      {
-        "name": "Henrik Nittmar",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Familjen Sunnanväder",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Henrik Nittmar",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "HealthInvest Small & Microcap Fund AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Adam Dahlberg",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Adam Dahlberg",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "?",
-        "level": 0,
-        "amount_in_percentage": "70.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "?",
-        "level": 1,
-        "amount_in_percentage": "30.00",
-        "amount_in_cash": null
-      },
-      {
-        "name": "Eccenovo AB",
-        "level": 1,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      },
-      {
-        "name": "Eccenovo AB",
-        "level": 0,
-        "amount_in_percentage": null,
-        "amount_in_cash": null
-      }
-    ]
-  },
-  {
     "issue_id": "efa803fb-7799-4c8a-afad-ea5c01fc69c5",
     "investors": [
       {
@@ -2987,7 +2613,7 @@
         "amount_in_cash": "1250000.000"
       },
       {
-        "name": "Formue Nord Markedsneutral A/S",
+        "name": "Formue Nord A/S",
         "level": 1,
         "amount_in_percentage": null,
         "amount_in_cash": "13000000.000"
@@ -3334,7 +2960,7 @@
         "amount_in_cash": "17500000.000"
       },
       {
-        "name": "Munkekullen 5 Förvaltning AB",
+        "name": "Munkekullen",
         "level": 1,
         "amount_in_percentage": null,
         "amount_in_cash": "15100000.000"
