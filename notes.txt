@@ -9,7 +9,6 @@ Venv: source venv/bin/activate
 Batch extraction: python3 tests/run_batch_extraction.py --limit 10  
 Batch test: python3 tests/run_evaluation.py --limit 10     
 
-
 Important:
 My test script rounds both my data and manual data down to 
 the integer. My extraction actually outputs with the decimal places.
@@ -46,68 +45,115 @@ Kenneth Lindvist value
 id: aaf556c3-344a-4f3d-8786-82407c25689b
 Fjärde AP-fonden 
 
+1, 2, 3, 4, 5,
 
 1. Image problem *
 
-2. Perfect
+* 2. Perfect
 
-3. Perfect
+* 3. Perfect
 
-4. Perfect
+* 4. Perfect
 
-5. 1 investor missing
+5. 1 investor missing. Vuxen group. Includes Säljande aktieägare.
 
-6. Missing all, don't think the data is in the pdf
+6. Missing all, it's in a different document on finance lab
 
 7. Missing all, query not grabbing right page, it is labelled differently *
+99102636-5e9b-456d-a87b-479d223fe922, no mention of tecknigs garant etc..
 
-8. Missing all, which is just 1 investor *
+8. Missing all, which is just 1 investor, it's konvertible *
 
-9. Perfect
+* 9. Perfect
 
-10. Perfect
+* 10. Perfect
 
-11. Perfect
+* 11. Perfect
 
-12. Manual data wrong? Kenneth Lindqvist amount, inconsistent naming scheme as well
+* 12. Manual data wrong? Kenneth Lindqvist amount, inconsistent naming scheme as well
 
-13. Manual data on Fjärde AP-fonden investor level seems wrong, otherwise perfect
+* 13. Manual data on Fjärde AP-fonden investor level seems wrong, otherwise perfect
 aaf556c3-344a-4f3d-8786-82407c25689b
 
-14. Perfect, but naming inconsistency so it shows as wrong
+*! 14. Perfect, but naming inconsistency so it shows as wrong
 
-15. Manual data rounded up instead of down. But looks accurate
+* 15. Manual data rounded up instead of down. But looks accurate
 
-16. Naming, missing 2 investors, finance lab app doesn't show those investors as underwriters though?
+* 16. Naming, missing 2 investors, finance lab app doesn't show those investors as underwriters though?
 
 17. Missing all, it is 1 investor and I don't see it in the pdf
 
-18. Perfect, but manual data has wrong amount for Buntel AB
+* 18. Perfect, but manual data has wrong amount for Buntel AB
+855dee92-6c3d-4ad6-8c92-07552a800a82
 
-19. Perfect, but manual data doesn't include 1 for some reason? Otherwise accurate
+* 19. Perfect, but manual data doesn't include 1 for some reason? Otherwise accurate
 
-20. Perfect
+* 20. Perfect
 
-21. Good, but manual data doesn't include garantiers? Weird table
+* 21. Good, but manual data doesn't include garantiers? Weird table
 
 22. Good, but missing data that I dont't know where it came from
+a5f42b66-6299-44a1-bf8e-7b7be25bb129
 
-23. Perfect
+* 23. Perfect
 
-24. Good, but naming, "others" amount seems wrong in manual data
+* 24. Good, but naming issue, "others" amount seems wrong in manual data
 
-25. Perfect, but naming issue
+* 25. Perfect, but naming issue
+641b2a4e-f929-4e70-9b90-890b80135549
 
-26. Perfect
+* 26. Perfect
 
-27. Perfect
+* 27. Perfect
 
 28. Missing all, don't see data in pdf
+9fff9ce4-455d-424a-ab32-42314f3efa2c
 
-29. Perfect but 1 name inconsistency
+* 29. Perfect but 1 name inconsistency
+efa803fb-7799-4c8a-afad-ea5c01fc69c5
 
-30. Good, but extra investors that have 0%, manual didn't grab these ones
+* 30. Good, but extra investors that have 0%, manual didn't grab these ones?
+61c9e302-3d1e-4eea-987a-f95a0e8fe1df
 
 Thoughts:
 Inconsistent naming schemes makes it difficult to test programmatically. Some cases
 where I think manual data is wrong. Cases where I can't even find the data in the pdfs - don't know where it came from.
+
+Verified changes:
+
+de4cf075-3c66-4f47-a16f-d788611e97ae
+names fix and kenneth cash amount
+
+855dee92-6c3d-4ad6-8c92-07552a800a82
+Buntel AB cash amount
+
+f5c8d679-3ccf-4a4c-a761-b9fc7fc50fac
+removed all, data in different doc
+
+5b602395-7655-4183-818c-71a556481a59
+removed Säljande aktieägare "money never sleeps"
+
+f26ba257-2c44-4324-9443-11915b0c4fc4
+fixed naming "Ozone"
+
+9fff9ce4-455d-424a-ab32-42314f3efa2c
+removed all, data in different doc
+
+50898375-798c-4242-bcde-1aeddd914a55
+Added Christian Lagerling, in pdf but not manual data
+
+a4cbb243-f65a-4479-9ec1-a82b05a938e3
+removed Säljande aktieägare
+
+467ba3df-7ead-4914-9011-d84707be1f4c
+removed for now, image based pdf
+
+55bd284c-30f9-4f5c-9e0b-ae4a1dea86f5
+removed all, data in different doc on finance lab app
+
+a5f42b66-6299-44a1-bf8e-7b7be25bb129
+part of the data in diffrent doc, (topp-garant)
+
+61c9e302-3d1e-4eea-987a-f95a0e8fe1df
+changed "Munkekullen 5 Förvaltning AB" to "Munkekullen" as that is how
+its written in pdf. Though in the app its the longer version.

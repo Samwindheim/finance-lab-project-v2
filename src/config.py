@@ -31,3 +31,9 @@ EXTRACTION_QUERIES = {
 }
 
 #Old under writere query: "Tabell över teckningsförbindelser, teckningsåtaganden och garantiåtaganden med kolumner för namn, belopp i SEK, och andel i procent (%)",
+
+# Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), guarantee commitments (garantiåtaganden or garanti) or teckning av aktier
+
+# garantiåtaganden or  garanti and teckningsåtaganden or teckningsförbindelser
+
+# teckningsförbindelse och garantiåtagande

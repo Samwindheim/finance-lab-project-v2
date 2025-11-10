@@ -15,11 +15,12 @@ from rapidfuzz import fuzz
 
 # --- Configuration ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEST_DIR = os.path.join(BASE_DIR, "tests")
 SOURCES_FILE = os.path.join(BASE_DIR, "tests", "sources.json")
 MANUAL_INVESTORS_FILE = os.path.join(BASE_DIR, "tests", "verified_investors.json")
 PREDICTIONS_DIR = os.path.join(BASE_DIR, "output_json")
-OUTPUT_REPORT_JSON = os.path.join(BASE_DIR, "accuracy_report.json")
-OUTPUT_SUMMARY_MD = os.path.join(BASE_DIR, "accuracy_summary.md")
+OUTPUT_REPORT_JSON = os.path.join(TEST_DIR, "accuracy_report.json")
+OUTPUT_SUMMARY_MD = os.path.join(TEST_DIR, "accuracy_summary.md")
 EXTRACTION_TYPE = "underwriters"
 
 # --- ANSI Color Codes for Logging ---
@@ -133,6 +134,9 @@ def main(limit: int | None):
         sources = json.load(f)
     with open(MANUAL_INVESTORS_FILE, 'r') as f:
         manual_data = json.load(f)
+
+    # log with test data we are using
+    log(bcolors.OKBLUE, f"Using manual data from {MANUAL_INVESTORS_FILE}")
 
     # Create a lookup map for ground truth data for efficient access
     # Add a check to ensure keys exist to prevent KeyErrors on malformed data

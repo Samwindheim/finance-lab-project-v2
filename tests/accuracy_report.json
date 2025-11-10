@@ -1,0 +1,840 @@
+[
+  {
+    "document_name": "ALZ_2024-06-05_Prospekt.pdf",
+    "issue_id": "98a4c8da-e2b7-4fa7-aad2-2fc1abede2ef",
+    "correct": 19,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "SYNC-B_2024‑11‑22_Prospekt.pdf",
+    "issue_id": "e0ee9dde-c426-4ec7-b386-d4c6b8171869",
+    "correct": 24,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "GTG_2023-11-08_Memorandum.pdf",
+    "issue_id": "23a6ae4b-8406-419e-92ab-f56747f17f9f",
+    "correct": 6,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "PURE_2022‑01‑27_Prospekt.pdf",
+    "issue_id": "5b602395-7655-4183-818c-71a556481a59",
+    "correct": 5,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "GUARD_2021‑10‑20_Prospekt.pdf",
+    "issue_id": "99102636-5e9b-456d-a87b-479d223fe922",
+    "correct": 0,
+    "incorrect": 0,
+    "missing": 6,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "?",
+          "level": 0,
+          "amount_in_percentage": "5.50",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "?",
+          "level": 1,
+          "amount_in_percentage": "79.00",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "M2 Asset Management AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "M2 Asset Management AB",
+          "level": 0,
+          "amount_in_percentage": "8.20",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Jan Ståhlberg",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Jan Ståhlberg",
+          "level": 0,
+          "amount_in_percentage": "7.30",
+          "amount_in_cash": null
+        }
+      }
+    ]
+  },
+  {
+    "document_name": "TESSIN_2024-06-14_Memorandum.pdf",
+    "issue_id": "20bdab5e-b7f5-4963-88bf-5a148c31b988",
+    "correct": 0,
+    "incorrect": 0,
+    "missing": 1,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Dan Brander",
+          "level": 1,
+          "amount_in_percentage": "100.00",
+          "amount_in_cash": null
+        }
+      }
+    ]
+  },
+  {
+    "document_name": "REDW_2023-08-25_Prospekt.pdf",
+    "issue_id": "c7d40245-fea1-4c49-9f40-9e454dc6e16e",
+    "correct": 19,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "IMSYS_2022-06-21_Prospekt.pdf",
+    "issue_id": "a8e3fd57-cb06-4977-b9b2-9ad8f8a09d5c",
+    "correct": 12,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "POLAR_2022-04-19_Memorandum.pdf",
+    "issue_id": "22461505-852f-413d-8cf5-ff3a4f5f5b64",
+    "correct": 28,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "ADDV-B_2025‑03‑24_Prospekt.pdf",
+    "issue_id": "de4cf075-3c66-4f47-a16f-d788611e97ae",
+    "correct": 10,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "NILAR_2022-06-02_Prospekt.pdf",
+    "issue_id": "aaf556c3-344a-4f3d-8786-82407c25689b",
+    "correct": 28,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "VISC_Prospekt.pdf",
+    "issue_id": "f26ba257-2c44-4324-9443-11915b0c4fc4",
+    "correct": 23,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "BPCINS_2021‑11‑17_Memorandum.pdf",
+    "issue_id": "d1a20442-9517-4fca-9a0e-06a6c6f2e327",
+    "correct": 23,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "PRISMA_2024‑06‑10_Prospekt.pdf",
+    "issue_id": "a4cbb243-f65a-4479-9ec1-a82b05a938e3",
+    "correct": 4,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "DANCAN_2024-06-11_Memorandum.pdf",
+    "issue_id": "855dee92-6c3d-4ad6-8c92-07552a800a82",
+    "correct": 14,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "FING-B_2022-11-10_Prospekt.pdf",
+    "issue_id": "50898375-798c-4242-bcde-1aeddd914a55",
+    "correct": 25,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "VPLAY-B_2024-01-19_Prospekt.pdf",
+    "issue_id": "2fe59d50-6f6b-47f0-9a9b-fc336cfe3424",
+    "correct": 17,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "DMYD-B_2023-06-02_Supplement.pdf",
+    "issue_id": "0dc16d36-2678-42a7-a4a4-061d9f8188d7",
+    "correct": 6,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 47,
+    "discrepancies": [
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Formue Nord Markedsneutral A/S",
+          "amount_in_cash": "25000000.000",
+          "amount_in_percentage": "15.29",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Selandia Alpha Invest A/S",
+          "amount_in_cash": "6160000.000",
+          "amount_in_percentage": "3.77",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Patrik Hansen",
+          "amount_in_cash": "4500000.000",
+          "amount_in_percentage": "2.75",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Bernhard Osten Sacken",
+          "amount_in_cash": "4400000.000",
+          "amount_in_percentage": "2.69",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Capono AB",
+          "amount_in_cash": "4400000.000",
+          "amount_in_percentage": "2.69",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Nowo Global Fund",
+          "amount_in_cash": "4400000.000",
+          "amount_in_percentage": "2.69",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Carl Rosvall",
+          "amount_in_cash": "4250000.000",
+          "amount_in_percentage": "2.6",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Martin Bjäringer",
+          "amount_in_cash": "4250000.000",
+          "amount_in_percentage": "2.6",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Buntel AB",
+          "amount_in_cash": "4000000.000",
+          "amount_in_percentage": "2.45",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Nolsterby Invest AB",
+          "amount_in_cash": "3520000.000",
+          "amount_in_percentage": "2.15",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Lusam Invest AB",
+          "amount_in_cash": "3175000.000",
+          "amount_in_percentage": "1.94",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Wilhelm Risberg",
+          "amount_in_cash": "3175000.000",
+          "amount_in_percentage": "1.94",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Arne Grundström",
+          "amount_in_cash": "2650000.000",
+          "amount_in_percentage": "1.62",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "G&W Holding AB",
+          "amount_in_cash": "2500000.000",
+          "amount_in_percentage": "1.53",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Excelity AB",
+          "amount_in_cash": "2400000.000",
+          "amount_in_percentage": "1.47",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "QQM Hedge Master",
+          "amount_in_cash": "2200000.000",
+          "amount_in_percentage": "1.35",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Gryningskust Holding AB",
+          "amount_in_cash": "1800000.000",
+          "amount_in_percentage": "1.1",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Spikarna Förvaltning AB",
+          "amount_in_cash": "1760000.000",
+          "amount_in_percentage": "1.08",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Oliver Molse",
+          "amount_in_cash": "1600000.000",
+          "amount_in_percentage": "0.98",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Oscar Molse",
+          "amount_in_cash": "1600000.000",
+          "amount_in_percentage": "0.98",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Anders Johansson",
+          "amount_in_cash": "1580000.000",
+          "amount_in_percentage": "0.97",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "ATH Invest AB",
+          "amount_in_cash": "1500000.000",
+          "amount_in_percentage": "0.92",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Accrelium AB",
+          "amount_in_cash": "1320000.000",
+          "amount_in_percentage": "0.81",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Bearpeak AB",
+          "amount_in_cash": "1320000.000",
+          "amount_in_percentage": "0.81",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Pegroco Holding AB",
+          "amount_in_cash": "1320000.000",
+          "amount_in_percentage": "0.81",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Visa Invest AB",
+          "amount_in_cash": "1320000.000",
+          "amount_in_percentage": "0.81",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Pronator Invest AB",
+          "amount_in_cash": "1300000.000",
+          "amount_in_percentage": "0.8",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Strategic Wisdom Nordic AB",
+          "amount_in_cash": "1250000.000",
+          "amount_in_percentage": "0.76",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Haldran AB",
+          "amount_in_cash": "1060000.000",
+          "amount_in_percentage": "0.65",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Consentia Group AB",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Cordouan Invest AB",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Ghanen Chouha",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Hans Wernstedt",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Hälsa Invest Sweden AB",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Johan Waldhe",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Lycksele Telemarketing AB",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Mats Carlsson",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "MIHAB AB",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Tony Chouha",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "XC Invest AB",
+          "amount_in_cash": "900000.000",
+          "amount_in_percentage": "0.55",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Erik Lundin",
+          "amount_in_cash": "825000.000",
+          "amount_in_percentage": "0.5",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Jan Robert Pärsson",
+          "amount_in_cash": "825000.000",
+          "amount_in_percentage": "0.5",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Maria Eldrot Lundmark",
+          "amount_in_cash": "825000.000",
+          "amount_in_percentage": "0.5",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "P&M CF AB",
+          "amount_in_cash": "825000.000",
+          "amount_in_percentage": "0.5",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Peter Lundmark",
+          "amount_in_cash": "825000.000",
+          "amount_in_percentage": "0.5",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Rune Löderup",
+          "amount_in_cash": "825000.000",
+          "amount_in_percentage": "0.5",
+          "level": 1
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Max Björs",
+          "amount_in_cash": "640000.000",
+          "amount_in_percentage": "0.39",
+          "level": 1
+        },
+        "ground_truth": null
+      }
+    ]
+  },
+  {
+    "document_name": "HDW-B_2024‑11‑05_Memorandum.pdf",
+    "issue_id": "a5f42b66-6299-44a1-bf8e-7b7be25bb129",
+    "correct": 7,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "QBRICK_2023-12-07_Memorandum.pdf",
+    "issue_id": "9190cffe-68dd-4e05-ad22-cf5e9a01fcf7",
+    "correct": 28,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "DANCAN_2022-10-31_Prospekt.pdf",
+    "issue_id": "e9f595d6-b28d-47fa-abce-919f5bb55873",
+    "correct": 19,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "LAIR_2022-11-29_Memorandum.pdf",
+    "issue_id": "641b2a4e-f929-4e70-9b90-890b80135549",
+    "correct": 21,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "PRLD_2023-12-04_Prospekt.pdf",
+    "issue_id": "0fcadbbf-7005-468f-880a-00816489873d",
+    "correct": 26,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "DUG_2022-11-24_Prospekt.pdf",
+    "issue_id": "1397a368-0165-404f-81b7-615bf1bb8d7a",
+    "correct": 23,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "ATORX_2023-04-28_Prospekt.pdf",
+    "issue_id": "efa803fb-7799-4c8a-afad-ea5c01fc69c5",
+    "correct": 77,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "TOBII_2024-03-18_Prospekt.pdf",
+    "issue_id": "61c9e302-3d1e-4eea-987a-f95a0e8fe1df",
+    "correct": 33,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 6,
+    "discrepancies": [
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Jörgen Lantto",
+          "amount_in_cash": null,
+          "amount_in_percentage": "0.0",
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Mats Backman",
+          "amount_in_cash": null,
+          "amount_in_percentage": "0.0",
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Ann Emilson",
+          "amount_in_cash": null,
+          "amount_in_percentage": "0.0",
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Emma Bauer",
+          "amount_in_cash": null,
+          "amount_in_percentage": "0.0",
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Jonas Jakstad",
+          "amount_in_cash": null,
+          "amount_in_percentage": "0.0",
+          "level": 0
+        },
+        "ground_truth": null
+      },
+      {
+        "type": "False Positive",
+        "predicted": {
+          "name": "Patrick Grundler",
+          "amount_in_cash": null,
+          "amount_in_percentage": "0.0",
+          "level": 0
+        },
+        "ground_truth": null
+      }
+    ]
+  }
+]
