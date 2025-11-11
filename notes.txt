@@ -59,7 +59,7 @@ Fjärde AP-fonden
 
 6. Missing all, it's in a different document on finance lab
 
-7. Missing all, query not grabbing right page, it is labelled differently *
+7. Missing all, query not grabbing right page, it is labelled differently * Most obvious failure
 99102636-5e9b-456d-a87b-479d223fe922, no mention of tecknigs garant etc..
 
 8. Missing all, which is just 1 investor, it's konvertible *
@@ -115,6 +115,15 @@ efa803fb-7799-4c8a-afad-ea5c01fc69c5
 * 30. Good, but extra investors that have 0%, manual didn't grab these ones?
 61c9e302-3d1e-4eea-987a-f95a0e8fe1df
 
+3a625f32-88af-44c7-bf21-6f49fa1e202e SVED
+grabbing wrong page, labelled differently
+
+5df19fd1-7d9b-456e-a63f-3eb59455f9a2
+not grabbing the only investor, labelled differently, could be a simple prompt fix
+
+29ced166-7982-439b-8837-dea699d58a91
+Mismatch on value, but it is right based from the pdf
+
 Thoughts:
 Inconsistent naming schemes makes it difficult to test programmatically. Some cases
 where I think manual data is wrong. Cases where I can't even find the data in the pdfs - don't know where it came from.
@@ -157,3 +166,18 @@ part of the data in diffrent doc, (topp-garant)
 61c9e302-3d1e-4eea-987a-f95a0e8fe1df
 changed "Munkekullen 5 Förvaltning AB" to "Munkekullen" as that is how
 its written in pdf. Though in the app its the longer version.
+
+ce5580c1-e107-42df-bcd6-0c3a6a763cbc
+removed Säljande aktieägare
+
+b2d50fd1-600e-4af4-b5d7-4868ed847c58
+removed all, data in different doc
+
+4793d827-4a3a-4872-ae49-b43ce07c0bcf
+removed all, data in different doc
+
+911a6d7d-7013-4383-af3d-54aed0022bdc
+removed all, amounts are in euros, so can't really compare with changing exchange rate
+
+4baaec27-fb54-41f7-b1eb-25e53dbacf85
+manual data says there is a no name given entry, but really its for 1 of the investors. Fixed this

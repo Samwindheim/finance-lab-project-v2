@@ -3152,5 +3152,2133 @@
         "amount_in_cash": "30000000.000"
       }
     ]
+  },
+  {
+    "issue_id": "e8580bf1-3580-44de-80de-ad06e20bd1a1",
+    "investors": [
+      {
+        "name": "Linn Olsen",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "20389.000"
+      },
+      {
+        "name": "Wilhelm Risberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "18919647.000"
+      },
+      {
+        "name": "Van Herk Investments B.V.",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "11156750.000"
+      },
+      {
+        "name": "Per Olof Svedenhag",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "37596.000"
+      },
+      {
+        "name": "Peter Elmvik",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3000000.000"
+      },
+      {
+        "name": "Alf Laurell",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4807.000"
+      },
+      {
+        "name": "Andreas Berndtsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "8671.000"
+      },
+      {
+        "name": "Fredrik Lundgren",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "18919647.000"
+      },
+      {
+        "name": "GELL Group AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "20000000.000"
+      },
+      {
+        "name": "Diana Ferro",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "43477.000"
+      },
+      {
+        "name": "Simon Grant",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "154722.000"
+      },
+      {
+        "name": "Jimmy Lindberg",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "Stockholms Elbolag AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3000000.000"
+      },
+      {
+        "name": "Tobias Bergenblad",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "47681.000"
+      },
+      {
+        "name": "Thomas Taapken",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "19458.000"
+      },
+      {
+        "name": "Tord Lendau",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "496958.000"
+      },
+      {
+        "name": "Matt Leavitt",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "624919.000"
+      },
+      {
+        "name": "Michael Colérus",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "47589.000"
+      },
+      {
+        "name": "Morningside AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3000000.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "4869b568-c1de-4389-82a0-f968abd3b1b8",
+    "investors": [
+      {
+        "name": "Precaso ApS",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "Oscar Falkenberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "Göran Falkenberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "J.Søe Holding ApS",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2900000.000"
+      },
+      {
+        "name": "CF Entertainment AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "Blue Horizon Investment ApS",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3194251.000"
+      },
+      {
+        "name": "Blue Horizon Investment ApS",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1482723.000"
+      },
+      {
+        "name": "Barnstormmedia AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "450000.000"
+      },
+      {
+        "name": "Carl Falkenberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Johan Carlson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "Johanna Falkenberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "Alexander Falkenberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "2Bak ApS",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Alex Finos",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "150000.000"
+      },
+      {
+        "name": "Rosebloom Enterprises AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "Segerlund Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "200000.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "e21b67db-83fa-45da-80a2-7918c559ec5f",
+    "investors": [
+      {
+        "name": "Wallseth Consulting AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "72000.000"
+      },
+      {
+        "name": "Marcus Åström",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "349250.000"
+      },
+      {
+        "name": "Gazzosa Rosso AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Stefan Andersson Engels",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "10000.000"
+      },
+      {
+        "name": "Tellus Equity Partners AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1500000.000"
+      },
+      {
+        "name": "Claes af Klinteberg",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5693.000"
+      },
+      {
+        "name": "Susanne Wallenborg",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "K Two Technology Consulting AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Paul Zeinou",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4000000.000"
+      },
+      {
+        "name": "Thomas Jönsson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Jens Olsson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Johan Lans",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Fenja Capital II A/S",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4000000.000"
+      },
+      {
+        "name": "Magnus Helgestrand",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "6044.000"
+      },
+      {
+        "name": "Tuvedalen Ltd",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2000000.000"
+      },
+      {
+        "name": "UBB Consulting AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3000000.000"
+      },
+      {
+        "name": "Olle Olsson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1500000.000"
+      },
+      {
+        "name": "Patrick Bergström",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "CapMate Aktiebolag",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Rikard Akhtarzand",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2700000.000"
+      },
+      {
+        "name": "Selandia Alpha Invest A/S",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1500000.000"
+      },
+      {
+        "name": "Råsunda förvaltning aktiebolag",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "750000.000"
+      },
+      {
+        "name": "Rune Löderup",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1500000.000"
+      },
+      {
+        "name": "Mattias Lundin",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "Nils Berg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1500000.000"
+      },
+      {
+        "name": "Aramia Capital AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1150000.000"
+      },
+      {
+        "name": "Krakesson AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "35000.000"
+      },
+      {
+        "name": "Klas Berggren",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "10000.000"
+      },
+      {
+        "name": "Mangold Fondkommission AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4948818.000"
+      },
+      {
+        "name": "Andreas Johansson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "9450.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "e871f82a-d3b8-483e-9c38-bd39d0650d27",
+    "investors": [
+      {
+        "name": "Fågelö Finans och Holding AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "74999.000"
+      },
+      {
+        "name": "Marlon Värnik",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "249999.000"
+      },
+      {
+        "name": "Nested Bio AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "14999.000"
+      },
+      {
+        "name": "Nested Bio AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4999.000"
+      },
+      {
+        "name": "Christofer Bergstrand",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "97507.000"
+      },
+      {
+        "name": "WW Advise AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "69999.000"
+      },
+      {
+        "name": "WW Advise AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "29999.000"
+      },
+      {
+        "name": "Könyves Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "44630.000"
+      },
+      {
+        "name": "Krakesson AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "24997.000"
+      },
+      {
+        "name": "Könyves Invest AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "49999.000"
+      },
+      {
+        "name": "Krakesson AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "24999.000"
+      },
+      {
+        "name": "Fredrik Åhlander",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "199999.000"
+      },
+      {
+        "name": "Andreas Nyberg",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "28912.000"
+      },
+      {
+        "name": "Peter Nilsson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "350000.000"
+      },
+      {
+        "name": "Philip Löchen",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "99999.000"
+      },
+      {
+        "name": "Öresund Growth Partner AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "199999.000"
+      },
+      {
+        "name": "Thomas Bolin",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "19949.000"
+      },
+      {
+        "name": "Mats Lagerdahl",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "99999.000"
+      },
+      {
+        "name": "Richard Kilander",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "199999.000"
+      },
+      {
+        "name": "Pronator Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "199999.000"
+      },
+      {
+        "name": "Sandante Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "149999.000"
+      },
+      {
+        "name": "Sarsaparill AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "32655.000"
+      },
+      {
+        "name": "Haskel Konsult Aktiebolag",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "199999.000"
+      },
+      {
+        "name": "Edvard Hall",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5369.000"
+      },
+      {
+        "name": "Thorbjörn Wennerholm",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "199999.000"
+      },
+      {
+        "name": "Stefan Lundgren",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "350000.000"
+      },
+      {
+        "name": "Karin Wehlin",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "99999.000"
+      },
+      {
+        "name": "John Moll",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "139999.000"
+      },
+      {
+        "name": "CapMate Aktiebolag",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "99999.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "8e551c70-e2d2-44cd-85e0-c87fb2d096b7",
+    "investors": [
+      {
+        "name": "Tedde Jeansson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1517319.000"
+      },
+      {
+        "name": "Sven Joel Härgestam",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2850098.000"
+      },
+      {
+        "name": "Fredrik Törgren",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "216492.000"
+      },
+      {
+        "name": "Farsviken AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "308324.000"
+      },
+      {
+        "name": "Anders P Carlsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Andreas Wieweg",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "43166.000"
+      },
+      {
+        "name": "Nuria Vilanova",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "522.000"
+      },
+      {
+        "name": "Per Ottosson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "397725.000"
+      },
+      {
+        "name": "Patrik Rosenberg",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "126500.000"
+      },
+      {
+        "name": "Vanesa Guirado",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "92.000"
+      },
+      {
+        "name": "Staffan Bohman",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "630993.000"
+      },
+      {
+        "name": "Provider Investment AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1999999.000"
+      },
+      {
+        "name": "SEB Stiftelsen",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2820887.000"
+      },
+      {
+        "name": "Mats Nilsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "255750.000"
+      },
+      {
+        "name": "Niclas Nyström",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "650000.000"
+      },
+      {
+        "name": "Ash&Partners AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "60255.000"
+      },
+      {
+        "name": "Carl Rosvall",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "217745.000"
+      },
+      {
+        "name": "Bjursund Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "956901.000"
+      },
+      {
+        "name": "Lars Roth",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "Leticia Baig",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "765.000"
+      },
+      {
+        "name": "Cristina Beaus",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "207.000"
+      },
+      {
+        "name": "Christopher McManus",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "150000.000"
+      },
+      {
+        "name": "Johan Gustavsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "31625.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "ce5580c1-e107-42df-bcd6-0c3a6a763cbc",
+    "investors": [
+      {
+        "name": "Swedbank Robur",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "130000000.000"
+      },
+      {
+        "name": "Danica Pension Livsforsikringsaktieselskab",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "75000000.000"
+      },
+      {
+        "name": "Enter Fonder",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "75000000.000"
+      },
+      {
+        "name": "Kapitalforeningen Investering & Tryghed",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "75000000.000"
+      },
+      {
+        "name": "Handelsbanken Fonder",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "150000000.000"
+      },
+      {
+        "name": "Nordea Investment Management",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "164000000.000"
+      },
+      {
+        "name": "Capital World Investors",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "158000000.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "643b27ff-d327-4ac2-b5e0-d0c25d53d0fd",
+    "investors": [
+      {
+        "name": "R&A Partners AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "20000000.000"
+      },
+      {
+        "name": "Munkekullen 5 förvaltning AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "28000000.000"
+      },
+      {
+        "name": "Erik Selin Fastigheter AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "35000000.000"
+      },
+      {
+        "name": "Nordic Capital",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "99000000.000"
+      },
+      {
+        "name": "Wilhelm Risberg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "35000000.000"
+      },
+      {
+        "name": "Nordic Capital",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000000.000"
+      },
+      {
+        "name": "Fredrik Lundgren",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "35000000.000"
+      },
+      {
+        "name": "Buntel AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "27300000.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "9acd9575-cbe0-415f-849f-0c272219b988",
+    "investors": [
+      {
+        "name": "LMK Venture Partners AB",
+        "level": 1,
+        "amount_in_percentage": "6.40",
+        "amount_in_cash": null
+      },
+      {
+        "name": "LHT Invest AB",
+        "level": 0,
+        "amount_in_percentage": "1.10",
+        "amount_in_cash": null
+      },
+      {
+        "name": "LHT Invest AB",
+        "level": 1,
+        "amount_in_percentage": "0.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "CJ Hall Invest AB",
+        "level": 0,
+        "amount_in_percentage": "3.40",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Ehsan Ashrafi",
+        "level": 1,
+        "amount_in_percentage": "1.90",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Rune Löderup",
+        "level": 1,
+        "amount_in_percentage": "1.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Simon Hammarström",
+        "level": 1,
+        "amount_in_percentage": "0.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Mikael Lönn",
+        "level": 1,
+        "amount_in_percentage": "1.90",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Mikael Lönn",
+        "level": 0,
+        "amount_in_percentage": "1.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Niklas Estensson",
+        "level": 1,
+        "amount_in_percentage": "0.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Strategic Wisdom Nordic AB",
+        "level": 1,
+        "amount_in_percentage": "0.40",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Tellus Equity Partners AB",
+        "level": 1,
+        "amount_in_percentage": "2.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Theodor Jeansson",
+        "level": 1,
+        "amount_in_percentage": "11.50",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Wictor Billström",
+        "level": 1,
+        "amount_in_percentage": "0.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Palmstierna Invest AB",
+        "level": 0,
+        "amount_in_percentage": "1.40",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Peter Blom",
+        "level": 0,
+        "amount_in_percentage": "0.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Palmstierna Invest AB",
+        "level": 1,
+        "amount_in_percentage": "2.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Jonas Hall",
+        "level": 0,
+        "amount_in_percentage": "0.70",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Jens Miöen",
+        "level": 1,
+        "amount_in_percentage": "1.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Ginunting MM AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Fredrik Lundgren",
+        "level": 1,
+        "amount_in_percentage": "2.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Fredrik Isberg",
+        "level": 1,
+        "amount_in_percentage": "0.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Formue Nord Markedsneutral A/S",
+        "level": 1,
+        "amount_in_percentage": "32.30",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Erik Svensson",
+        "level": 1,
+        "amount_in_percentage": "0.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Alarik Förvaltning AB",
+        "level": 0,
+        "amount_in_percentage": "2.80",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Anders Johansson",
+        "level": 1,
+        "amount_in_percentage": "1.30",
+        "amount_in_cash": null
+      }
+    ]
+  },
+  {
+    "issue_id": "e662b03b-e659-4b34-b90d-48c97143e20c",
+    "investors": [
+      {
+        "name": "Erik Penser Bank AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1700000.000"
+      },
+      {
+        "name": "Bernhard von Der Osten-Sacken",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3500000.000"
+      },
+      {
+        "name": "Bizcap AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "400000.000"
+      },
+      {
+        "name": "Theodor Jeansson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3000000.000"
+      },
+      {
+        "name": "QQM Equity Hedge",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Semelin Kapitalförvaltning AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Silfvergruppen AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Pär Nordström",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Oscar Molse",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Pegroco Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "8861240.000"
+      },
+      {
+        "name": "Philip Ohlsson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Nowo Global Fund",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1250000.000"
+      },
+      {
+        "name": "Jörgen Persson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "140250.000"
+      },
+      {
+        "name": "Nils Berg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Monitor International 1 AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2000000.000"
+      },
+      {
+        "name": "Great Ventures & Consulting GVC AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Gryningskust Holding AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Wictor Billström",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Formue Nord Markedsneutral A/S",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4000000.000"
+      },
+      {
+        "name": "Gainbridge Novus Nordic",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "First Venture Sweden AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3677885.000"
+      },
+      {
+        "name": "Fouriertransform AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "12486311.000"
+      },
+      {
+        "name": "Maida Vale Capital AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "LHT Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2600000.000"
+      },
+      {
+        "name": "LHT Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2660715.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "b32f3170-958c-456c-8986-205bae58dd22",
+    "investors": [
+      {
+        "name": "Olle Westblom",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "Ingvar Andersson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2000000.000"
+      },
+      {
+        "name": "Hörnell Teknikinvest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1200000.000"
+      },
+      {
+        "name": "AB Bröckeln",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5753678.000"
+      },
+      {
+        "name": "Anders Björkman",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "200000.000"
+      },
+      {
+        "name": "Britta Backlund",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "50000.000"
+      },
+      {
+        "name": "Chalmers Ventures AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Anna Weiner Jiffer",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "200000.000"
+      },
+      {
+        "name": "Jesper Osterman",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "K-Svets Ventures AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1200000.000"
+      },
+      {
+        "name": "Jesper Brodersen",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "40000.000"
+      },
+      {
+        "name": "Magnus Nilsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1200000.000"
+      },
+      {
+        "name": "Dala Tillväxt AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1200000.000"
+      },
+      {
+        "name": "Gerhard Dal",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "6000000.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "3a625f32-88af-44c7-bf21-6f49fa1e202e",
+    "investors": [
+      {
+        "name": "Nordea Fonder",
+        "level": 0,
+        "amount_in_percentage": "15.20",
+        "amount_in_cash": null
+      },
+      {
+        "name": "Stena Adactum",
+        "level": 0,
+        "amount_in_percentage": "40.60",
+        "amount_in_cash": null
+      },
+      {
+        "name": "If Skadeförsäkring",
+        "level": 0,
+        "amount_in_percentage": "11.50",
+        "amount_in_cash": null
+      }
+    ]
+  },
+  {
+    "issue_id": "b3dcbe2c-1155-44cc-b20c-571f11da1b21",
+    "investors": [
+      {
+        "name": "Scobie Ward",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "10905823.000"
+      },
+      {
+        "name": "Scobie Ward",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "11529688.000"
+      },
+      {
+        "name": "Novobis AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "8820155.000"
+      },
+      {
+        "name": "Novobis AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "9324711.000"
+      },
+      {
+        "name": "Knutsson Holdings AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "8487305.000"
+      },
+      {
+        "name": "Knutsson Holdings AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "8972820.000"
+      },
+      {
+        "name": "Erlinghundra AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "18666.000"
+      },
+      {
+        "name": "Erlinghundra AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "10978820.000"
+      },
+      {
+        "name": "Topline Capital Partners LP",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "15701996.000"
+      },
+      {
+        "name": "Topline Capital Partners LP",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "16600225.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "d03db85d-9a7a-448d-bd0a-6343cf7afbbd",
+    "investors": [
+      {
+        "name": "Eva de Falck",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "11250.000"
+      },
+      {
+        "name": "Gerhard Dal",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "899999.000"
+      },
+      {
+        "name": "Aktiebolaget POM Sandelius",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "468750.000"
+      },
+      {
+        "name": "Katrin Lindahl Wallin",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "9375.000"
+      },
+      {
+        "name": "Mangold Fondkommission AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2992567.000"
+      },
+      {
+        "name": "Kai Olsen",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3999999.000"
+      },
+      {
+        "name": "Karl Tigerhielm",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "37500.000"
+      },
+      {
+        "name": "John Leidegren",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "44897.000"
+      },
+      {
+        "name": "Greger Larsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "187203.000"
+      },
+      {
+        "name": "GM Stora Segholmen Förvaltning AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "9375.000"
+      },
+      {
+        "name": "Heidi Wik",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "198750.000"
+      },
+      {
+        "name": "Bizcap AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Spectre Invest Oü",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "37125.000"
+      },
+      {
+        "name": "Simone Heller",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "48355.000"
+      },
+      {
+        "name": "NFT Ventures 1 Kommanditbolag",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5814558.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "29ced166-7982-439b-8837-dea699d58a91",
+    "investors": [
+      {
+        "name": "BLL Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5200182.000"
+      },
+      {
+        "name": "Norrlandspojkarna AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5284049.000"
+      },
+      {
+        "name": "Saugatuck Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "9702855.000"
+      },
+      {
+        "name": "Saugatuck Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "20976507.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "911a6d7d-7013-4383-af3d-54aed0022bdc",
+    "investors": [
+      {
+        "name": "Dividend Sweden AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1802715.000"
+      },
+      {
+        "name": "Dariush Hosseinian",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "600904.000"
+      },
+      {
+        "name": "Rune Löderup",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "600904.000"
+      },
+      {
+        "name": "Mangold Fondkommission AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "12018107.000"
+      },
+      {
+        "name": "LOC AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "300452.000"
+      },
+      {
+        "name": "Jinderman & Partners",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1201810.000"
+      },
+      {
+        "name": "JJV Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3004526.000"
+      },
+      {
+        "name": "Patrick Bergström",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "600904.000"
+      },
+      {
+        "name": "Oscar Molse",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "5007550.000"
+      },
+      {
+        "name": "Andreas Bonnier",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "901357.000"
+      },
+      {
+        "name": "BGL Mananagement AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "600904.000"
+      },
+      {
+        "name": "CapMate AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1201810.000"
+      },
+      {
+        "name": "Myacom Investment AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "901357.000"
+      },
+      {
+        "name": "Modelio Equity AB (publ)",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "10015089.000"
+      },
+      {
+        "name": "Niclas Löwgren",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "300452.000"
+      },
+      {
+        "name": "Niclas Corneliusson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "480723.000"
+      },
+      {
+        "name": "Fredrik Attefall",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "420633.000"
+      },
+      {
+        "name": "Formue Nord Markedsneutral A/S",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "12018107.000"
+      },
+      {
+        "name": "Bernhard von der Osten-Sacken",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3004526.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "2d818e3b-22f7-406a-b2ae-0940c325a96e",
+    "investors": [
+      {
+        "name": "Kent Mårtensson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "Kent Eklund",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148383.000"
+      },
+      {
+        "name": "John Moll",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "238480.000"
+      },
+      {
+        "name": "Johan Larsholm",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148383.000"
+      },
+      {
+        "name": "Jimmie Landerman",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "264954.000"
+      },
+      {
+        "name": "Jens Olsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "264954.000"
+      },
+      {
+        "name": "Johan Landén",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "MIB AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "137769.000"
+      },
+      {
+        "name": "JSH Biotech Aps",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "132462.000"
+      },
+      {
+        "name": "Mikael Blihagen",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "529968.000"
+      },
+      {
+        "name": "Nils-Holger Olsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "264954.000"
+      },
+      {
+        "name": "Mattias Svensson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "264954.000"
+      },
+      {
+        "name": "Karl-Johan Kjellander",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "Paginera Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "381586.000"
+      },
+      {
+        "name": "Peter Mörsell",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148383.000"
+      },
+      {
+        "name": "Polynom Investment AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "953979.000"
+      },
+      {
+        "name": "Peter Nilsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "476990.000"
+      },
+      {
+        "name": "Christian Månsson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148383.000"
+      },
+      {
+        "name": "Wictor Billström",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "Ark Invest IVS",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "132462.000"
+      },
+      {
+        "name": "Sarsaparill AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "476990.000"
+      },
+      {
+        "name": "Simon Hammarström",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148383.000"
+      },
+      {
+        "name": "Jakob Svensson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "Göran Ofsén",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "Torna Kapital AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "238480.000"
+      },
+      {
+        "name": "Stefan Lundgren",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "429257.000"
+      },
+      {
+        "name": "Tonoy Sayeed",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      },
+      {
+        "name": "Strategic Wisdom Nordic Aktiebolag",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "148382.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "8b0bd64f-4686-4b54-a56c-a3dcdb3834c4",
+    "investors": [
+      {
+        "name": "Angelica Korsfeldt",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "27500.000"
+      },
+      {
+        "name": "Linn Olsen",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "27500.000"
+      },
+      {
+        "name": "Per Svedenhag",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "49000.000"
+      },
+      {
+        "name": "Pia Renaudin",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "60000.000"
+      },
+      {
+        "name": "Michael Colérus",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "108000.000"
+      },
+      {
+        "name": "Tord Lendau",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "200000.000"
+      },
+      {
+        "name": "Morningside Group AB",
+        "level": 0,
+        "amount_in_percentage": "13.25",
+        "amount_in_cash": "2000000.000"
+      },
+      {
+        "name": "Alf Laurell",
+        "level": 0,
+        "amount_in_percentage": "0.18",
+        "amount_in_cash": "27500.000"
+      },
+      {
+        "name": "Diana Ferro",
+        "level": 0,
+        "amount_in_percentage": "0.05",
+        "amount_in_cash": "8246.000"
+      },
+      {
+        "name": "Thomas Taapken",
+        "level": 0,
+        "amount_in_percentage": "0.02",
+        "amount_in_cash": "3690.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "069821e5-982f-4124-aa98-719b0261e4f0",
+    "investors": [
+      {
+        "name": "Andrée Larsson Alfonso",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "200000.000"
+      },
+      {
+        "name": "Christoffer Stackell",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Erik Lundin",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Edvin Malmgård",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Christian Månsson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Dzano Hasanagic",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "300000.000"
+      },
+      {
+        "name": "Dzano Consulting AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "300000.000"
+      },
+      {
+        "name": "Curam Holding AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1520000.000"
+      },
+      {
+        "name": "Philip Löchen",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "100000.000"
+      },
+      {
+        "name": "Nowo Global Fund",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2500000.000"
+      },
+      {
+        "name": "Great Ventures & Consulting AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Peter Sebök",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "400000.000"
+      },
+      {
+        "name": "Bernhard von der Osten-Sacken",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "2000000.000"
+      },
+      {
+        "name": "Andreas Poike",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "AD94 Holding Aktiebolag",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1700000.000"
+      },
+      {
+        "name": "JJV Investment Group AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "JEQ Capital AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "3300000.000"
+      },
+      {
+        "name": "John Andersson Moll",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Jinderman & Partners AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Jens Miöen",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Augvest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "800000.000"
+      },
+      {
+        "name": "Arnholmen Förvaltning AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Biljon AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1257932.000"
+      },
+      {
+        "name": "Biljon AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1300000.000"
+      },
+      {
+        "name": "Magnus Uhlin",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Frostberget Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Fredrik Holst",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "400000.000"
+      },
+      {
+        "name": "Selandia Alpha Invest A/S",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Richard Kilander",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "200000.000"
+      },
+      {
+        "name": "Simon Hammarström",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Robert Burén",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Pronator Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "400000.000"
+      },
+      {
+        "name": "Quantum Leben AG",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1520000.000"
+      },
+      {
+        "name": "Tellus Equity Partners AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "760000.000"
+      },
+      {
+        "name": "Haskel Konsult AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "300000.000"
+      },
+      {
+        "name": "Jakob Svensson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "250000.000"
+      },
+      {
+        "name": "Tuvedalen Ltd",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1000000.000"
+      },
+      {
+        "name": "Ylber Rexhepi",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "UBB Consulting AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Newick AB",
+        "level": 2,
+        "amount_in_percentage": null,
+        "amount_in_cash": "700000.000"
+      },
+      {
+        "name": "Nils Berg",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Mattias Svensson",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      },
+      {
+        "name": "Meriti Neutral",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "500000.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "5df19fd1-7d9b-456e-a63f-3eb59455f9a2",
+    "investors": [
+      {
+        "name": "Flerie Invest AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "26141235.000"
+      }
+    ]
+  },
+  {
+    "issue_id": "4baaec27-fb54-41f7-b1eb-25e53dbacf85",
+    "investors": [
+      {
+        "name": "Monitor International 1 AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "6560811.000"
+      },
+      {
+        "name": "Monitor International 1 AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "1769697.000"
+      },
+      {
+        "name": "Johannes Klintenheim",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "230462.000"
+      },
+      {
+        "name": "Jörgen Persson",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "608333.000"
+      },
+      {
+        "name": "Six sis",
+        "level": 0,
+        "amount_in_percentage": "17.8",
+        "amount_in_cash": "4465437.000"
+      },
+      {
+        "name": "Lindbloms Invest AB",
+        "level": 1,
+        "amount_in_percentage": null,
+        "amount_in_cash": "6560811.000"
+      },
+      {
+        "name": "PMJ Fastigheter AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "4181507.000"
+      },
+      {
+        "name": "TJ Gruppen AB",
+        "level": 0,
+        "amount_in_percentage": null,
+        "amount_in_cash": "766166.000"
+      }
+    ]
   }
 ]

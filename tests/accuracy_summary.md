@@ -1,14 +1,14 @@
 # Extraction Accuracy Summary
 
 ## Overall Metrics
-- **Total Documents Processed:** 26
-- **Total Investors Extracted (Predicted):** 550
-- **Correct Datapoint Extractions:** 497
-- **Incorrect Datapoint Extractions:** 0
-- **Missing Datapoint Extractions:** 7
+- **Total Documents Processed:** 45
+- **Total Investors Extracted (Predicted):** 862
+- **Correct Datapoint Extractions:** 789
+- **Incorrect Datapoint Extractions:** 20
+- **Missing Datapoint Extractions:** 10
 - **False Positives:** 53
-- **Documents with 100% Accuracy:** 22
-- **Documents with < 100% Accuracy:** 4
+- **Documents with 100% Accuracy:** 37
+- **Documents with < 100% Accuracy:** 8
 
 ## Discrepancy Details
 
@@ -139,3 +139,77 @@
   - **Extracted:** `Jonas Jakstad`
 - **Type:** False Positive
   - **Extracted:** `Patrick Grundler`
+
+### 📄 SVED-B_2024-01-04_Prospekt.pdf
+- **Type:** Missing
+  - **Expected:** `Nordea Fonder`
+- **Type:** Missing
+  - **Expected:** `If Skadeförsäkring`
+
+### 📄 INCOAX_Prospekt.pdf
+- **Type:** Incorrect Value
+  - **Investor:** `Saugatuck Invest AB`
+  - **Errors:** Amount mismatch: Got 21000000.000, expected 20976507.000 (Accepted range: 21000000-21000000)
+
+### 📄 MERIS_2021‑10‑11_Prospekt.pdf
+- **Type:** Incorrect Value
+  - **Investor:** `Formue Nord Markedsneutral A/S`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 1184883.840, expected 12018107.000 (Accepted range: 1184883-1184884)
+- **Type:** Incorrect Value
+  - **Investor:** `Mangold Fondkommission AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 1184883.840, expected 12018107.000 (Accepted range: 1184883-1184884)
+- **Type:** Incorrect Value
+  - **Investor:** `Modelio Equity AB (publ)`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 987403.200, expected 10015089.000 (Accepted range: 987403-987404)
+- **Type:** Incorrect Value
+  - **Investor:** `Oscar Molse`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 493702.160, expected 5007550.000 (Accepted range: 493702-493703)
+- **Type:** Incorrect Value
+  - **Investor:** `Bernhard von der Osten-Sacken`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 296220.960, expected 3004526.000 (Accepted range: 296220-296221)
+- **Type:** Incorrect Value
+  - **Investor:** `JJV Invest AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 296220.960, expected 3004526.000 (Accepted range: 296220-296221)
+- **Type:** Incorrect Value
+  - **Investor:** `Dividend Sweden AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 177732.520, expected 1802715.000 (Accepted range: 177732-177733)
+- **Type:** Incorrect Value
+  - **Investor:** `CapMate AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 118488.370, expected 1201810.000 (Accepted range: 118488-118489)
+- **Type:** Incorrect Value
+  - **Investor:** `Jinderman & Partners`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 118488.370, expected 1201810.000 (Accepted range: 118488-118489)
+- **Type:** Incorrect Value
+  - **Investor:** `Andreas Bonnier`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 88866.260, expected 901357.000 (Accepted range: 88866-88867)
+- **Type:** Incorrect Value
+  - **Investor:** `Myacom Investment AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 88866.260, expected 901357.000 (Accepted range: 88866-88867)
+- **Type:** Incorrect Value
+  - **Investor:** `BGL Management AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)
+- **Type:** Incorrect Value
+  - **Investor:** `Patrick Bergström`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)
+- **Type:** Incorrect Value
+  - **Investor:** `Rune Löderup`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)
+- **Type:** Incorrect Value
+  - **Investor:** `Dariush Hosseinian`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)
+- **Type:** Incorrect Value
+  - **Investor:** `Niclas Corneliusson`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 47395.320, expected 480723.000 (Accepted range: 47395-47396)
+- **Type:** Incorrect Value
+  - **Investor:** `Fredrik Attefall`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 41470.870, expected 420633.000 (Accepted range: 41470-41471)
+- **Type:** Incorrect Value
+  - **Investor:** `LOC AB`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 29622.040, expected 300452.000 (Accepted range: 29622-29623)
+- **Type:** Incorrect Value
+  - **Investor:** `Niclas Löwgren`
+  - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 29622.040, expected 300452.000 (Accepted range: 29622-29623)
+
+### 📄 TOL_2023-08-30_Prospekt.pdf
+- **Type:** Missing
+  - **Expected:** `Flerie Invest AB`

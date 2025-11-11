@@ -18,7 +18,7 @@ You will be given one or more images of a document page and the raw text extract
 - level: The investor level as defined below.
 
 **Investor Levels:**
-- Underwriter (“Teckningsåtagare”, “Teckningsförbindelser” or similar) → 0
+- Underwriters (“Teckningsåtagare”, “Teckningsförbindelser” or similar) → 0
 - If mulitple kinds of Tecknings (genom befintliga, utan teckningsrätter) for an investor, sum the values in to one data point 
 - For underwriters, only extract amounts associated with "teckna i Företrädesemissionen" or similar phrases explicitly linking the commitment to the Rights Issue
 
@@ -52,7 +52,7 @@ You will be given one or more images of a document page and the raw text extract
 3. Validate that every row from the table is represented in JSON.
 4. Output only JSON. No extra text, explanations, or formatting.
 5. Ensure numbers are correctly transformed according to the rules above.
-IMPORTANT: Do not invent data. If a value for a specific field is not clear, you MUST use null for that field. Do not attempt to guess or infer missing values.
+IMPORTANT: Do not invent data. If a value for a specific field is not clear, you MUST use null for that field. Do not attempt to guess or infer missing values. Do not extract investors that are not tecknings or garant.
 
 **Output Format Example:**
 {

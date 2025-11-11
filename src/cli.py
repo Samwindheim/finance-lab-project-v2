@@ -124,25 +124,28 @@ def extract_command(args):
         pages_to_extract = [top_result]
         results_by_page = {res['page_number']: res for res in results}
         
-        # Start checking from the page after the top result.
+        # --- Expand page selection around the top result ---
+        # Look forward to find consecutive pages.
         current_page = top_result['page_number'] + 1
-
-        # Always include the page immediately following the top result.
-        # This helps capture content that continues onto the next page, even if
-        # that page didn't rank high in the search results.
+        # Always include the page immediately following the top result for context.
         if current_page in results_by_page:
-            # If the next page was in our search results, add it.
             pages_to_extract.append(results_by_page[current_page])
         else:
-            # Otherwise, create a synthetic result for it to ensure it gets processed.
-            pages_to_extract.append({'page_number': current_page})
-
-        # Now, continue checking for any other pages that are both consecutive
-        # and were in our initial search results.
+            pages_to_extract.append({'page_number': current_page}) # Synthetic page
+        
         current_page += 1
         while current_page in results_by_page:
             pages_to_extract.append(results_by_page[current_page])
             current_page += 1
+
+        # Look backward to find consecutive pages that are also in the search results.
+        current_page = top_result['page_number'] - 1
+        while current_page > 0 and current_page in results_by_page:
+            pages_to_extract.append(results_by_page[current_page])
+            current_page -= 1
+
+        # Sort the collected pages by page number to ensure correct order
+        pages_to_extract.sort(key=lambda p: p['page_number'])
 
         page_numbers = [p['page_number'] for p in pages_to_extract]
         print(f"\nFound {len(page_numbers)} consecutive pages to analyze: {page_numbers}")

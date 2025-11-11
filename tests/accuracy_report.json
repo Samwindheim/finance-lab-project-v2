@@ -836,5 +836,589 @@
         "ground_truth": null
       }
     ]
+  },
+  {
+    "document_name": "SCIB_2023-03-07_Prospekt.pdf",
+    "issue_id": "e8580bf1-3580-44de-80de-ad06e20bd1a1",
+    "correct": 19,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "RIGHTB_2024-01-15_Memorandum.pdf",
+    "issue_id": "4869b568-c1de-4389-82a0-f968abd3b1b8",
+    "correct": 16,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "LUMITO_2025‑10‑16_Prospekt.pdf",
+    "issue_id": "e21b67db-83fa-45da-80a2-7918c559ec5f",
+    "correct": 30,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "DIABIO_2025‑01‑23_Memorandum.pdf",
+    "issue_id": "e871f82a-d3b8-483e-9c38-bd39d0650d27",
+    "correct": 29,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "LINC_Prospekt.pdf",
+    "issue_id": "ce5580c1-e107-42df-bcd6-0c3a6a763cbc",
+    "correct": 7,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "SOLT_2025‑10‑06_Informationsdokument.pdf",
+    "issue_id": "643b27ff-d327-4ac2-b5e0-d0c25d53d0fd",
+    "correct": 8,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "FUUD_2022-06-09_Prospekt.pdf",
+    "issue_id": "9acd9575-cbe0-415f-849f-0c272219b988",
+    "correct": 26,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "ALELIO_2023-06-26_Prospekt.pdf",
+    "issue_id": "e662b03b-e659-4b34-b90d-48c97143e20c",
+    "correct": 25,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "LCT_2024-03-19_Memorandum.pdf",
+    "issue_id": "b32f3170-958c-456c-8986-205bae58dd22",
+    "correct": 14,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "SVED-B_2024-01-04_Prospekt.pdf",
+    "issue_id": "3a625f32-88af-44c7-bf21-6f49fa1e202e",
+    "correct": 1,
+    "incorrect": 0,
+    "missing": 2,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Nordea Fonder",
+          "level": 0,
+          "amount_in_percentage": "15.20",
+          "amount_in_cash": null
+        }
+      },
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "If Skadeförsäkring",
+          "level": 0,
+          "amount_in_percentage": "11.50",
+          "amount_in_cash": null
+        }
+      }
+    ]
+  },
+  {
+    "document_name": "SCOUT_2022-09-08_Prospekt.pdf",
+    "issue_id": "b3dcbe2c-1155-44cc-b20c-571f11da1b21",
+    "correct": 10,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "TESSIN_2022-11-14_Prospekt.pdf",
+    "issue_id": "d03db85d-9a7a-448d-bd0a-6343cf7afbbd",
+    "correct": 15,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "INCOAX_Prospekt.pdf",
+    "issue_id": "29ced166-7982-439b-8837-dea699d58a91",
+    "correct": 3,
+    "incorrect": 1,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Saugatuck Invest AB",
+          "amount_in_cash": "21000000.000",
+          "amount_in_percentage": "51.0",
+          "level": 1
+        },
+        "ground_truth": {
+          "name": "Saugatuck Invest AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "20976507.000"
+        },
+        "errors": [
+          "Amount mismatch: Got 21000000.000, expected 20976507.000 (Accepted range: 21000000-21000000)"
+        ]
+      }
+    ]
+  },
+  {
+    "document_name": "MERIS_2021‑10‑11_Prospekt.pdf",
+    "issue_id": "911a6d7d-7013-4383-af3d-54aed0022bdc",
+    "correct": 0,
+    "incorrect": 19,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Formue Nord Markedsneutral A/S",
+          "amount_in_cash": "1184883.840",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Formue Nord Markedsneutral A/S",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "12018107.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 1184883.840, expected 12018107.000 (Accepted range: 1184883-1184884)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Mangold Fondkommission AB",
+          "amount_in_cash": "1184883.840",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Mangold Fondkommission AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "12018107.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 1184883.840, expected 12018107.000 (Accepted range: 1184883-1184884)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Modelio Equity AB (publ)",
+          "amount_in_cash": "987403.200",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Modelio Equity AB (publ)",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "10015089.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 987403.200, expected 10015089.000 (Accepted range: 987403-987404)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Oscar Molse",
+          "amount_in_cash": "493702.160",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Oscar Molse",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "5007550.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 493702.160, expected 5007550.000 (Accepted range: 493702-493703)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Bernhard von der Osten-Sacken",
+          "amount_in_cash": "296220.960",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Bernhard von der Osten-Sacken",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "3004526.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 296220.960, expected 3004526.000 (Accepted range: 296220-296221)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "JJV Invest AB",
+          "amount_in_cash": "296220.960",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "JJV Invest AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "3004526.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 296220.960, expected 3004526.000 (Accepted range: 296220-296221)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Dividend Sweden AB",
+          "amount_in_cash": "177732.520",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Dividend Sweden AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "1802715.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 177732.520, expected 1802715.000 (Accepted range: 177732-177733)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "CapMate AB",
+          "amount_in_cash": "118488.370",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "CapMate AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "1201810.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 118488.370, expected 1201810.000 (Accepted range: 118488-118489)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Jinderman & Partners",
+          "amount_in_cash": "118488.370",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Jinderman & Partners",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "1201810.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 118488.370, expected 1201810.000 (Accepted range: 118488-118489)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Andreas Bonnier",
+          "amount_in_cash": "88866.260",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Andreas Bonnier",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "901357.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 88866.260, expected 901357.000 (Accepted range: 88866-88867)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Myacom Investment AB",
+          "amount_in_cash": "88866.260",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Myacom Investment AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "901357.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 88866.260, expected 901357.000 (Accepted range: 88866-88867)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "BGL Management AB",
+          "amount_in_cash": "59244.150",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "BGL Mananagement AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "600904.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Patrick Bergström",
+          "amount_in_cash": "59244.150",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Patrick Bergström",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "600904.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Rune Löderup",
+          "amount_in_cash": "59244.150",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Rune Löderup",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "600904.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Dariush Hosseinian",
+          "amount_in_cash": "59244.150",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Dariush Hosseinian",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "600904.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 59244.150, expected 600904.000 (Accepted range: 59244-59245)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Niclas Corneliusson",
+          "amount_in_cash": "47395.320",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Niclas Corneliusson",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "480723.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 47395.320, expected 480723.000 (Accepted range: 47395-47396)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Fredrik Attefall",
+          "amount_in_cash": "41470.870",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Fredrik Attefall",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "420633.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 41470.870, expected 420633.000 (Accepted range: 41470-41471)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "LOC AB",
+          "amount_in_cash": "29622.040",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "LOC AB",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "300452.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 29622.040, expected 300452.000 (Accepted range: 29622-29623)"
+        ]
+      },
+      {
+        "type": "Incorrect Value",
+        "predicted": {
+          "name": "Niclas Löwgren",
+          "amount_in_cash": "29622.040",
+          "amount_in_percentage": null,
+          "level": 0
+        },
+        "ground_truth": {
+          "name": "Niclas Löwgren",
+          "level": 1,
+          "amount_in_percentage": null,
+          "amount_in_cash": "300452.000"
+        },
+        "errors": [
+          "Level mismatch: Got 0, expected 1",
+          "Amount mismatch: Got 29622.040, expected 300452.000 (Accepted range: 29622-29623)"
+        ]
+      }
+    ]
+  },
+  {
+    "document_name": "STREAM_Memorandum.pdf",
+    "issue_id": "2d818e3b-22f7-406a-b2ae-0940c325a96e",
+    "correct": 28,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "SCIB_2024-04-23_Prospekt.pdf",
+    "issue_id": "8b0bd64f-4686-4b54-a56c-a3dcdb3834c4",
+    "correct": 10,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "ADVT_2024‑11‑26_Prospekt.pdf",
+    "issue_id": "069821e5-982f-4124-aa98-719b0261e4f0",
+    "correct": 43,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
+  },
+  {
+    "document_name": "TOL_2023-08-30_Prospekt.pdf",
+    "issue_id": "5df19fd1-7d9b-456e-a63f-3eb59455f9a2",
+    "correct": 0,
+    "incorrect": 0,
+    "missing": 1,
+    "false_positives": 0,
+    "discrepancies": [
+      {
+        "type": "Missing",
+        "predicted": null,
+        "ground_truth": {
+          "name": "Flerie Invest AB",
+          "level": 0,
+          "amount_in_percentage": null,
+          "amount_in_cash": "26141235.000"
+        }
+      }
+    ]
+  },
+  {
+    "document_name": "BRIX_2022-05-18_Memorandum.pdf",
+    "issue_id": "4baaec27-fb54-41f7-b1eb-25e53dbacf85",
+    "correct": 8,
+    "incorrect": 0,
+    "missing": 0,
+    "false_positives": 0,
+    "discrepancies": []
   }
 ]

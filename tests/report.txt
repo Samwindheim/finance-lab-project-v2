@@ -10,11 +10,7 @@ in a separate document that is linked in the app.
 
 ADDV-B_2025‑03‑24_Prospekt.pdf
 Issue_id: de4cf075-3c66-4f47-a16f-d788611e97ae
-Manual data has wrong amount in cash for "Kenneth Lindqvist"
-
-PRISMA_2024‑06‑10_Prospekt.pdf
-Issue_id: a4cbb243-f65a-4479-9ec1-a82b05a938e3
-Manual data inclues Säljande aktieägare, mine extraction does not.
+Believe that manual data has wrong amount in cash for "Kenneth Lindqvist"
 
 DANCAN_2024-06-11_Memorandum.pdf
 Issue ID: 855dee92-6c3d-4ad6-8c92-07552a800a82
@@ -22,17 +18,30 @@ Manual data has wrong amount in cash for "Buntel AB"
 
 TOBII_2024-03-18_Prospekt.pdf
 Issue ID: 61c9e302-3d1e-4eea-987a-f95a0e8fe1df
-Manual data doesn't include 6 investors that are in the pdf, could be intentional because these investors have 0%
+Manual data doesn't include 6 investors that are in the pdf, 
+could be intentional because these investors have 0%
 
 DANCAN_2022-10-31_Prospekt.pdf
 Issue ID: e9f595d6-b28d-47fa-abce-919f5bb55873
-Wrong amount for "others" garantors
+Wrong amount for "others/övriga" garantors?
 
 HDW-B_2024‑11‑05_Memorandum.pdf
 Issue ID: a5f42b66-6299-44a1-bf8e-7b7be25bb129
-Has some of the data, (topp-garant) in separate file on finance lab app
+Part of the data (topp-down garantors) is in a separate document linked the finance lab app.
+So some it in the source pdf, some is not.
 
 DMYD-B_2023-06-02_Supplement.pdf
 Issue ID: 0dc16d36-2678-42a7-a4a4-061d9f8188d7
-Doesn't include garantors, table on pdf looks strange, ah it's intentional I think, struck through to ignore it
-Can add in gemini prompt to ignore data that has strike through in the image
+Table of garantiers has a strikethrough in the pdf?
+
+FOOT-B_2024-03-11_Prospekt.pdf
+543ffedf-716e-405d-8289-2bcb2361be12
+No manual data exists for this source in manual_investors.json
+
+MERIS_2021‑10‑11_Prospekt.pdf
+911a6d7d-7013-4383-af3d-54aed0022bdc
+Amounts are in euros, so can't accurately test with changing exchange rate
+
+SCIB_2024-04-23_Prospekt.pdf
+8b0bd64f-4686-4b54-a56c-a3dcdb3834c4
+Manual data is missing 4 underwriters that are in the pdf 
