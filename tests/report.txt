@@ -1,47 +1,43 @@
 PURE_2022‑01‑27_Prospekt.pdf IPO Vuxen Group
 Issue ID: 5b602395-7655-4183-818c-71a556481a59
-Includes Säljande aktieägare in manual data. My extraction
-only grabs the underwriters and garantors.
+The manual data includes "Säljande aktieägare" (selling shareholders), while the automated extraction only includes underwriters and guarantors.
 
 ODIN_2025‑04‑01_Memorandum.pdf
 Issued ID: f5c8d679-3ccf-4a4c-a761-b9fc7fc50fac
-Underwriter data is not in the linked source document. It is
-in a separate document that is linked in the app.
+The underwriter data is not present in the source PDF but in a separate document linked within the Finance Lab app.
 
 ADDV-B_2025‑03‑24_Prospekt.pdf
 Issue_id: de4cf075-3c66-4f47-a16f-d788611e97ae
-Believe that manual data has wrong amount in cash for "Kenneth Lindqvist"
+The manual data contains an incorrect cash amount for the investor "Kenneth Lindqvist".
 
 DANCAN_2024-06-11_Memorandum.pdf
 Issue ID: 855dee92-6c3d-4ad6-8c92-07552a800a82
-Manual data has wrong amount in cash for "Buntel AB"
+The manual data contains an incorrect cash amount for the investor "Buntel AB".
 
 TOBII_2024-03-18_Prospekt.pdf
 Issue ID: 61c9e302-3d1e-4eea-987a-f95a0e8fe1df
-Manual data doesn't include 6 investors that are in the pdf, 
-could be intentional because these investors have 0%
+The manual data is missing six investors listed in the PDF, possibly because their commitment is 0%.
 
 DANCAN_2022-10-31_Prospekt.pdf
 Issue ID: e9f595d6-b28d-47fa-abce-919f5bb55873
-Wrong amount for "others/övriga" garantors?
+The amount for guarantors labeled "övriga" (other) may be incorrect in the manual data.
 
 HDW-B_2024‑11‑05_Memorandum.pdf
 Issue ID: a5f42b66-6299-44a1-bf8e-7b7be25bb129
-Part of the data (topp-down garantors) is in a separate document linked the finance lab app.
-So some it in the source pdf, some is not.
+Data is split between the source PDF and a separate document in the Finance Lab app.
 
 DMYD-B_2023-06-02_Supplement.pdf
 Issue ID: 0dc16d36-2678-42a7-a4a4-061d9f8188d7
-Table of garantiers has a strikethrough in the pdf?
+The table of guarantors in the source PDF is struck through/crossed out, suggesting potential changes.
 
 FOOT-B_2024-03-11_Prospekt.pdf
 543ffedf-716e-405d-8289-2bcb2361be12
-No manual data exists for this source in manual_investors.json
+No manual data exists for this source in 'manual_investors.json'.
 
 MERIS_2021‑10‑11_Prospekt.pdf
 911a6d7d-7013-4383-af3d-54aed0022bdc
-Amounts are in euros, so can't accurately test with changing exchange rate
+Financial amounts are in Euros (€), preventing accurate comparison due to currency rate fluctuations.
 
 SCIB_2024-04-23_Prospekt.pdf
 8b0bd64f-4686-4b54-a56c-a3dcdb3834c4
-Manual data is missing 4 underwriters that are in the pdf 
+The manual data is missing four underwriters who are listed in the source PDF. 

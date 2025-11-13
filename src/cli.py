@@ -117,11 +117,22 @@ def extract_command(args):
     results = indexer.query(query, top_k=5)
 
     if results:
-        # --- Continuity Check Logic ---
-        # Identify consecutive pages from the top search results. This is useful for
-        # tables that span multiple pages.
-        top_result = results[0] # get the top result
+        SIMILARITY_DISTANCE_THRESHOLD = 1.05 # 5% threshold
+
+        # --- Page Selection Logic ---
+        # Start with the top result and include the second result if its score is close.
+        # Then, expand around the top result to find consecutive pages.
+        top_result = results[0]
         pages_to_extract = [top_result]
+        
+        # Check if second result is close enough to include
+        if len(results) > 1:
+            second_result = results[1]
+            # If the second result's distance is within the threshold, include its page.
+            if second_result['distance'] <= top_result['distance'] * SIMILARITY_DISTANCE_THRESHOLD:
+                if second_result['page_number'] != top_result['page_number']:
+                    pages_to_extract.append(second_result)
+
         results_by_page = {res['page_number']: res for res in results}
         
         # --- Expand page selection around the top result ---
@@ -144,11 +155,20 @@ def extract_command(args):
             pages_to_extract.append(results_by_page[current_page])
             current_page -= 1
 
+        # Remove duplicates by page number, keeping the first occurrence
+        unique_pages = []
+        seen_page_numbers = set()
+        for page in pages_to_extract:
+            if page['page_number'] not in seen_page_numbers:
+                unique_pages.append(page)
+                seen_page_numbers.add(page['page_number'])
+        pages_to_extract = unique_pages
+
         # Sort the collected pages by page number to ensure correct order
         pages_to_extract.sort(key=lambda p: p['page_number'])
 
         page_numbers = [p['page_number'] for p in pages_to_extract]
-        print(f"\nFound {len(page_numbers)} consecutive pages to analyze: {page_numbers}")
+        print(f"\nFound {len(page_numbers)} relevant pages to analyze: {page_numbers}")
 
         # --- Fallback logic for PDF path ---
         # Use the path from metadata if available, otherwise use the path from CLI args

@@ -969,30 +969,11 @@
   {
     "document_name": "INCOAX_Prospekt.pdf",
     "issue_id": "29ced166-7982-439b-8837-dea699d58a91",
-    "correct": 3,
-    "incorrect": 1,
+    "correct": 4,
+    "incorrect": 0,
     "missing": 0,
     "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Incorrect Value",
-        "predicted": {
-          "name": "Saugatuck Invest AB",
-          "amount_in_cash": "21000000.000",
-          "amount_in_percentage": "51.0",
-          "level": 1
-        },
-        "ground_truth": {
-          "name": "Saugatuck Invest AB",
-          "level": 1,
-          "amount_in_percentage": null,
-          "amount_in_cash": "20976507.000"
-        },
-        "errors": [
-          "Amount mismatch: Got 21000000.000, expected 20976507.000 (Accepted range: 21000000-21000000)"
-        ]
-      }
-    ]
+    "discrepancies": []
   },
   {
     "document_name": "MERIS_2021‑10‑11_Prospekt.pdf",
@@ -1395,22 +1376,11 @@
   {
     "document_name": "TOL_2023-08-30_Prospekt.pdf",
     "issue_id": "5df19fd1-7d9b-456e-a63f-3eb59455f9a2",
-    "correct": 0,
+    "correct": 1,
     "incorrect": 0,
-    "missing": 1,
+    "missing": 0,
     "false_positives": 0,
-    "discrepancies": [
-      {
-        "type": "Missing",
-        "predicted": null,
-        "ground_truth": {
-          "name": "Flerie Invest AB",
-          "level": 0,
-          "amount_in_percentage": null,
-          "amount_in_cash": "26141235.000"
-        }
-      }
-    ]
+    "discrepancies": []
   },
   {
     "document_name": "BRIX_2022-05-18_Memorandum.pdf",

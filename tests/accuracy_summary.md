@@ -2,13 +2,13 @@
 
 ## Overall Metrics
 - **Total Documents Processed:** 45
-- **Total Investors Extracted (Predicted):** 862
-- **Correct Datapoint Extractions:** 789
-- **Incorrect Datapoint Extractions:** 20
-- **Missing Datapoint Extractions:** 10
+- **Total Investors Extracted (Predicted):** 863
+- **Correct Datapoint Extractions:** 791
+- **Incorrect Datapoint Extractions:** 19
+- **Missing Datapoint Extractions:** 9
 - **False Positives:** 53
-- **Documents with 100% Accuracy:** 37
-- **Documents with < 100% Accuracy:** 8
+- **Documents with 100% Accuracy:** 39
+- **Documents with < 100% Accuracy:** 6
 
 ## Discrepancy Details
 
@@ -146,11 +146,6 @@
 - **Type:** Missing
   - **Expected:** `If Skadeförsäkring`
 
-### 📄 INCOAX_Prospekt.pdf
-- **Type:** Incorrect Value
-  - **Investor:** `Saugatuck Invest AB`
-  - **Errors:** Amount mismatch: Got 21000000.000, expected 20976507.000 (Accepted range: 21000000-21000000)
-
 ### 📄 MERIS_2021‑10‑11_Prospekt.pdf
 - **Type:** Incorrect Value
   - **Investor:** `Formue Nord Markedsneutral A/S`
@@ -209,7 +204,3 @@
 - **Type:** Incorrect Value
   - **Investor:** `Niclas Löwgren`
   - **Errors:** Level mismatch: Got 0, expected 1, Amount mismatch: Got 29622.040, expected 300452.000 (Accepted range: 29622-29623)
-
-### 📄 TOL_2023-08-30_Prospekt.pdf
-- **Type:** Missing
-  - **Expected:** `Flerie Invest AB`
