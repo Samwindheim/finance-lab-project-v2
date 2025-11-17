@@ -22,35 +22,12 @@ def encode_image(image_path):
     return base64.b64encode(image_file.read()).decode('utf-8')
 
 def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type: str):
-    load_dotenv()
-    # (and text from the page)
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        print("Error: GEMINI_API_KEY not found in .env file.")
-        return None
-
-    client = OpenAI(
-        api_key=api_key,
-        base_url=GEMINI_API_BASE_URL,
-    )
-
-    # --- Prepare content for multi-modal request ---
+    """
+    Prepares images and text, then calls the core text-based function 
+    to get structured JSON data from Gemini.
+    """
     content = []
     
-    # Add the prompt text first
-    prompt_file_path = os.path.join(PROMPTS_DIR, f"{extraction_type}.txt")
-    if not os.path.exists(prompt_file_path):
-        print(f"Error: Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
-        return None
-    with open(prompt_file_path, "r") as f:
-        prompt_text = f.read()
-    content.append({"type": "text", "text": prompt_text})
-
-    # Add the extracted page text
-    content.append({"type": "text", "text": "--- TEXT ---"})
-    content.append({"type": "text", "text": page_texts})
-    content.append({"type": "text", "text": "--- END TEXT ---"})
-
     # Add each image
     for image_path in image_paths:
         if not os.path.exists(image_path):
@@ -63,10 +40,45 @@ def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type
             "type": "image_url",
             "image_url": {"url": f"data:{mime_type};base64,{base64_image}"},
         })
+    
+    return get_json_from_text(page_texts, extraction_type, additional_content=content)
 
-    print(f"\nSending request to Gemini with {len(image_paths)} image(s)...")
-    # print page texts
-    # print(f"\nPage texts: {page_texts}")
+
+def get_json_from_text(text: str, extraction_type: str, additional_content: List[dict] = None):
+    """Sends a text-focused request to Gemini to extract structured JSON data."""
+    load_dotenv()
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("Error: GEMINI_API_KEY not found in .env file.")
+        return None
+
+    client = OpenAI(
+        api_key=api_key,
+        base_url=GEMINI_API_BASE_URL,
+    )
+
+    # --- Prepare content for the request ---
+    content = []
+    
+    # Add the prompt text first
+    prompt_file_path = os.path.join(PROMPTS_DIR, f"{extraction_type}.txt")
+    if not os.path.exists(prompt_file_path):
+        print(f"Error: Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
+        return None
+    with open(prompt_file_path, "r") as f:
+        prompt_text = f.read()
+    content.append({"type": "text", "text": prompt_text})
+
+    # Add the primary text
+    content.append({"type": "text", "text": "--- TEXT ---"})
+    content.append({"type": "text", "text": text})
+    content.append({"type": "text", "text": "--- END TEXT ---"})
+    
+    # Add any additional content (like images)
+    if additional_content:
+        content.extend(additional_content)
+    
+    print(f"\nSending request to Gemini...")
 
     response = client.chat.completions.create(
         model=GEMINI_MODEL,

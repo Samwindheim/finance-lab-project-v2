@@ -16,7 +16,7 @@ import sys
 import json
 import os
 from pdf_indexer import PDFIndexer
-from vision import get_json_from_image
+from vision import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
 
@@ -256,6 +256,66 @@ def extract_command(args):
         print(f"\nCould not find any relevant pages for '{extraction_type}'.")
 
 
+def extract_html_command(args):
+    """Extract structured data from an HTML file."""
+    extraction_type = args.extraction_type
+    html_path = args.html_path
+
+    print(f"\n{'='*60}")
+    print(f"Extracting {extraction_type.title()} from HTML")
+    print(f"{'='*60}")
+
+    # 1. Extract text from the HTML file
+    print(f"Extracting text from {os.path.basename(html_path)}...")
+    text = extract_text_from_html(html_path)
+
+    if not text:
+        print("\nError: Could not extract any text from the HTML file.")
+        return
+
+    # 2. Get the json data from the text using the vision model (text-only)
+    json_data = get_json_from_text(text, extraction_type)
+    if json_data:
+        parsed_json = clean_and_parse_json(json_data)
+        if parsed_json:
+            # --- Create the final output structure ---
+            html_filename_for_lookup = os.path.basename(html_path)
+            issue_id = get_issue_id_for_pdf(html_filename_for_lookup) # Re-use for now
+
+            if not issue_id:
+                print(f"\nWarning: Could not find issue_id for '{html_filename_for_lookup}' in sources.json. The final file will be missing it.")
+
+            # --- Post-process to match manual data format ---
+            processed_investors = []
+            for investor in parsed_json.get("investors", []):
+                # --- Format amount_in_cash ---
+                amount = investor.get("amount_in_cash")
+                if isinstance(amount, (int, float)):
+                    investor["amount_in_cash"] = f"{(amount):.3f}"
+                
+                # --- Format amount_in_percentage ---
+                percent = investor.get("amount_in_percentage")
+                if isinstance(percent, (int, float)):
+                    investor["amount_in_percentage"] = str(percent)
+
+                processed_investors.append(investor)
+
+            final_output = {
+                "issue_id": issue_id,
+                "investors": processed_investors,
+                "source_pages": [1]  # HTML is a single page
+            }
+
+            html_filename = os.path.basename(html_path)
+            json_filename = f"{os.path.splitext(html_filename)[0]}_{extraction_type}.json"
+            output_dir = config.OUTPUT_JSON_DIR
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, json_filename)
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(final_output, f, indent=2, ensure_ascii=False)
+            print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
+
+
 def extract_html_text_command(args):
     """Extracts and prints the text content from an HTML file."""
     html_path = args.html_path
@@ -311,6 +371,9 @@ Examples:
   # Extract underwriter data from a specific PDF
   ./run.sh extract underwriters pdfs/document.pdf
 
+  # Extract underwriter data from an HTML source
+  ./run.sh extract-html underwriters path/to/your/document.html
+
   # Clear the index for a specific PDF
   ./run.sh clear pdfs/document.pdf
         """
@@ -342,6 +405,12 @@ Examples:
     extract_parser.add_argument('extraction_type', help=f"Type of data to extract (e.g., {', '.join(config.EXTRACTION_QUERIES.keys())})")
     extract_parser.add_argument('pdf_path', help='Path to the PDF file')
     extract_parser.set_defaults(func=extract_command)
+
+    # Extract HTML command
+    extract_html_parser = subparsers.add_parser('extract-html', help='Extract structured data from an HTML file')
+    extract_html_parser.add_argument('extraction_type', help=f"Type of data to extract (e.g., {', '.join(config.EXTRACTION_QUERIES.keys())})")
+    extract_html_parser.add_argument('html_path', help='Path or URL to the HTML file')
+    extract_html_parser.set_defaults(func=extract_html_command)
 
     # Extract HTML Text command
     extract_html_text_parser = subparsers.add_parser('extract-html-text', help='Extract text from an HTML file and print it')
