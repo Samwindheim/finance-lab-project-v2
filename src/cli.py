@@ -17,6 +17,7 @@ import json
 import os
 from pdf_indexer import PDFIndexer
 from vision import get_json_from_image
+from html_processor import extract_text_from_html
 import config
 
 # --- Load sources data once for performance ---
@@ -255,6 +256,22 @@ def extract_command(args):
         print(f"\nCould not find any relevant pages for '{extraction_type}'.")
 
 
+def extract_html_text_command(args):
+    """Extracts and prints the text content from an HTML file."""
+    html_path = args.html_path
+
+    print(f"\n{'='*60}")
+    print(f"Extracting text from HTML source: {os.path.basename(html_path)}")
+    print(f"{'='*60}\n")
+
+    text = extract_text_from_html(html_path)
+
+    if text:
+        print(text)
+    else:
+        print("\nCould not extract text or the file is empty.")
+
+
 def clear_command(args):
     """Clear the vector database."""
     print(f"\n{'='*60}")
@@ -325,6 +342,11 @@ Examples:
     extract_parser.add_argument('extraction_type', help=f"Type of data to extract (e.g., {', '.join(config.EXTRACTION_QUERIES.keys())})")
     extract_parser.add_argument('pdf_path', help='Path to the PDF file')
     extract_parser.set_defaults(func=extract_command)
+
+    # Extract HTML Text command
+    extract_html_text_parser = subparsers.add_parser('extract-html-text', help='Extract text from an HTML file and print it')
+    extract_html_text_parser.add_argument('html_path', help='Path or URL to the HTML file')
+    extract_html_text_parser.set_defaults(func=extract_html_text_command)
 
     # Clear command
     clear_parser = subparsers.add_parser('clear', help='Clear the vector database for a specific PDF')

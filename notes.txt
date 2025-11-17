@@ -124,6 +124,10 @@ not grabbing the only investor, labelled differently, could be a simple prompt f
 29ced166-7982-439b-8837-dea699d58a91
 Mismatch on value, but it is right based from the pdf
 
+e871f82a-d3b8-483e-9c38-bd39d0650d27
+DIABIO_2025‑01‑23_Memorandum.pdf
+investor levels look wrong on some in manual data
+
 Thoughts:
 Inconsistent naming schemes makes it difficult to test programmatically. Some cases
 where I think manual data is wrong. Cases where I can't even find the data in the pdfs - don't know where it came from.
@@ -181,3 +185,6 @@ removed all, amounts are in euros, so can't really compare with changing exchang
 
 4baaec27-fb54-41f7-b1eb-25e53dbacf85
 manual data says there is a no name given entry, but really its for 1 of the investors. Fixed this
+
+7677bea0-5317-41c6-a706-4ebee0a009c8
+no manual data for this in manual_investors.json

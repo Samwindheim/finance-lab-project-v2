@@ -26,9 +26,13 @@
 - **Type:** Missing
   - **Expected:** `Jan Ståhlberg`
 
+  Reason: Query not grabbing right page, missed page 5
+
 ### 📄 TESSIN_2024-06-14_Memorandum.pdf
 - **Type:** Missing
   - **Expected:** `Dan Brander`
+
+  Reason: Query not grabbing right page, konvertible, missed page 2
 
 ### 📄 DMYD-B_2023-06-02_Supplement.pdf
 - **Type:** False Positive
@@ -126,6 +130,8 @@
 - **Type:** False Positive
   - **Extracted:** `Max Björs`
 
+  Reason: Crossed out / cancelled guarantors, extraction has trouble detecting that so it still grabbed them
+
 ### 📄 TOBII_2024-03-18_Prospekt.pdf
 - **Type:** False Positive
   - **Extracted:** `Jörgen Lantto`
@@ -140,8 +146,12 @@
 - **Type:** False Positive
   - **Extracted:** `Patrick Grundler`
 
+  Reason: Manual doesn't include some garantors, they have 0%
+
 ### 📄 SVED-B_2024-01-04_Prospekt.pdf
 - **Type:** Missing
   - **Expected:** `Nordea Fonder`
 - **Type:** Missing
   - **Expected:** `If Skadeförsäkring`
+
+  Reason: Not grabbing right page, "Nyckelinformation om emittenten"
