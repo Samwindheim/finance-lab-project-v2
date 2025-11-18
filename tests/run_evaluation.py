@@ -16,7 +16,7 @@ from rapidfuzz import fuzz
 # --- Configuration ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(BASE_DIR, "tests")
-SOURCES_FILE = os.path.join(BASE_DIR, "tests", "sources.json")
+SOURCES_FILE = os.path.join(BASE_DIR, "tests", "verified_sources.json")
 MANUAL_INVESTORS_FILE = os.path.join(BASE_DIR, "tests", "verified_investors.json")
 PREDICTIONS_DIR = os.path.join(BASE_DIR, "output_json")
 OUTPUT_REPORT_JSON = os.path.join(TEST_DIR, "accuracy_report.json")

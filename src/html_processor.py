@@ -1,21 +1,51 @@
 """
 HTML Processing Module.
 
-This module provides functions to extract clean, readable text content from HTML files. It uses BeautifulSoup to parse the HTML and heuristics to remove common non-content elements like scripts, styles, and navigation bars.
+This module provides functions to extract clean, readable text content from HTML files. It uses BeautifulSoup to parse the HTML and heuristics to remove common non-content elements like scripts, styles, and navigation bars. Tables are preserved in markdown format.
 """
 
 from bs4 import BeautifulSoup
 import requests
 
-def extract_text_from_html(html_path_or_url: str) -> str:
+def _table_to_markdown(table):
+    """Converts an HTML table to markdown format."""
+    rows = []
+    for tr in table.find_all('tr'):
+        cells = []
+        for td in tr.find_all(['td', 'th']):
+            cell_text = ' '.join(td.stripped_strings)
+            cells.append(cell_text)
+        if cells:
+            rows.append(cells)
+    
+    if not rows:
+        return ""
+    
+    # Create markdown table
+    markdown = []
+    # Header row
+    if rows:
+        markdown.append('| ' + ' | '.join(rows[0]) + ' |')
+        markdown.append('| ' + ' | '.join(['---'] * len(rows[0])) + ' |')
+        # Data rows
+        for row in rows[1:]:
+            # Pad row if needed
+            while len(row) < len(rows[0]):
+                row.append('')
+            markdown.append('| ' + ' | '.join(row) + ' |')
+    
+    return '\n'.join(markdown)
+
+def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True) -> str:
     """
     Extracts the main text content from an HTML file or URL.
-
+    
     Args:
         html_path_or_url: The path to the HTML file or a URL.
-
+        preserve_tables: If True, converts tables to markdown format. Default is True.
+    
     Returns:
-        A string containing the extracted text.
+        A string containing the extracted text with tables preserved if requested.
     """
     html_content = ""
     if html_path_or_url.startswith('http'):
@@ -44,7 +74,19 @@ def extract_text_from_html(html_path_or_url: str) -> str:
         for script_or_style in soup(["script", "style"]):
             script_or_style.decompose()
 
-        # Get text
+        # Extract tables first if preserving them
+        if preserve_tables:
+            tables = soup.find_all('table')
+            for table in tables:
+                # Replace table with a placeholder that includes markdown
+                markdown_table = _table_to_markdown(table)
+                if markdown_table:
+                    # Create a new tag to hold the markdown table
+                    placeholder = soup.new_tag('div')
+                    placeholder.string = f"\n\n[TABLE]\n{markdown_table}\n[/TABLE]\n\n"
+                    table.replace_with(placeholder)
+
+        # Get text (now with tables as markdown)
         text = soup.get_text()
 
         # Break into lines and remove leading/trailing space on each
