@@ -27,11 +27,27 @@ if os.path.exists(SOURCES_FILE):
     with open(SOURCES_FILE, 'r') as f:
         SOURCES_DATA = json.load(f)
 
-def get_issue_id_for_pdf(pdf_filename: str) -> str | None:
-    """Finds the issue_id for a given PDF filename from the loaded sources data."""
+HTML_SOURCES_FILE = os.path.join(config.BASE_DIR, "tests", "html-sources.json")
+HTML_SOURCES_DATA = []
+if os.path.exists(HTML_SOURCES_FILE):
+    with open(HTML_SOURCES_FILE, 'r') as f:
+        HTML_SOURCES_DATA = json.load(f)
+
+def find_issue_id(source_path: str) -> str | None:
+    """Finds the issue_id for a given source path from all available source files."""
+    # Check if it's a URL or HTML file first
+    if source_path.startswith('http') or source_path.lower().endswith(('.html', '.htm')):
+        for source in HTML_SOURCES_DATA:
+            if source.get("source_url") == source_path:
+                # Prioritize issue_id, but fall back to other IDs if needed
+                return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+    
+    # If not found or it's a PDF, check by filename in the PDF sources
+    pdf_filename = os.path.basename(source_path)
     for source in SOURCES_DATA:
         if source.get("source_url") == pdf_filename:
             return source.get("issue_id")
+            
     return None
 
 def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
@@ -64,6 +80,45 @@ def clean_and_parse_json(json_string: str) -> dict | None:
         print("Raw response:")
         print(json_string)
         return None
+
+def process_and_save_json(parsed_json: dict, source_path: str, extraction_type: str, source_pages: list):
+    """Post-processes and saves the extracted JSON data to a file."""
+    # --- Create the final output structure ---
+    source_filename_for_lookup = os.path.basename(source_path)
+    issue_id = find_issue_id(source_path)
+
+    if not issue_id:
+        print(f"\nWarning: Could not find issue_id for '{source_filename_for_lookup}' in any source file. The final file will be missing it.")
+
+    # --- Post-process to match manual data format ---
+    processed_investors = []
+    for investor in parsed_json.get("investors", []):
+        # --- Format amount_in_cash ---
+        amount = investor.get("amount_in_cash")
+        if isinstance(amount, (int, float)):
+            investor["amount_in_cash"] = f"{(amount):.3f}"
+        
+        # --- Format amount_in_percentage ---
+        percent = investor.get("amount_in_percentage")
+        if isinstance(percent, (int, float)):
+            investor["amount_in_percentage"] = str(percent)
+
+        processed_investors.append(investor)
+
+    final_output = {
+        "issue_id": issue_id,
+        "investors": processed_investors,
+        "source_pages": source_pages
+    }
+
+    source_filename = os.path.basename(source_path)
+    json_filename = f"{os.path.splitext(source_filename)[0]}_{extraction_type}.json"
+    output_dir = config.OUTPUT_JSON_DIR
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, json_filename)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(final_output, f, indent=2, ensure_ascii=False)
+    print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
 
 def index_command(args):
     """Index a PDF file."""
@@ -212,46 +267,7 @@ def extract_command(args):
         if json_data:
             parsed_json = clean_and_parse_json(json_data)
             if parsed_json:
-                # --- Create the final output structure ---
-                pdf_filename_for_lookup = os.path.basename(pdf_path_for_extraction)
-                issue_id = get_issue_id_for_pdf(pdf_filename_for_lookup)
-
-                if not issue_id:
-                    print(f"\nWarning: Could not find issue_id for '{pdf_filename_for_lookup}' in sources.json. The final file will be missing it.")
-
-                # The parsed_json from the model should now be {"investors": [...]}
-                # We wrap it in the final structure with the issue_id
-                
-                # --- Post-process to match manual data format ---
-                processed_investors = []
-                for investor in parsed_json.get("investors", []):
-                    # --- Format amount_in_cash ---
-                    amount = investor.get("amount_in_cash")
-                    if isinstance(amount, (int, float)):
-                        investor["amount_in_cash"] = f"{(amount):.3f}"
-                    
-                    # --- Format amount_in_percentage ---
-                    percent = investor.get("amount_in_percentage")
-                    if isinstance(percent, (int, float)):
-                        # Format to a string, e.g., "9.7"
-                        investor["amount_in_percentage"] = str(percent)
-
-                    processed_investors.append(investor)
-
-                final_output = {
-                    "issue_id": issue_id,
-                    "investors": processed_investors,
-                    "source_pages": page_numbers
-                }
-
-                pdf_filename = os.path.basename(pdf_path_for_extraction)
-                json_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_type}.json"
-                output_dir = config.OUTPUT_JSON_DIR
-                os.makedirs(output_dir, exist_ok=True)
-                output_path = os.path.join(output_dir, json_filename)
-                with open(output_path, 'w', encoding='utf-8') as f:
-                    json.dump(final_output, f, indent=2, ensure_ascii=False)
-                print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
+                process_and_save_json(parsed_json, pdf_path_for_extraction, extraction_type, page_numbers)
     else:
         print(f"\nCould not find any relevant pages for '{extraction_type}'.")
 
@@ -278,42 +294,40 @@ def extract_html_command(args):
     if json_data:
         parsed_json = clean_and_parse_json(json_data)
         if parsed_json:
-            # --- Create the final output structure ---
-            html_filename_for_lookup = os.path.basename(html_path)
-            issue_id = get_issue_id_for_pdf(html_filename_for_lookup) # Re-use for now
+            process_and_save_json(parsed_json, html_path, extraction_type, [1])
 
-            if not issue_id:
-                print(f"\nWarning: Could not find issue_id for '{html_filename_for_lookup}' in sources.json. The final file will be missing it.")
 
-            # --- Post-process to match manual data format ---
-            processed_investors = []
-            for investor in parsed_json.get("investors", []):
-                # --- Format amount_in_cash ---
-                amount = investor.get("amount_in_cash")
-                if isinstance(amount, (int, float)):
-                    investor["amount_in_cash"] = f"{(amount):.3f}"
-                
-                # --- Format amount_in_percentage ---
-                percent = investor.get("amount_in_percentage")
-                if isinstance(percent, (int, float)):
-                    investor["amount_in_percentage"] = str(percent)
-
-                processed_investors.append(investor)
-
-            final_output = {
-                "issue_id": issue_id,
-                "investors": processed_investors,
-                "source_pages": [1]  # HTML is a single page
-            }
-
-            html_filename = os.path.basename(html_path)
-            json_filename = f"{os.path.splitext(html_filename)[0]}_{extraction_type}.json"
-            output_dir = config.OUTPUT_JSON_DIR
-            os.makedirs(output_dir, exist_ok=True)
-            output_path = os.path.join(output_dir, json_filename)
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(final_output, f, indent=2, ensure_ascii=False)
-            print(f"\nSuccessfully extracted and saved data to: {output_path}\n")
+def unified_extract_command(args):
+    """
+    Extracts structured data from a PDF or HTML source.
+    Automatically determines the correct extraction method.
+    """
+    source = args.source
+    extraction_type = args.extraction_type
+    
+    # --- Determine source type ---
+    is_pdf = source.lower().endswith('.pdf')
+    is_html = source.lower().startswith('http') or source.lower().endswith(('.html', '.htm'))
+    
+    if is_pdf:
+        # To call the PDF extraction logic, we need to simulate the 'args' object
+        # that the original extract_command expects.
+        pdf_args = argparse.Namespace(
+            extraction_type=extraction_type,
+            pdf_path=source,
+            index_dir=args.index_dir  # Pass along the index directory
+        )
+        extract_command(pdf_args)
+    elif is_html:
+        # Simulate the 'args' object for the HTML extraction logic.
+        html_args = argparse.Namespace(
+            extraction_type=extraction_type,
+            html_path=source
+        )
+        extract_html_command(html_args)
+    else:
+        print(f"\nError: Could not determine file type for '{source}'.")
+        print("Please provide a PDF file, an HTML file, or a URL.")
 
 
 def extract_html_text_command(args):
@@ -368,11 +382,9 @@ Examples:
   # Query the index for a specific PDF, n is the number of top results to return
   ./run.sh query pdfs/document.pdf "Find underwriter section" -n 5
 
-  # Extract underwriter data from a specific PDF
+  # Extract structured data from any source (PDF or HTML)
   ./run.sh extract underwriters pdfs/document.pdf
-
-  # Extract underwriter data from an HTML source
-  ./run.sh extract-html underwriters path/to/your/document.html
+  ./run.sh extract underwriters https://example.com/source.html
 
   # Clear the index for a specific PDF
   ./run.sh clear pdfs/document.pdf
@@ -400,17 +412,11 @@ Examples:
     query_parser.add_argument('-n', '--n', type=int, default=3, help='Number of results (default: 3)')
     query_parser.set_defaults(func=query_command)
     
-    # Extract command
-    extract_parser = subparsers.add_parser('extract', help='Extract structured data from a specific PDF')
+    # Unified Extract command
+    extract_parser = subparsers.add_parser('extract', help='Extract structured data from a PDF or HTML source')
     extract_parser.add_argument('extraction_type', help=f"Type of data to extract (e.g., {', '.join(config.EXTRACTION_QUERIES.keys())})")
-    extract_parser.add_argument('pdf_path', help='Path to the PDF file')
-    extract_parser.set_defaults(func=extract_command)
-
-    # Extract HTML command
-    extract_html_parser = subparsers.add_parser('extract-html', help='Extract structured data from an HTML file')
-    extract_html_parser.add_argument('extraction_type', help=f"Type of data to extract (e.g., {', '.join(config.EXTRACTION_QUERIES.keys())})")
-    extract_html_parser.add_argument('html_path', help='Path or URL to the HTML file')
-    extract_html_parser.set_defaults(func=extract_html_command)
+    extract_parser.add_argument('source', help='Path or URL to the source file (PDF or HTML)')
+    extract_parser.set_defaults(func=unified_extract_command)
 
     # Extract HTML Text command
     extract_html_text_parser = subparsers.add_parser('extract-html-text', help='Extract text from an HTML file and print it')
