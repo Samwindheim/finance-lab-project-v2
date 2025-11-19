@@ -53,8 +53,7 @@ You will be given one or more images of a document page and the raw text extract
 4. Output only JSON. No extra text, explanations, or formatting.
 5. Ensure numbers are correctly transformed according to the rules above.
 
-IMPORTANT: Do not invent data. If a value for a specific field is not clear, you MUST use null for that field. Do not attempt to guess or infer missing values. Do not extract investors that are not tecknings or garant. Do not extract investors
-that you are not sure are part of the data set.
+IMPORTANT: Do not invent data. If a value for a specific field is not clear, you MUST use null for that field. Do not attempt to guess or infer missing values. Do not extract investors that are not tecknings or garant. Do not extract investors that you are not sure are part of the data set. Keep in mind that it is possible that the provided text/images do not contain the investors.
 
 **Output Format Example:**
 {
