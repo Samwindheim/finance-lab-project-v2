@@ -19,36 +19,15 @@ from pdf_indexer import PDFIndexer
 from vision import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
+from utils import load_json_file, find_issue_id, clean_and_parse_json
+from typing import List, Dict
 
 # --- Load sources data once for performance ---
 SOURCES_FILE = os.path.join(config.BASE_DIR, "tests", "sources.json")
-SOURCES_DATA = []
-if os.path.exists(SOURCES_FILE):
-    with open(SOURCES_FILE, 'r') as f:
-        SOURCES_DATA = json.load(f)
+SOURCES_DATA = load_json_file(SOURCES_FILE)
 
 HTML_SOURCES_FILE = os.path.join(config.BASE_DIR, "tests", "html-sources.json")
-HTML_SOURCES_DATA = []
-if os.path.exists(HTML_SOURCES_FILE):
-    with open(HTML_SOURCES_FILE, 'r') as f:
-        HTML_SOURCES_DATA = json.load(f)
-
-def find_issue_id(source_path: str) -> str | None:
-    """Finds the issue_id for a given source path from all available source files."""
-    # Check if it's a URL or HTML file first
-    if source_path.startswith('http') or source_path.lower().endswith(('.html', '.htm')):
-        for source in HTML_SOURCES_DATA:
-            if source.get("source_url") == source_path:
-                # Prioritize issue_id, but fall back to other IDs if needed
-                return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-    
-    # If not found or it's a PDF, check by filename in the PDF sources
-    pdf_filename = os.path.basename(source_path)
-    for source in SOURCES_DATA:
-        if source.get("source_url") == pdf_filename:
-            return source.get("issue_id")
-            
-    return None
+HTML_SOURCES_DATA = load_json_file(HTML_SOURCES_FILE)
 
 def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
     """Generates a unique index path from a PDF filename."""
@@ -66,26 +45,69 @@ def load_indexer(pdf_path: str, index_dir: str) -> PDFIndexer | None:
         return None
     return indexer
 
-def clean_and_parse_json(json_string: str) -> dict | None:
-    """Cleans a JSON string from LLM response and parses it."""
-    if json_string.startswith("```json"):
-        json_string = json_string[7:-3].strip()
-    elif json_string.startswith("```"):
-        json_string = json_string[3:-3].strip()
+def select_consecutive_pages(results: List[Dict]) -> List[int]:
+    """
+    Selects a consecutive block of pages around the top search results from a PDF.
+    This logic is crucial for capturing tables that span multiple pages.
+    """
+    if not results:
+        return []
 
-    try:
-        return json.loads(json_string)
-    except json.JSONDecodeError:
-        print("\nError: Failed to decode JSON from model response.")
-        print("Raw response:")
-        print(json_string)
-        return None
+    SIMILARITY_DISTANCE_THRESHOLD = 1.05 # 5% threshold
+
+    # Start with the top result and include the second result if its score is close.
+    top_result = results[0]
+    pages_to_extract = [top_result]
+    
+    # Check if second result is close enough to include
+    if len(results) > 1:
+        second_result = results[1]
+        # If the second result's distance is within the threshold, include its page.
+        if second_result['distance'] <= top_result['distance'] * SIMILARITY_DISTANCE_THRESHOLD:
+            if second_result['page_number'] != top_result['page_number']:
+                pages_to_extract.append(second_result)
+
+    results_by_page = {res['page_number']: res for res in results}
+    
+    # --- Expand page selection around the top result ---
+    # Look forward to find consecutive pages.
+    current_page = top_result['page_number'] + 1
+    # Always include the page immediately following the top result for context.
+    if current_page in results_by_page:
+        pages_to_extract.append(results_by_page[current_page])
+    else:
+        pages_to_extract.append({'page_number': current_page}) # Synthetic page
+    
+    current_page += 1
+    while current_page in results_by_page:
+        pages_to_extract.append(results_by_page[current_page])
+        current_page += 1
+
+    # Look backward to find consecutive pages that are also in the search results.
+    current_page = top_result['page_number'] - 1
+    while current_page > 0 and current_page in results_by_page:
+        pages_to_extract.append(results_by_page[current_page])
+        current_page -= 1
+
+    # Remove duplicates by page number, keeping the first occurrence
+    unique_pages = []
+    seen_page_numbers = set()
+    for page in pages_to_extract:
+        if page['page_number'] not in seen_page_numbers:
+            unique_pages.append(page)
+            seen_page_numbers.add(page['page_number'])
+    
+    # Sort the collected pages by page number to ensure correct order
+    unique_pages.sort(key=lambda p: p['page_number'])
+
+    return [p['page_number'] for p in unique_pages]
+
 
 def process_and_save_json(parsed_json: dict, source_path: str, extraction_type: str, source_pages: list):
     """Post-processes and saves the extracted JSON data to a file."""
     # --- Create the final output structure ---
     source_filename_for_lookup = os.path.basename(source_path)
-    issue_id = find_issue_id(source_path)
+    issue_id = find_issue_id(source_path, SOURCES_DATA, HTML_SOURCES_DATA)
 
     if not issue_id:
         print(f"\nWarning: Could not find issue_id for '{source_filename_for_lookup}' in any source file. The final file will be missing it.")
@@ -173,63 +195,13 @@ def extract_command(args):
     results = indexer.query(query, top_k=5)
 
     if results:
-        SIMILARITY_DISTANCE_THRESHOLD = 1.05 # 5% threshold
-
-        # --- Page Selection Logic ---
-        # Start with the top result and include the second result if its score is close.
-        # Then, expand around the top result to find consecutive pages.
-        top_result = results[0]
-        pages_to_extract = [top_result]
-        
-        # Check if second result is close enough to include
-        if len(results) > 1:
-            second_result = results[1]
-            # If the second result's distance is within the threshold, include its page.
-            if second_result['distance'] <= top_result['distance'] * SIMILARITY_DISTANCE_THRESHOLD:
-                if second_result['page_number'] != top_result['page_number']:
-                    pages_to_extract.append(second_result)
-
-        results_by_page = {res['page_number']: res for res in results}
-        
-        # --- Expand page selection around the top result ---
-        # Look forward to find consecutive pages.
-        current_page = top_result['page_number'] + 1
-        # Always include the page immediately following the top result for context.
-        if current_page in results_by_page:
-            pages_to_extract.append(results_by_page[current_page])
-        else:
-            pages_to_extract.append({'page_number': current_page}) # Synthetic page
-        
-        current_page += 1
-        while current_page in results_by_page:
-            pages_to_extract.append(results_by_page[current_page])
-            current_page += 1
-
-        # Look backward to find consecutive pages that are also in the search results.
-        current_page = top_result['page_number'] - 1
-        while current_page > 0 and current_page in results_by_page:
-            pages_to_extract.append(results_by_page[current_page])
-            current_page -= 1
-
-        # Remove duplicates by page number, keeping the first occurrence
-        unique_pages = []
-        seen_page_numbers = set()
-        for page in pages_to_extract:
-            if page['page_number'] not in seen_page_numbers:
-                unique_pages.append(page)
-                seen_page_numbers.add(page['page_number'])
-        pages_to_extract = unique_pages
-
-        # Sort the collected pages by page number to ensure correct order
-        pages_to_extract.sort(key=lambda p: p['page_number'])
-
-        page_numbers = [p['page_number'] for p in pages_to_extract]
+        page_numbers = select_consecutive_pages(results)
         print(f"\nFound {len(page_numbers)} relevant pages to analyze: {page_numbers}")
 
         # --- Fallback logic for PDF path ---
         # Use the path from metadata if available, otherwise use the path from CLI args
         # We check the top result, assuming all consecutive pages are from the same PDF
-        pdf_path_for_extraction = top_result.get('pdf_path') or args.pdf_path
+        pdf_path_for_extraction = results[0].get('pdf_path') or args.pdf_path
         
         if not pdf_path_for_extraction:
             print("\nError: Could not determine PDF path for extraction. Please re-index the document or provide a valid path.")
@@ -238,13 +210,13 @@ def extract_command(args):
         # 2. extract the images and text for all identified pages
         saved_image_paths = []
         page_texts = []
-        for page in pages_to_extract:
-            print(f"Extracting image and text for page {page['page_number']}...")
+        for page_num in page_numbers:
+            print(f"Extracting image and text for page {page_num}...")
             
             # Extract image
             saved_path = indexer.extract_page_as_image(
                 pdf_path=pdf_path_for_extraction,
-                page_number=page['page_number']
+                page_number=page_num
             )
             if saved_path:
                 saved_image_paths.append(saved_path)
@@ -252,7 +224,7 @@ def extract_command(args):
             # Extract text
             text = indexer.get_text_for_page(
                 pdf_path=pdf_path_for_extraction,
-                page_number=page['page_number']
+                page_number=page_num
             )
             if text:
                 page_texts.append(text)

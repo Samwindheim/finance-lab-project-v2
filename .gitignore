@@ -117,3 +117,8 @@ faiss_index/
 output_images/
 output_json/
 pdfs/
+
+# Test results
+tests/accuracy_report.json
+tests/accuracy_summary.md
+tests/summary_reasons.md

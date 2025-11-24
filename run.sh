@@ -26,5 +26,17 @@ if [ ! -f "$CLI_SCRIPT_PATH" ]; then
     exit 1
 fi
 
-# Run the Python CLI script with all arguments passed to this shell script
-python "$CLI_SCRIPT_PATH" "$@"
+# Main script logic
+case "$1" in
+  index|query|extract|clear|extract-html-text)
+    python3 src/cli.py "$@"
+    ;;
+  process_issue)
+    # Forward all arguments except the first one (process_issue)
+    python3 src/process_issue.py "${@:2}"
+    ;;
+  *)
+    echo "Usage: $0 {index|query|extract|clear|process_issue|extract-html-text}"
+    exit 1
+    ;;
+esac
