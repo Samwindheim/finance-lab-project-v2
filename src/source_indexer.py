@@ -136,8 +136,23 @@ class SourceIndexer:
             html_url = html_source.get("source_url")
             print(f"  - Processing HTML: {html_url}")
             text = extract_text_from_html(html_url, preserve_tables=True)
-            all_chunks.extend(self._chunk_text(text, html_url, "HTML"))
-            all_chunks.append(self._chunk_text(f"\n--- END OF DOCUMENT: {os.path.basename(html_url)} ---\n", html_url, "SEPARATOR")[0])
+            
+            if text:
+                # Create ONE single embedding for the HTML document
+                # Truncate to 8191 tokens (limit for text-embedding-3-large)
+                tokens = self.tokenizer.encode(text)
+                if len(tokens) > 8191:
+                    print(f"    - Truncating HTML text to 8191 tokens (original: {len(tokens)})")
+                    text = self.tokenizer.decode(tokens[:8191])
+                
+                chunk_data = {
+                    "issue_id": self.issue_id,
+                    "source_document": html_url,
+                    "source_type": "HTML",
+                    "page_number": None,
+                    "text": text,
+                }
+                all_chunks.append(chunk_data)
 
         if not all_chunks:
             print("No text extracted from any source. Aborting index creation.")

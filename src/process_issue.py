@@ -76,17 +76,16 @@ def main():
         sys.exit(1)
         
     print(f"\nQuerying the unified index for '{extraction_type}'...")
-    results = indexer.query(query_text, top_k=10)
+    results = indexer.query(query_text, top_k=15)
 
-    # --- TEMPORARY TEST CODE ---
-    print("\n--- Top 10 Search Results ---")
-    for i, res in enumerate(results):
-        print(f"\n{i+1}. Distance: {res['distance']:.4f}")
-        print(f"   Source: {res['source_document']} (Type: {res
-        ['source_type']}, Page: {res.get('page_number', 'N/A')})")
-        print(f"   Text: {res['text'][:200]}...")
-    print("\n" + "="*60)
-    sys.exit(0) # Stop the script here
+    # --- TEMPORARY TEST CODE, uncomment to see query results---
+    # print("\n--- Top 15 Search Results ---")
+    # for i, res in enumerate(results):
+    #     print(f"\n{i+1}. Distance: {res['distance']:.4f}")
+    #     print(f"   Source: {res['source_document']} (Type: {res['source_type']}, Page: {res.get('page_number', 'N/A')})")
+    #     print(f"   Text: {res['text'][:200]}...")
+    # print("\n" + "="*60)
+    # sys.exit(0) # Stop the script here
     # --- END TEMPORARY TEST CODE ---
     
     if not results:
@@ -95,45 +94,66 @@ def main():
         
     # --- Step 4: Prepare context and call the vision model ---
     final_context_texts = []
-    processed_html_sources = set()
-    pdf_results = [] # Collect all results from PDFs
+    image_paths_to_extract = set() # Use a set to avoid duplicate images
+    
+    # Separate results by type
+    pdf_results = [r for r in results if r.get("source_type") == "PDF"]
+    html_results = [r for r in results if r.get("source_type") == "HTML"]
+    
+    best_pdf_res = pdf_results[0] if pdf_results else None
+    best_html_res = html_results[0] if html_results else None
+    
+    use_html_only = False
+    
+    # Determine if we should use HTML only
+    if best_html_res:
+        # If no PDF results found, or HTML is strictly better (lower distance)
+        if not best_pdf_res or best_html_res['distance'] < best_pdf_res['distance']:
+            use_html_only = True
+            print(f"  - HTML result ({best_html_res['distance']:.4f}) is better than best PDF ({best_pdf_res['distance']:.4f if best_pdf_res else 'None'}). Using HTML only.")
 
-    for res in results:
-        source_doc = res.get("source_document")
-        source_type = res.get("source_type")
-
-        if source_type == "HTML" and source_doc not in processed_html_sources:
-            # If we find a relevant chunk from an HTML, use the whole document's text
-            print(f"  - Found relevant HTML, adding full text from: {source_doc}")
+    # --- Build Context ---
+    if use_html_only:
+        # Case 1: Use ONLY the HTML text
+        source_doc = best_html_res['source_document']
+        print(f"  - Found relevant HTML, adding full text from: {source_doc}")
+        # We re-extract to ensure we have the full text (in case embedding used truncated version)
+        full_html_text = extract_text_from_html(source_doc, preserve_tables=True)
+        if full_html_text:
+             final_context_texts.append(f"--- START HTML DOCUMENT: {source_doc} ---\n{full_html_text}\n--- END HTML DOCUMENT ---")
+             
+    else:
+        # Case 2: Standard PDF Logic + Top HTML (if exists)
+        
+        # Add Top HTML if available
+        if best_html_res:
+            source_doc = best_html_res['source_document']
+            print(f"  - Including top HTML context from: {source_doc}")
             full_html_text = extract_text_from_html(source_doc, preserve_tables=True)
             if full_html_text:
-                final_context_texts.append(full_html_text)
-                processed_html_sources.add(source_doc)
-        elif source_type == "PDF":
-            # For PDFs, collect the results to be processed by the page selection logic
-            pdf_results.append(res)
-    
-    # --- Step 5: Use the intelligent page selection for PDFs ---
-    image_paths_to_extract = set() # Use a set to avoid duplicate images
-    if pdf_results:
-        # We need to group results by document before selecting pages
-        from collections import defaultdict
-        pdf_results_by_doc = defaultdict(list)
-        for res in pdf_results:
-            pdf_results_by_doc[res.get("source_document")].append(res)
+                final_context_texts.append(f"--- START HTML DOCUMENT: {source_doc} ---\n{full_html_text}\n--- END HTML DOCUMENT ---")
+        
+        # Process PDF Results
+        if pdf_results:
+            # We need to group results by document before selecting pages
+            from collections import defaultdict
+            pdf_results_by_doc = defaultdict(list)
+            for res in pdf_results:
+                pdf_results_by_doc[res.get("source_document")].append(res)
 
-        for pdf_filename, doc_results in pdf_results_by_doc.items():
-            # The results are already sorted by distance, which is what select_consecutive_pages expects
-            selected_pages = select_consecutive_pages(doc_results)
-            print(f"  - Selected consecutive pages for {pdf_filename}: {selected_pages}")
-            
-            for page_num in selected_pages:
-                image_paths_to_extract.add((pdf_filename, page_num))
-            
-            # Also add the text from these selected pages to the context
-            for res in doc_results:
-                if res.get("page_number") in selected_pages:
-                    final_context_texts.append(res.get("text"))
+            for pdf_filename, doc_results in pdf_results_by_doc.items():
+                # To align with cli.py, we only consider the top 5 results for this document.
+                top_5_doc_results = doc_results[:5]
+                selected_pages = select_consecutive_pages(top_5_doc_results)
+                print(f"  - Selected consecutive pages for {pdf_filename}: {selected_pages}")
+                
+                for page_num in selected_pages:
+                    image_paths_to_extract.add((pdf_filename, page_num))
+                
+                # Also add the text from these selected pages to the context
+                for res in doc_results:
+                    if res.get("page_number") in selected_pages:
+                        final_context_texts.append(f"--- PDF TEXT CHUNK (Page {res.get('page_number')}) ---\n{res.get('text')}")
 
     if not final_context_texts:
         print("Could not build a valid context for the language model. Exiting.")
@@ -149,6 +169,18 @@ def main():
             img_path = indexer.extract_page_as_image(pdf_filename, page_num)
             if img_path:
                 extracted_image_paths.append(img_path)
+    
+    # --- TEMPORARY DEBUG CODE, saves context to file ---
+    with open('context.txt', 'w') as f:
+        f.write(combined_text)
+        for img_path in sorted(extracted_image_paths):
+            f.write("\n")
+            f.write(f"- {img_path}\n")
+
+    sys.exit(0) # Stop before calling LLM
+    
+
+    # --- END TEMPORARY DEBUG CODE ---
     
     # --- Step 7: Call the appropriate vision model function ---
     print("\nSending combined context to the language model for extraction...")
