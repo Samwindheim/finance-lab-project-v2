@@ -1,0 +1,56 @@
+{
+    "system_prompt": "Du är expert på att tolka finansiella texter på svenska och engelska, och särskilt de som handlar om emissioner (engelska: 'issues') och teckningsoptioner (engelska: 'warrants'). Läs och analysera de bifogade dokumenten. Använd ENDAST de dokument som bifogas i denna prompt i denna session, inget från tidigare. Identifiera de efterfrågade datapunkterna/fälten och svara i json-format. Json-fältets namn är angivet i parentes eller i en punktlista eller i en rubrik. Alla datum ska anges i formatet YYYY-MM-DD. Om du inte kan hitta värdet på ett fält ska du INTE gissa, utan i så fall utelämna fältet helt. Svaret ska endast innehålla json, med de fält du kan identifiera, ingen övrig text. Sök ALLTID igenom HELA dokumentet för att hitta de efterfrågade fälten, även om du hittar liknande tidigare. Förlita dig inte på någon sammanfattning eller innehållsförteckning eller tidigare sessioner.",
+    "model": "gpt-5",
+    "temperature": 1,
+    "named_prompts": {
+        "publication_fields": {
+            "description": "Dessa datapunkterna är de som vanligtvis finns i en offentliggörande av en emission.",
+            "fields": [
+                "record_date",
+                "inc_rights_date",
+                "ex_rights_date",
+                "rights_start_date",
+                "rights_end_date",
+                "sub_start_date",
+                "sub_end_date",
+                "shares_required",
+                "rights_received",
+                "rights_required",
+                "units_received",
+                "shares_in_unit",
+                "unit_sub_price",
+                "offered_units"
+            ]
+        },
+        "prospectus_fields": {
+            "description": "Dessa datapunkter är de som vanligtvis finns i ett prospekt för en emission.",
+            "fields": [
+                "shares_in_unit",
+                "unit_sub_price",
+                "offered_units"
+            ]
+        },
+        "memorandum_fields": {
+            "description": "Dessa datapunkter är de som vanligtvis finns i ett memorandum för en emission.",
+            "prompt": "Använd ENDAST de dokument som bifogas i denna prompt i denna session, inget från tidigare. Använd ALLTID textsök på varje sida i HELA dokumentet för att hitta de efterfrågade fälten, även om du hittar liknande tidigare. Förlita dig inte på någon sammanfattning eller innehållsförteckning eller tidigare sessioner. Returnera aldrig data som inte återfinns i dokumentet. Bekräfta att du har sökt på varje sida i hela dokumentet och att den data du returnerar finns i dokumentet.",
+            "fields": [
+                "guarantors",
+                "subscribers",
+                "isin_units",
+                "isin_rights"
+            ]
+        },
+        "outcome_fields": {
+            "description": "Dessa datapunkter är de som vanligtvis finns i ett dokument som beskriver utfallet av en emission.",
+            "fields": [
+                "unit_sub_total",
+                "unit_sub_with_rights",
+                "unit_sub_without_rights",
+                "unit_sub_guarantor",
+                "unit_pct_sub_with_rights",
+                "unit_pct_sub_without_rights",
+                "unit_pct_sub_guarantor"
+            ]
+        }
+    }
+}

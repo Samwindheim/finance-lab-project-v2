@@ -56,8 +56,8 @@ def main():
         
         # Load all source files to find the documents for this issue
         base_dir = config.BASE_DIR
-        pdf_sources_path = os.path.join(base_dir, 'tests', 'sources.json')
-        html_sources_path = os.path.join(base_dir, 'tests', 'html-sources.json')
+        pdf_sources_path = os.path.join(base_dir, 'source_files', 'sources.json')
+        html_sources_path = os.path.join(base_dir, 'source_files', 'html-sources.json')
         pdf_sources = load_json_file(pdf_sources_path)
         html_sources = load_json_file(html_sources_path)
         

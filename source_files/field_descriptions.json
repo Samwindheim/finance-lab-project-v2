@@ -1,0 +1,120 @@
+{
+    "record_date": {
+        "description": "Avstämningsdag. Då aktieägare är berättigade till rätter.",
+        "type": "date"
+    },
+    "inc_rights_date": {
+        "description": "Sista datum när aktien handlas inklusive rätter.",
+        "type": "date"
+    },
+    "ex_rights_date": {
+        "description": "Första datum när aktien handlas exklusive rätter.",
+        "type": "date"
+    },
+    "rights_start_date": {
+        "description": "Första datum när rätterna handlas.",
+        "type": "date"
+    },
+    "rights_end_date": {
+        "description": "Sista datum som rätterna handlas.",
+        "type": "date"
+    },
+    "sub_start_date": {
+        "description": "Första datum för teckningsperioden.",
+        "type": "date"
+    },
+    "sub_end_date": {
+        "description": "Sista datum för teckningsperioden.",
+        "type": "date"
+    },
+    "shares_required": {
+        "description": "Antal aktier för att få ett visst antal rätter. Om det beskrivs som 'varje befintlig aktie', så är det 1 aktie.",
+        "type": "number",
+        "examples": [
+            {
+                "input": "Varje befintlig aktie i {bolaget} berättigar innehavaren till",
+                "output": "1"
+            }
+        ]
+    },
+    "rights_received": {
+        "description": "Antal rätter som ges per antal aktier.",
+        "type": "number"
+    },
+    "rights_required": {
+        "description": "Antal rätter som krävs för att teckna ett visst antal aktier.",
+        "type": "number"
+    },
+    "units_received": {
+        "description": "Antal units eller aktier som ges per antal rätter.",
+        "type": "number"
+    },
+    "shares_in_unit": {
+        "description": "Antal aktier per unit, vilket är en (1) aktie om inte annat anges.",
+        "type": "number"
+    },
+    "unit_sub_price": {
+        "description": "Teckningspris per unit.",
+        "type": "number"
+    },
+    "offered_units": {
+        "description": "Antal units som erbjuds.",
+        "type": "number"
+    },
+    "guarantors": {
+        "description": "`guarantors` ska vara en lista av garanter, som har namn (name) och storlek på åtagande antingen i pengar (amount_in_cash) eller i procent (amount_in_percentage). Listan redovisas ofta i en tabell med rubrik som innehåller 'Garantiåtagande', 'Garanter', 'Teckningsförbindelser och garantiåtaganden' eller liknande. Denna information kommer ofta i slutet av dokumentet, så se till att läsa hela dokumentet.",
+        "type": "array",
+        "examples": [
+            {
+                "long_input": "Garantiåtagande\n\n| Namn | Storlek på åtagande |\n| --- | --- |\n| Garant 1 | 100 000 kr |\n| Garant 2 | 50 % |\n",
+                "long_output": "\"guarantors\": [\n  {\n    \"name\": \"Garant 1\",\n    \"amount_in_cash\": 100000\n  },\n  {\n    \"name\": \"Garant 2\",\n    \"amount_in_percentage\": 50\n  }\n]"
+            }
+        ]
+    },
+    "subscribers": {
+        "description": "Lista av teckningsåtagare, som har namn (name) och storlek på åtagande antingen i pengar (amount_in_cash) eller i procent (amount_in_percentage). Listan redovisas ofta i en tabell med rubrik som innehåller 'Teckningsåtagare', 'Teckningsförbindelse', 'Teckningsförbindelser och garantiåtaganden' eller liknande. Denna information kommer ofta i slutet av dokumentet, så se till att läsa hela dokumentet.",
+        "type": "array",
+        "examples": [
+            {
+                "long_input": "Teckningsförbindelser\n\n| Teckningsåtagare | Storlek på åtagande |\n| --- | --- |\n| Åtagare 1 | 100 000 kr |\n| Åtagare 2 | 50 % |\n",
+                "long_output": "\"subscribers\": [\n  {\n    \"name\": \"Åtagare 1\",\n    \"amount_in_cash\": 100000\n  },\n  {\n    \"name\": \"Åtagare 2\",\n    \"amount_in_percentage\": 50\n  }\n]"
+            }
+        ]
+    },
+    "isin_units": {
+        "description": "ISIN-kod för units.",
+        "type": "string"
+    },
+    "isin_rights": {
+        "description": "ISIN-kod för teckningsrätter.",
+        "type": "string"
+    },
+    "unit_sub_total": {
+        "description": "Antal units som tecknats totalt.",
+        "type": "number"
+    },
+    "unit_sub_with_rights": {
+        "description": "Antal units som tecknats med företrädesrätt.",
+        "type": "number"
+    },
+    "unit_sub_without_rights": {
+        "description": "Antal units som tecknats utan företrädesrätt.",
+        "type": "number"
+    },
+    "unit_sub_guarantor": {
+        "description": "Antal units som tecknats av garanter.",
+        "type": "number"
+    },
+    "unit_pct_sub_with_rights": {
+        "description": "Andel i procent som tecknats med företrädesrätt. unit_pct_sub_with_rights får bara anges om det inte angetts en unit_sub_with_rights.",
+        "type": "number"
+    },
+    "unit_pct_sub_without_rights": {
+        "description": "Andel i procent som tecknats utan företrädesrätt. unit_pct_sub_without_rights får bara anges om det inte angetts en unit_sub_without_rights.",
+        "type": "number"
+    },
+    "unit_pct_sub_guarantor": {
+        "description": "Andel i procent som tecknats av garanter. unit_pct_sub_guarantor får bara anges om det inte angetts en unit_sub_guarantor.",
+        "type": "number"
+    }
+}
