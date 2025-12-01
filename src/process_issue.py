@@ -55,11 +55,8 @@ def main():
         print(f"No existing index found for issue {issue_id}. Building a new one...")
         
         # Load all source files to find the documents for this issue
-        base_dir = config.BASE_DIR
-        pdf_sources_path = os.path.join(base_dir, 'source_files', 'sources.json')
-        html_sources_path = os.path.join(base_dir, 'source_files', 'html-sources.json')
-        pdf_sources = load_json_file(pdf_sources_path)
-        html_sources = load_json_file(html_sources_path)
+        pdf_sources = load_json_file(config.PDF_SOURCES_FILE)
+        html_sources = load_json_file(config.HTML_SOURCES_FILE)
         
         pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources, html_sources)
         

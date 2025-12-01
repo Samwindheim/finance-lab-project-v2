@@ -24,6 +24,10 @@ OUTPUT_IMAGE_DIR = BASE_DIR / "output_images"
 OUTPUT_JSON_DIR = BASE_DIR / "output_json"
 PROMPTS_DIR = BASE_DIR / "prompts"
 
+# --- Source File Paths ---
+PDF_SOURCES_FILE = BASE_DIR / "source_files" / "pdf-sources.json"
+HTML_SOURCES_FILE = BASE_DIR / "source_files" / "html-sources.json"
+
 # --- Extraction Queries ---
 EXTRACTION_QUERIES = {
     "underwriters": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), guarantee commitments (garantiåtaganden or garanti)",

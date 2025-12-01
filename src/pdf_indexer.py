@@ -304,6 +304,17 @@ class PDFIndexer:
             print(f"\nError extracting text from page {page_number}: {e}")
             return ""
 
+    def get_page_count(self, pdf_path: str) -> int:
+        """Returns the number of pages in a PDF document."""
+        try:
+            doc = fitz.open(pdf_path)
+            count = len(doc)
+            doc.close()
+            return count
+        except Exception as e:
+            print(f"Warning: Could not get page count for {os.path.basename(pdf_path)}: {e}")
+            return 0
+
     def extract_page_as_image(self, pdf_path: str, page_number: int, output_dir: str = config.OUTPUT_IMAGE_DIR, zoom: int = 2) -> str:
         """
         Extracts a specific page from a PDF as a high-resolution image.

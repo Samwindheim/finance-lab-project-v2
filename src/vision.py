@@ -21,7 +21,7 @@ def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
-def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type: str):
+def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type: str = None, prompt_text: str = None):
     """
     Prepares images and text, then calls the core text-based function 
     to get structured JSON data from Gemini.
@@ -41,10 +41,10 @@ def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type
             "image_url": {"url": f"data:{mime_type};base64,{base64_image}"},
         })
     
-    return get_json_from_text(page_texts, extraction_type, additional_content=content)
+    return get_json_from_text(page_texts, extraction_type, additional_content=content, prompt_text=prompt_text)
 
 
-def get_json_from_text(text: str, extraction_type: str, additional_content: List[dict] = None):
+def get_json_from_text(text: str, extraction_type: str = None, additional_content: List[dict] = None, prompt_text: str = None):
     """Sends a text-focused request to Gemini to extract structured JSON data."""
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -61,12 +61,15 @@ def get_json_from_text(text: str, extraction_type: str, additional_content: List
     content = []
     
     # Add the prompt text first
-    prompt_file_path = os.path.join(PROMPTS_DIR, f"{extraction_type}.txt")
-    if not os.path.exists(prompt_file_path):
-        print(f"Error: Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
-        return None
-    with open(prompt_file_path, "r") as f:
-        prompt_text = f.read()
+    if not prompt_text:
+        # Fallback to old method if no direct prompt_text is provided
+        prompt_file_path = os.path.join(PROMPTS_DIR, f"{extraction_type}.txt")
+        if not os.path.exists(prompt_file_path):
+            print(f"Error: Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
+            return None
+        with open(prompt_file_path, "r") as f:
+            prompt_text = f.read()
+
     content.append({"type": "text", "text": prompt_text})
 
     # Add the primary text

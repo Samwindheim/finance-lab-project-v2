@@ -21,13 +21,19 @@ from html_processor import extract_text_from_html
 import config
 from utils import load_json_file, find_issue_id, clean_and_parse_json
 from typing import List, Dict
+from extraction_logic import extract_from_pdf, extract_from_html
 
 # --- Load sources data once for performance ---
-SOURCES_FILE = os.path.join(config.BASE_DIR, "tests", "sources.json")
-SOURCES_DATA = load_json_file(SOURCES_FILE)
+SOURCES_DATA = None
+HTML_SOURCES_DATA = None
 
-HTML_SOURCES_FILE = os.path.join(config.BASE_DIR, "tests", "html-sources.json")
-HTML_SOURCES_DATA = load_json_file(HTML_SOURCES_FILE)
+def _load_sources_data():
+    """Lazy loader for the sources data to avoid loading it if not needed."""
+    global SOURCES_DATA, HTML_SOURCES_DATA
+    if SOURCES_DATA is None:
+        SOURCES_DATA = load_json_file(config.PDF_SOURCES_FILE)
+    if HTML_SOURCES_DATA is None:
+        HTML_SOURCES_DATA = load_json_file(config.HTML_SOURCES_FILE)
 
 def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
     """Generates a unique index path from a PDF filename."""
@@ -45,68 +51,11 @@ def load_indexer(pdf_path: str, index_dir: str) -> PDFIndexer | None:
         return None
     return indexer
 
-def select_consecutive_pages(results: List[Dict]) -> List[int]:
-    """
-    Selects a consecutive block of pages around the top search results from a PDF.
-    This logic is crucial for capturing tables that span multiple pages.
-    """
-    if not results:
-        return []
-
-    SIMILARITY_DISTANCE_THRESHOLD = 1.05 # 5% threshold
-
-    # Start with the top result and include the second result if its score is close.
-    top_result = results[0]
-    pages_to_extract = [top_result]
-    
-    # Check if second result is close enough to include
-    if len(results) > 1:
-        second_result = results[1]
-        # If the second result's distance is within the threshold, include its page.
-        if second_result['distance'] <= top_result['distance'] * SIMILARITY_DISTANCE_THRESHOLD:
-            if second_result['page_number'] != top_result['page_number']:
-                pages_to_extract.append(second_result)
-
-    results_by_page = {res['page_number']: res for res in results}
-    
-    # --- Expand page selection around the top result ---
-    # Look forward to find consecutive pages.
-    current_page = top_result['page_number'] + 1
-    # Always include the page immediately following the top result for context.
-    if current_page in results_by_page:
-        pages_to_extract.append(results_by_page[current_page])
-    else:
-        pages_to_extract.append({'page_number': current_page}) # Synthetic page
-    
-    current_page += 1
-    while current_page in results_by_page:
-        pages_to_extract.append(results_by_page[current_page])
-        current_page += 1
-
-    # Look backward to find consecutive pages that are also in the search results.
-    current_page = top_result['page_number'] - 1
-    while current_page > 0 and current_page in results_by_page:
-        pages_to_extract.append(results_by_page[current_page])
-        current_page -= 1
-
-    # Remove duplicates by page number, keeping the first occurrence
-    unique_pages = []
-    seen_page_numbers = set()
-    for page in pages_to_extract:
-        if page['page_number'] not in seen_page_numbers:
-            unique_pages.append(page)
-            seen_page_numbers.add(page['page_number'])
-    
-    # Sort the collected pages by page number to ensure correct order
-    unique_pages.sort(key=lambda p: p['page_number'])
-
-    return [p['page_number'] for p in unique_pages]
-
-
 def process_and_save_json(parsed_json: dict, source_path: str, extraction_type: str, source_pages: list):
     """Post-processes and saves the extracted JSON data to a file."""
     # --- Create the final output structure ---
     source_filename_for_lookup = os.path.basename(source_path)
+    _load_sources_data() # Ensure source data is loaded
     issue_id = find_issue_id(source_path, SOURCES_DATA, HTML_SOURCES_DATA)
 
     if not issue_id:
@@ -174,99 +123,48 @@ def extract_command(args):
     """Extract structured data from a PDF based on the extraction type."""
     extraction_type = args.extraction_type
     pdf_path = args.pdf_path
-
-    # get the query for the extraction type, defined in config.py
-    query = config.EXTRACTION_QUERIES.get(extraction_type)
-
-    if not query:
+    
+    # The new unified command uses a different definitions file now.
+    # This remains for backward compatibility or direct calls.
+    if extraction_type in config.EXTRACTION_QUERIES:
+        query = config.EXTRACTION_QUERIES[extraction_type]
+        prompt = None # In old system, prompt was derived from extraction_type
+    else:
         print(f"\nError: Invalid extraction type '{extraction_type}'.")
         print(f"Available types: {', '.join(config.EXTRACTION_QUERIES.keys())}")
         return
 
-    print(f"\n{'='*60}")
-    print(f"Extracting {extraction_type.title()}")
-    print(f"{'='*60}")
-
-    indexer = load_indexer(pdf_path, args.index_dir)
-    if not indexer:
-        return
-
-    # 1. query the index for top 5 relevant pages
-    results = indexer.query(query, top_k=5)
-
-    if results:
-        page_numbers = select_consecutive_pages(results)
-        print(f"\nFound {len(page_numbers)} relevant pages to analyze: {page_numbers}")
-
-        # --- Fallback logic for PDF path ---
-        # Use the path from metadata if available, otherwise use the path from CLI args
-        # We check the top result, assuming all consecutive pages are from the same PDF
-        pdf_path_for_extraction = results[0].get('pdf_path') or args.pdf_path
-        
-        if not pdf_path_for_extraction:
-            print("\nError: Could not determine PDF path for extraction. Please re-index the document or provide a valid path.")
-            return
-
-        # 2. extract the images and text for all identified pages
-        saved_image_paths = []
-        page_texts = []
-        for page_num in page_numbers:
-            print(f"Extracting image and text for page {page_num}...")
-            
-            # Extract image
-            saved_path = indexer.extract_page_as_image(
-                pdf_path=pdf_path_for_extraction,
-                page_number=page_num
-            )
-            if saved_path:
-                saved_image_paths.append(saved_path)
-
-            # Extract text
-            text = indexer.get_text_for_page(
-                pdf_path=pdf_path_for_extraction,
-                page_number=page_num
-            )
-            if text:
-                page_texts.append(text)
-        
-        if not saved_image_paths:
-            print("\nError: Could not extract any images for the identified pages.")
-            return
-
-        combined_text = "\n\n--- Page Separator ---\n\n".join(page_texts)
-        # 3. get the json data from the images & text using the vision model
-        json_data = get_json_from_image(saved_image_paths, combined_text, extraction_type)
-        if json_data:
-            parsed_json = clean_and_parse_json(json_data)
-            if parsed_json:
-                process_and_save_json(parsed_json, pdf_path_for_extraction, extraction_type, page_numbers)
-    else:
-        print(f"\nCould not find any relevant pages for '{extraction_type}'.")
+    # Define a final output path for the standalone extraction
+    source_filename = os.path.basename(pdf_path)
+    json_filename = f"{os.path.splitext(source_filename)[0]}_{extraction_type}.json"
+    output_path = os.path.join(config.OUTPUT_JSON_DIR, json_filename)
+    
+    # Call the refactored logic
+    # The prompt is now passed directly. We set it to None here to maintain
+    # the old behavior where the vision module derives it from extraction_type.
+    extract_from_pdf(pdf_path, query, None, extraction_type, output_path)
 
 
 def extract_html_command(args):
     """Extract structured data from an HTML file."""
     extraction_type = args.extraction_type
     html_path = args.html_path
-
-    print(f"\n{'='*60}")
-    print(f"Extracting {extraction_type.title()} from HTML")
-    print(f"{'='*60}")
-
-    # 1. Extract text from the HTML file
-    print(f"Extracting text from {os.path.basename(html_path)}...")
-    text = extract_text_from_html(html_path)
-
-    if not text:
-        print("\nError: Could not extract any text from the HTML file.")
+    
+    # This remains for backward compatibility or direct calls.
+    if extraction_type not in config.EXTRACTION_QUERIES:
+        print(f"\nError: Invalid extraction type '{extraction_type}'.")
         return
 
-    # 2. Get the json data from the text using the vision model (text-only)
-    json_data = get_json_from_text(text, extraction_type)
-    if json_data:
-        parsed_json = clean_and_parse_json(json_data)
-        if parsed_json:
-            process_and_save_json(parsed_json, html_path, extraction_type, [1])
+    # Define a final output path for the standalone extraction
+    source_filename = os.path.basename(html_path)
+    json_filename = f"{os.path.splitext(source_filename)[0]}_{extraction_type}.json"
+    output_path = os.path.join(config.OUTPUT_JSON_DIR, json_filename)
+    
+    # In the old system, the prompt was derived from the type. For the refactored
+    # function, we'd ideally pass the full prompt text. This part may need
+    # adjustment if this command is intended to be used with the new definitions.
+    # For now, we pass None and assume the vision module can handle it.
+    extract_from_html(html_path, None, extraction_type, output_path)
 
 
 def unified_extract_command(args):
