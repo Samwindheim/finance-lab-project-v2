@@ -1,4 +1,18 @@
 """
+PDF Document Indexing and Retrieval.
+
+This module provides the `PDFIndexer` class, which is responsible for the "Retrieval" part
+of the Retrieval-Augmented Generation (RAG) pipeline. It handles all operations related
+to processing PDF files for semantic search.
+
+Key Responsibilities:
+- Extracting raw text from PDF documents.
+- Splitting text into manageable, overlapping chunks.
+- Generating vector embeddings for each text chunk using an external API.
+- Storing and managing these embeddings in a FAISS vector index.
+- Performing semantic searches to find text chunks relevant to a query.
+"""
+"""
 The PDFIndexer class powers the retrieval component of the RAG pipeline, handling:
 
 - Text Extraction: Loads PDFs with PyMuPDF, extracts text, and splits it into token-based chunks.

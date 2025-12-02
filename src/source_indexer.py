@@ -1,5 +1,19 @@
 """
-The SourceIndexer class is designed for an "event-centric" approach to data extraction.
+[DEPRECATED] Unified Indexer for Multi-Source Issues.
+
+This module provides the `SourceIndexer` class, which was designed to support the
+deprecated `process_issue.py` pipeline. Its purpose was to find all documents
+(PDFs, HTML, etc.) related to a single issue and combine all their text into a
+single, unified FAISS vector index.
+
+This approach has been superseded by the method in `run_extraction.py`, where each
+document is indexed and processed individually before the final results are merged.
+The `PDFIndexer` class is now used for the per-document indexing.
+
+This file is kept for archival purposes only.
+"""
+"""
+The SourceIndexer class is designed for an "event-centric" approach to data extraction. Not using for now.
 
 It handles:
 - Finding all documents (PDFs and HTML) associated with a single issue_id.

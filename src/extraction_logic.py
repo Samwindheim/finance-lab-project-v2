@@ -1,3 +1,13 @@
+"""
+Core Data Extraction and Processing Logic.
+
+This module contains the primary functions for performing the Retrieval-Augmented Generation (RAG)
+extraction from various document types. It encapsulates the logic for querying the vector index,
+selecting relevant pages, calling the vision/language models, and post-processing the results.
+
+These functions are designed to be reusable and are orchestrated by higher-level scripts
+like `run_extraction.py`.
+"""
 import os
 import json
 from typing import List, Dict
@@ -108,7 +118,7 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     return output_path
 
 
-def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str):
+def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive"):
     """
     Reusable logic to perform a full RAG extraction on a single PDF document.
     """
@@ -124,15 +134,21 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
         indexer.index_pdf(pdf_path)
 
     # 1. Query the index
-    print("  - Querying for relevant pages...")
+    print(f"  - Querying for relevant pages (strategy: {page_selection_strategy})...")
     results = indexer.query(search_query, top_k=5)
 
     if not results:
         print("  - Could not find any relevant pages.")
         return None
 
-    # 2. Select pages
-    page_numbers = select_consecutive_pages(results)
+    # 2. Select pages based on the specified strategy
+    page_numbers = []
+    if page_selection_strategy == "top_hit":
+        # For simple fields, just take the page from the single best result.
+        page_numbers = [results[0]['page_number']]
+    else: # Default to "consecutive"
+        page_numbers = select_consecutive_pages(results)
+        
     print(f"  - Selected {len(page_numbers)} pages to analyze: {page_numbers}")
 
     # 3. Extract images and text for context
@@ -185,9 +201,10 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     return None
 
 
-def merge_and_deduplicate_investors(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
+def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
     """
-    Merges investor data from multiple temporary files, deduplicates, and saves to a final output file.
+    Merges data from multiple temporary files, deduplicates based on the extraction
+    field type, and saves to a final output file.
     """
     if not temp_files:
         print("  - No temporary files to merge.")
@@ -200,30 +217,56 @@ def merge_and_deduplicate_investors(issue_id: str, extraction_field: str, temp_f
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                items = data.get(extraction_field, [])
-                if items:
+                items = data.get(extraction_field)
+                
+                # Skip if the key exists but has no value (null, empty list)
+                if not items:
+                    continue
+
+                # The 'investors' field is a list that should be extended.
+                # Other fields (like 'record_date') are single values to be appended.
+                if isinstance(items, list):
                     combined_data.extend(items)
-                    source_docs_processed.append(data.get("source_document", os.path.basename(file_path)))
+                else:
+                    combined_data.append(items)
+                
+                source_docs_processed.append(data.get("source_document", os.path.basename(file_path)))
+
         except (json.JSONDecodeError, FileNotFoundError):
             print(f"  - Warning: Could not read or parse temp file {os.path.basename(file_path)}. Skipping.")
             continue
+
+    # --- Finalize based on the data type ---
+    final_field_value = None
     
-    # Deduplicate based on a combination of 'name' and 'level'
-    unique_items = []
-    seen_entries = set()
-    for item in combined_data:
-        name = item.get("name")
-        level = item.get("level")
-        unique_key = (name, level)
-        
-        if name and unique_key not in seen_entries:
-            unique_items.append(item)
-            seen_entries.add(unique_key)
+    if extraction_field == "investors":
+        # Handle deduplication for a list of investor dicts
+        unique_items = []
+        seen_entries = set()
+        for item in combined_data:
+            # Ensure item is a dictionary before using .get()
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name")
+            level = item.get("level")
+            unique_key = (name, level)
             
+            if name and unique_key not in seen_entries:
+                unique_items.append(item)
+                seen_entries.add(unique_key)
+        final_field_value = unique_items
+    else:
+        # For simple fields (like record_date), find unique values and take the first one.
+        unique_values = sorted(list(set(combined_data)))
+        if len(unique_values) > 1:
+            print(f"  - Warning: Multiple different values found for '{extraction_field}': {unique_values}. Using the first one.")
+        if unique_values:
+            final_field_value = unique_values[0]
+
     # Final combined output structure
     final_output = {
         "issue_id": issue_id,
-        extraction_field: unique_items,
+        extraction_field: final_field_value,
         "contributing_sources": sorted(list(set(source_docs_processed)))
     }
 
@@ -231,5 +274,6 @@ def merge_and_deduplicate_investors(issue_id: str, extraction_field: str, temp_f
     with open(final_output_path, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2, ensure_ascii=False)
         
-    print(f"\n  - Successfully merged {len(unique_items)} unique entries from {len(source_docs_processed)} source(s).")
+    item_count = len(final_field_value) if isinstance(final_field_value, list) else 1 if final_field_value else 0
+    print(f"\n  - Successfully merged {item_count} unique item(s) from {len(source_docs_processed)} source(s).")
     print(f"  - Combined data saved to: {final_output_path}")

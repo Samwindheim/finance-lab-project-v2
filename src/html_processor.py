@@ -1,7 +1,12 @@
 """
-HTML Processing Module.
+HTML Processing and Text Extraction Utility.
 
-This module provides functions to extract clean, readable text content from HTML files. It uses BeautifulSoup to parse the HTML and heuristics to remove common non-content elements like scripts, styles, and navigation bars. Tables are preserved in markdown format.
+This module is responsible for fetching and parsing HTML content from local files or URLs.
+It uses the BeautifulSoup library to extract clean, readable text from the HTML structure,
+optionally preserving table formats.
+
+The main function, `extract_text_from_html`, is used by the extraction pipeline to prepare
+HTML content for analysis by the language model.
 """
 
 from bs4 import BeautifulSoup

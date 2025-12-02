@@ -1,6 +1,15 @@
-#!/usr/bin/env python3
 """
-A script to process all documents associated with a given issue_id using a unified index.
+[DEPRECATED] Alternative Multi-Source Extraction Pipeline.
+
+This script represents an earlier approach to processing an entire issue from multiple
+source documents. It works by creating a single, unified FAISS index for all documents
+related to an issue and then performing one large semantic search across all of them.
+
+This approach has been superseded by the pipeline in `run_extraction.py`, which processes
+each document individually and then merges the results. The new method was found to be
+more reliable and is the standard process going forward.
+
+This file is kept for archival purposes only.
 """
 
 import json

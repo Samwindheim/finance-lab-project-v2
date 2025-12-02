@@ -1,7 +1,17 @@
 """
-Vision Model Interaction for Structured Data Extraction.
+Interface for Vision and Language Model Communication.
 
-This module is responsible for interfacing with the Google Gemini vision model to extract structured data (JSON) from PDF page images. It takes one or more images, combines them with a textual prompt and page text, and sends them to the Gemini API. The primary function, get_json_from_image, orchestrates this process, handling API key management, request payload construction, and returning the raw JSON response from the model.
+This module is the primary interface for communicating with the generative AI model (e.g., Gemini).
+It abstracts the details of the API calls for both multi-modal (image + text) and text-only
+prompts.
+
+Key Functions:
+- `get_json_from_image`: Sends images and accompanying text to the model and requests
+  structured JSON output.
+- `get_json_from_text`: Sends only text to the model for extraction tasks.
+
+This module handles the construction of the API payload, communication with the model,
+and returns the raw JSON string for further processing.
 """
 import os
 import base64

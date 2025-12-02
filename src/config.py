@@ -1,3 +1,13 @@
+"""
+Central Configuration File.
+
+This file contains all the core settings that control the behavior of the data extraction
+pipeline. It defines embedding models, API endpoints, file paths, and other constants
+that are used throughout the application.
+
+Separating configuration into its own file allows for easy updates and management of
+settings without modifying the application's core logic.
+"""
 # --- Configuration file for the PDF RAG pipeline ---
 
 # PDF Indexer settings
