@@ -40,7 +40,7 @@ HTML_SOURCES_FILE = BASE_DIR / "source_files" / "html-sources.json"
 
 # --- Extraction Queries ---
 EXTRACTION_QUERIES = {
-    "underwriters": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), guarantee commitments (garantiåtaganden or garanti)",
+    "investors": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), guarantee commitments (garantiåtaganden or garanti)",
     "temp": "future query text"
 }
 

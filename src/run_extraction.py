@@ -48,6 +48,16 @@ def main():
 
     print(f"--- Running extraction for issue '{issue_id}' | field '{extraction_field}' ---")
 
+    # --- Step 1.1b: Load the Prompt Text from its File ---
+    prompt_filename = f"{extraction_field}.txt"
+    prompt_path = os.path.join(config.PROMPTS_DIR, prompt_filename)
+    try:
+        with open(prompt_path, 'r', encoding='utf-8') as f:
+            extraction_prompt = f.read()
+    except FileNotFoundError:
+        print(f"Error: Prompt file not found. Please create a file named '{prompt_filename}' in the '{config.PROMPTS_DIR}' directory.")
+        sys.exit(1)
+
     # --- Step 1.1: Load and Parse Definitions ---
     definitions = load_extraction_definitions()
     field_definition = definitions.get(extraction_field)
@@ -56,14 +66,14 @@ def main():
         print(f"Error: No definition found for extraction field '{extraction_field}' in extraction_definitions.json")
         sys.exit(1)
 
+    # --- Original Step 1.1 continues ---
     source_types = field_definition.get("source_types", [])
     semantic_search_query = field_definition.get("semantic_search_query")
-    extraction_prompt = field_definition.get("extraction_prompt")
     # Default to 'consecutive' if the strategy is not defined
     page_selection_strategy = field_definition.get("page_selection_strategy", "consecutive")
     
-    if not all([source_types, extraction_prompt]):
-         print(f"Error: Definition for '{extraction_field}' is missing one or more required keys (source_types, extraction_prompt).")
+    if not all([source_types, semantic_search_query]):
+         print(f"Error: Definition for '{extraction_field}' is missing one or more required keys (source_types, semantic_search_query).")
          sys.exit(1)
 
     print(f"\n[1] Loaded definition for '{extraction_field}'. Target source types: {source_types}")

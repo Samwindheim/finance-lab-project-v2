@@ -171,7 +171,7 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
 
     # 4. Call LLM and save result
     combined_text = "\\n\\n--- Page Separator ---\\n\\n".join(page_texts)
-    json_data = get_json_from_image(saved_image_paths, combined_text, prompt_text=extraction_prompt)
+    json_data = get_json_from_image(saved_image_paths, combined_text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
         parsed_json = clean_and_parse_json(json_data)
         if parsed_json:
@@ -192,7 +192,7 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
         return None
 
     # 2. Call LLM and save result
-    json_data = get_json_from_text(text, prompt_text=extraction_prompt)
+    json_data = get_json_from_text(text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
         parsed_json = clean_and_parse_json(json_data)
         if parsed_json:
@@ -254,10 +254,27 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             if name and unique_key not in seen_entries:
                 unique_items.append(item)
                 seen_entries.add(unique_key)
-        final_field_value = unique_items
+        
+        # --- Apply final formatting to numbers ---
+        formatted_items = []
+        for investor in unique_items:
+            # Format amount_in_cash to string with 3 decimal places
+            amount = investor.get("amount_in_cash")
+            if isinstance(amount, (int, float)):
+                investor["amount_in_cash"] = f"{amount:.3f}"
+            
+            # Format amount_in_percentage to string
+            percent = investor.get("amount_in_percentage")
+            if isinstance(percent, (int, float)):
+                investor["amount_in_percentage"] = str(percent)
+            
+            formatted_items.append(investor)
+
+        final_field_value = formatted_items
     else:
         # For simple fields (like record_date), find unique values and take the first one.
-        unique_values = sorted(list(set(combined_data)))
+        # Using a set handles deduplication automatically and ignores None.
+        unique_values = sorted(list(set(item for item in combined_data if item is not None)))
         if len(unique_values) > 1:
             print(f"  - Warning: Multiple different values found for '{extraction_field}': {unique_values}. Using the first one.")
         if unique_values:
