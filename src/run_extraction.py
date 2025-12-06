@@ -29,7 +29,6 @@ from extraction_logic import extract_from_pdf, extract_from_html, merge_and_fina
 
 def load_extraction_definitions():
     """Loads the extraction definitions from the JSON file."""
-    # Correctly locate the definitions file relative to this script's location
     definitions_path = os.path.join(os.path.dirname(__file__), 'extraction_definitions.json')
     definitions = load_json_file(definitions_path)
     if not definitions:
@@ -37,77 +36,46 @@ def load_extraction_definitions():
         sys.exit(1)
     return definitions
 
-def main():
-    parser = argparse.ArgumentParser(description="Run a specific extraction for a given issue ID based on definitions.")
-    parser.add_argument('--issue-id', required=True, help='The issue ID to process.')
-    parser.add_argument('--extraction-field', required=True, help='The field to extract (e.g., investors, record_date).')
-    args = parser.parse_args()
+def run_single_extraction(issue_id: str, extraction_field: str, definitions: dict, pdf_matches: list, html_matches: list):
+    """Runs the full extraction and merge pipeline for a single field."""
+    field_definition = definitions.get(extraction_field)
+    if not field_definition:
+        print(f"Warning: No definition found for '{extraction_field}'. Skipping.")
+        return
 
-    issue_id = args.issue_id
-    extraction_field = args.extraction_field
-
-    print(f"--- Running extraction for issue '{issue_id}' | field '{extraction_field}' ---")
-
-    # --- Step 1.1b: Load the Prompt Text from its File ---
+    # --- Step 1: Load the Prompt Text from its File ---
     prompt_filename = f"{extraction_field}.txt"
     prompt_path = os.path.join(config.PROMPTS_DIR, prompt_filename)
     try:
         with open(prompt_path, 'r', encoding='utf-8') as f:
             extraction_prompt = f.read()
     except FileNotFoundError:
-        print(f"Error: Prompt file not found. Please create a file named '{prompt_filename}' in the '{config.PROMPTS_DIR}' directory.")
-        sys.exit(1)
+        print(f"Error: Prompt file not found for '{extraction_field}'. Please create '{prompt_filename}' in the prompts directory.")
+        return
 
-    # --- Step 1.1: Load and Parse Definitions ---
-    definitions = load_extraction_definitions()
-    field_definition = definitions.get(extraction_field)
-
-    if not field_definition:
-        print(f"Error: No definition found for extraction field '{extraction_field}' in extraction_definitions.json")
-        sys.exit(1)
-
-    # --- Original Step 1.1 continues ---
+    # --- Step 2: Get Definition Details ---
     source_types = field_definition.get("source_types", [])
     semantic_search_query = field_definition.get("semantic_search_query")
-    # Default to 'consecutive' if the strategy is not defined
     page_selection_strategy = field_definition.get("page_selection_strategy", "consecutive")
     
     if not all([source_types, semantic_search_query]):
-         print(f"Error: Definition for '{extraction_field}' is missing one or more required keys (source_types, semantic_search_query).")
-         sys.exit(1)
+         print(f"Error: Definition for '{extraction_field}' is missing required keys (source_types, semantic_search_query). Skipping.")
+         return
 
-    print(f"\n[1] Loaded definition for '{extraction_field}'. Target source types: {source_types}")
+    print(f"  - Loaded definition. Target source types: {source_types}")
 
-    # --- Step 1.2: Identify Source Files for the Issue ---
-    pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
-    html_sources_data = load_json_file(config.HTML_SOURCES_FILE)
-
-    pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources_data, html_sources_data)
-    
-    if not pdf_matches and not html_matches:
-        print(f"Error: No source documents found for issue_id '{issue_id}'.")
-        sys.exit(1)
-        
-    print(f"[2] Found {len(pdf_matches)} PDF(s) and {len(html_matches)} HTML document(s) for the issue.")
-
-    # --- Phase 2: Source-Specific Extraction ---
-    print("\n[3] Starting source-specific extraction process...")
+    # --- Step 3: Source-Specific Extraction ---
     temp_output_files = []
-    
-    # Create a temporary directory for individual extraction outputs
     temp_dir = os.path.join(config.OUTPUT_JSON_DIR, 'temp', f"{issue_id}_{extraction_field}")
     os.makedirs(temp_dir, exist_ok=True)
 
     for doc_type in source_types:
-        print(f"\n- Processing source type: '{doc_type}'")
         if doc_type == "PDF":
             for pdf_info in pdf_matches:
                 pdf_filename = pdf_info.get("source_url")
-                if not pdf_filename:
-                    continue
+                if not pdf_filename: continue
                 pdf_path = os.path.join(config.PDF_DIR, pdf_filename)
                 
-                # Define a unique temporary output path for this document's result
                 temp_output_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_field}.json"
                 temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
@@ -122,15 +90,11 @@ def main():
                 if result_path:
                     temp_output_files.append(result_path)
         else:
-            # Assumes other types are source_type from html-sources.json
             for html_info in html_matches:
                 if html_info.get("source_type") == doc_type:
                     html_url = html_info.get("source_url")
-                    if not html_url:
-                        continue
+                    if not html_url: continue
                     
-                    # Define a unique temporary output path for this document's result
-                    # Create a safe filename from the URL
                     safe_filename = "".join(c for c in os.path.basename(html_url) if c.isalnum() or c in ('-', '_')).rstrip()
                     temp_output_filename = f"{safe_filename}_{extraction_field}.json"
                     temp_output_path = os.path.join(temp_dir, temp_output_filename)
@@ -144,11 +108,11 @@ def main():
                     if result_path:
                         temp_output_files.append(result_path)
 
-    # --- Phase 3: Merging and Finalization ---
-    print(f"\n[4] Merging {len(temp_output_files)} extraction output(s)...")
+    # --- Step 4: Merging and Finalization ---
+    print(f"\n  - Merging {len(temp_output_files)} extraction output(s)...")
     
     if temp_output_files:
-        final_filename = f"{issue_id}_{extraction_field}_combined.json"
+        final_filename = f"{issue_id}_extraction.json"
         final_output_path = os.path.join(config.OUTPUT_JSON_DIR, final_filename)
         
         merge_and_finalize_outputs(
@@ -158,14 +122,55 @@ def main():
             final_output_path=final_output_path
         )
         
-        # Clean up the temporary directory
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
-            print(f"  - Cleaned up temporary directory: {temp_dir}")
     else:
         print("  - No results to merge.")
 
-    print(f"\n--- Extraction for issue '{issue_id}' complete. ---")
+def main():
+    parser = argparse.ArgumentParser(description="Run extractions for a given issue ID.")
+    parser.add_argument('--issue-id', required=True, help='The issue ID to process.')
+    parser.add_argument('--extraction-field', help='A specific field to extract. If omitted, all fields will be extracted.')
+    args = parser.parse_args()
+
+    issue_id = args.issue_id
+    extraction_field = args.extraction_field
+
+    definitions = load_extraction_definitions()
+
+    # --- Step 1: Identify all fields to be processed ---
+    fields_to_process = []
+    if extraction_field:
+        if extraction_field in definitions:
+            fields_to_process.append(extraction_field)
+            print(f"--- Running single extraction for issue '{issue_id}' | field '{extraction_field}' ---")
+        else:
+            print(f"Error: Extraction field '{extraction_field}' not found in definitions.")
+            sys.exit(1)
+    else:
+        fields_to_process = list(definitions.keys())
+        print(f"--- Running all extractions for issue '{issue_id}' ---")
+        print(f"Found {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
+
+    # --- Step 2: Find all source documents for the issue (ONCE) ---
+    print("\n--- Identifying source documents ---")
+    pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
+    html_sources_data = load_json_file(config.HTML_SOURCES_FILE)
+    pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources_data, html_sources_data)
+
+    if not pdf_matches and not html_matches:
+        print(f"Error: No source documents found for issue_id '{issue_id}'. Aborting.")
+        sys.exit(1)
+    
+    print(f"Found {len(pdf_matches)} PDF(s) and {len(html_matches)} HTML document(s) for the issue.")
+
+    # --- Step 3: Loop through and run each extraction ---
+    for field in fields_to_process:
+        print(f"\n{'='*60}")
+        print(f"--- Processing field: '{field}' ---")
+        run_single_extraction(issue_id, field, definitions, pdf_matches, html_matches)
+
+    print(f"\n--- All processing for issue '{issue_id}' complete. ---")
 
 
 if __name__ == "__main__":

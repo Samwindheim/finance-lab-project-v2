@@ -280,17 +280,43 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         if unique_values:
             final_field_value = unique_values[0]
 
-    # Final combined output structure
+    # --- Load existing data and update it ---
+    temp_data = {}
+    if os.path.exists(final_output_path):
+        try:
+            with open(final_output_path, 'r', encoding='utf-8') as f:
+                temp_data = json.load(f)
+        except json.JSONDecodeError:
+            print(f"  - Warning: Could not parse existing output file at {final_output_path}. A new file will be created.")
+
+    # Update the temporary data object
+    temp_data["issue_id"] = issue_id
+    temp_data[extraction_field] = final_field_value
+    
+    # Combine and deduplicate contributing sources
+    existing_sources = temp_data.get("contributing_sources", [])
+    all_sources = sorted(list(set(existing_sources + source_docs_processed)))
+    temp_data["contributing_sources"] = all_sources
+
+    # --- Rebuild the dictionary to enforce key order ---
     final_output = {
-        "issue_id": issue_id,
-        extraction_field: final_field_value,
-        "contributing_sources": sorted(list(set(source_docs_processed)))
+        "issue_id": temp_data.get("issue_id"),
+        "contributing_sources": temp_data.get("contributing_sources", [])
     }
+
+    # Add the rest of the keys, sorted alphabetically for consistency
+    other_keys = sorted([k for k in temp_data.keys() if k not in ["issue_id", "contributing_sources"]])
+    for key in other_keys:
+        final_output[key] = temp_data[key]
 
     # Save the combined file
     with open(final_output_path, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2, ensure_ascii=False)
         
-    item_count = len(final_field_value) if isinstance(final_field_value, list) else 1 if final_field_value else 0
-    print(f"\n  - Successfully merged {item_count} unique item(s) from {len(source_docs_processed)} source(s).")
-    print(f"  - Combined data saved to: {final_output_path}")
+    item_count_str = f"'{extraction_field}'"
+    if extraction_field == "investors":
+        item_count = len(final_field_value) if isinstance(final_field_value, list) else 0
+        item_count_str = f"{item_count} unique item(s) for '{extraction_field}'"
+
+    print(f"\n  - Successfully processed {item_count_str}.")
+    print(f"  - Updated data saved to: {final_output_path}")
