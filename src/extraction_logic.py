@@ -13,7 +13,7 @@ import json
 from typing import List, Dict
 
 from pdf_indexer import PDFIndexer
-from vision import get_json_from_image, get_json_from_text
+from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
 from utils import find_issue_id, clean_and_parse_json
@@ -34,10 +34,14 @@ def _load_sources_data():
         HTML_SOURCES_DATA = load_json_file(config.HTML_SOURCES_FILE)
 
 
-def select_consecutive_pages(results: List[Dict]) -> List[int]:
+def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[int]:
     """
     Selects a consecutive block of pages around the top search results from a PDF.
     This logic is crucial for capturing tables that span multiple pages.
+    
+    Args:
+        results: List of search results with page numbers and distances
+        max_pages: Maximum number of pages to select (default: 4)
     """
     if not results:
         return []
@@ -49,7 +53,7 @@ def select_consecutive_pages(results: List[Dict]) -> List[int]:
     pages_to_extract = [top_result]
     
     # Check if second result is close enough to include
-    if len(results) > 1:
+    if len(results) > 1 and len(pages_to_extract) < max_pages:
         second_result = results[1]
         # If the second result's distance is within the threshold, include its page.
         if second_result['distance'] <= top_result['distance'] * SIMILARITY_DISTANCE_THRESHOLD:
@@ -62,20 +66,21 @@ def select_consecutive_pages(results: List[Dict]) -> List[int]:
     # Look forward to find consecutive pages.
     current_page = top_result['page_number'] + 1
     # Always include the page immediately following the top result for context.
-    if current_page in results_by_page:
-        pages_to_extract.append(results_by_page[current_page])
-    else:
-        # Synthetic page to ensure the next page is included even if not in top results
-        pages_to_extract.append({'page_number': current_page, 'distance': float('inf'), 'text': ''})
+    if len(pages_to_extract) < max_pages:
+        if current_page in results_by_page:
+            pages_to_extract.append(results_by_page[current_page])
+        else:
+            # Synthetic page to ensure the next page is included even if not in top results
+            pages_to_extract.append({'page_number': current_page, 'distance': float('inf'), 'text': ''})
     
     current_page += 1
-    while current_page in results_by_page:
+    while current_page in results_by_page and len(pages_to_extract) < max_pages:
         pages_to_extract.append(results_by_page[current_page])
         current_page += 1
 
     # Look backward to find consecutive pages that are also in the search results.
     current_page = top_result['page_number'] - 1
-    while current_page > 0 and current_page in results_by_page:
+    while current_page > 0 and current_page in results_by_page and len(pages_to_extract) < max_pages:
         pages_to_extract.append(results_by_page[current_page])
         current_page -= 1
 

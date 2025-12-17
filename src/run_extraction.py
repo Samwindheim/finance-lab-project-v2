@@ -65,13 +65,23 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
     print(f"  - Loaded definition. Target source types: {source_types}")
 
     # --- Step 3: Source-Specific Extraction ---
+    # Process source types in order, stopping as soon as data is found
     temp_output_files = []
     temp_dir = os.path.join(config.OUTPUT_JSON_DIR, 'temp', f"{issue_id}_{extraction_field}")
     os.makedirs(temp_dir, exist_ok=True)
+    
+    data_found = False  # Track if we've successfully extracted data
 
     for doc_type in source_types:
-        if doc_type == "PDF":
-            for pdf_info in pdf_matches:
+        if data_found:
+            print(f"  - Data already extracted. Skipping remaining source types.")
+            break
+        
+        print(f"  - Looking for '{doc_type}' documents...")
+            
+        # Check PDFs with this source_type
+        for pdf_info in pdf_matches:
+            if pdf_info.get("source_type") == doc_type:
                 pdf_filename = pdf_info.get("source_url")
                 if not pdf_filename: continue
                 pdf_path = os.path.join(config.PDF_DIR, pdf_filename)
@@ -89,24 +99,32 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                 )
                 if result_path:
                     temp_output_files.append(result_path)
-        else:
-            for html_info in html_matches:
-                if html_info.get("source_type") == doc_type:
-                    html_url = html_info.get("source_url")
-                    if not html_url: continue
-                    
-                    safe_filename = "".join(c for c in os.path.basename(html_url) if c.isalnum() or c in ('-', '_')).rstrip()
-                    temp_output_filename = f"{safe_filename}_{extraction_field}.json"
-                    temp_output_path = os.path.join(temp_dir, temp_output_filename)
+                    data_found = True
+                    break  # Stop processing more documents once we have data
+        
+        if data_found:
+            break  # Exit outer loop if we found data in PDFs
+        
+        # Check HTMLs with this source_type
+        for html_info in html_matches:
+            if html_info.get("source_type") == doc_type:
+                html_url = html_info.get("source_url")
+                if not html_url: continue
+                
+                safe_filename = "".join(c for c in os.path.basename(html_url) if c.isalnum() or c in ('-', '_')).rstrip()
+                temp_output_filename = f"{safe_filename}_{extraction_field}.json"
+                temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
-                    result_path = extract_from_html(
-                        html_path=html_url,
-                        extraction_prompt=extraction_prompt,
-                        extraction_field=extraction_field,
-                        output_path=temp_output_path
-                    )
-                    if result_path:
-                        temp_output_files.append(result_path)
+                result_path = extract_from_html(
+                    html_path=html_url,
+                    extraction_prompt=extraction_prompt,
+                    extraction_field=extraction_field,
+                    output_path=temp_output_path
+                )
+                if result_path:
+                    temp_output_files.append(result_path)
+                    data_found = True
+                    break  # Stop processing more documents once we have data
 
     # --- Step 4: Merging and Finalization ---
     print(f"\n  - Merging {len(temp_output_files)} extraction output(s)...")

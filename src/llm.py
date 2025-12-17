@@ -1,7 +1,7 @@
 """
-Interface for Vision and Language Model Communication.
+Large Language Model (LLM) Interface.
 
-This module is the primary interface for communicating with the generative AI model (e.g., Gemini).
+This module is the primary interface for communicating with the generative AI model (Gemini).
 It abstracts the details of the API calls for both multi-modal (image + text) and text-only
 prompts.
 
@@ -116,3 +116,4 @@ if __name__ == "__main__":
         print("\n--- Gemini Response ---")
         print(json_data)
         print("---------------------\n")
+
