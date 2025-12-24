@@ -46,5 +46,11 @@
         "source_types": ["Terms", "Publication"],
         "semantic_search_query": "Sista datum för handel med teckningsrätter",
         "page_selection_strategy": "top_hit"
+    },
+    "important_dates": {
+        "description": "Extracts all important dates for the rights issue (record date, subscription period, rights trading period, etc.) in a single pass.",
+        "source_types": ["Prospectus", "Memorandum", "InformationDocument", "Terms", "Publication"],
+        "semantic_search_query": "Tidsplan eller tidplan med viktiga datum för företrädesemissionen (avstämningsdag, teckningsperiod, handel med teckningsrätter)",
+        "page_selection_strategy": "consecutive"
     }
 }

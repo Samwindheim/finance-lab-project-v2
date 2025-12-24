@@ -47,17 +47,26 @@ def clean_and_parse_json(json_string: str) -> dict | None:
 
 def find_issue_id(source_path: str, pdf_sources: list, html_sources: list) -> str | None:
     """Finds the issue_id for a given source path from all available source files."""
-    # Check if it's a URL or HTML file first
-    if source_path.startswith('http') or source_path.lower().endswith(('.html', '.htm')):
-        for source in html_sources:
-            if source.get("source_url") == source_path:
-                # Prioritize issue_id, but fall back to other IDs if needed
-                return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+    # Check for exact matches first (highest priority)
     
-    # If not found or it's a PDF, check by filename in the PDF sources
+    # HTML/URL check
+    for source in html_sources:
+        if source.get("source_url") == source_path:
+            return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+    
+    # PDF check
     pdf_filename = os.path.basename(source_path)
     for source in pdf_sources:
         if source.get("source_url") == pdf_filename:
+            return source.get("issue_id")
+
+    # If no exact match, try partial matches
+    for source in html_sources:
+        if source_path in (source.get("source_url") or ""):
+            return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+            
+    for source in pdf_sources:
+        if source_path in (source.get("source_url") or ""):
             return source.get("issue_id")
             
     return None

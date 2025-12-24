@@ -1,18 +1,18 @@
 """
 Main Orchestrator for the Definition-Driven Extraction Pipeline.
 
-This script serves as the primary entry point for the main, automated data extraction
-process. It is designed to be called with an `issue_id` and a specific `extraction_field`
-(e.g., 'investors').
+This script serves as the primary entry point for the data extraction process. 
+It can be run on an entire issue or a specific document link.
 
-Its main responsibilities are:
-1.  Loading the relevant extraction definition from `extraction_definitions.json`.
-2.  Finding all PDF and HTML source documents associated with the given `issue_id`.
-3.  Iterating through each source and calling the appropriate core extraction function
-    from `extraction_logic.py`.
-4.  Saving the output of each individual extraction to a temporary file.
-5.  Orchestrating the final merging and de-duplication of all temporary results into
-    a single, clean, combined JSON output file.
+Usage Examples:
+1. Run on a specific document:
+   python src/run_extraction.py <document_link> --extraction-field investors
+
+2. Run on all documents for an issue:
+   python src/run_extraction.py --issue-id <issue_id>
+
+3. Run a specific field for an entire issue:
+   python src/run_extraction.py --issue-id <issue_id> --extraction-field investors
 """
 import argparse
 import json
@@ -23,7 +23,7 @@ import shutil
 # Add project root to the Python path to allow root-level imports like 'config'
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils import load_json_file, find_sources_by_issue_id
+from utils import load_json_file, find_sources_by_issue_id, find_issue_id
 import config
 from extraction_logic import extract_from_pdf, extract_from_html, merge_and_finalize_outputs
 
@@ -146,43 +146,70 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
         print("  - No results to merge.")
 
 def main():
-    parser = argparse.ArgumentParser(description="Run extractions for a given issue ID.")
-    parser.add_argument('--issue-id', required=True, help='The issue ID to process.')
+    parser = argparse.ArgumentParser(description="Run extractions for a given issue ID or document.")
+    parser.add_argument('source_link', nargs='?', help='A specific document filename or URL to process.')
+    parser.add_argument('--issue-id', help='The issue ID to process. (Auto-detected if source_link is provided)')
     parser.add_argument('--extraction-field', help='A specific field to extract. If omitted, all fields will be extracted.')
     args = parser.parse_args()
 
+    source_link = args.source_link
     issue_id = args.issue_id
     extraction_field = args.extraction_field
 
+    # --- Step 1: Identify Issue ID and Target Document ---
+    pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
+    html_sources_data = load_json_file(config.HTML_SOURCES_FILE)
+
+    if source_link:
+        detected_id = find_issue_id(source_link, pdf_sources_data, html_sources_data)
+        if not detected_id and not issue_id:
+            print(f"Error: Could not find an issue_id associated with '{source_link}'. Please provide --issue-id manually.")
+            sys.exit(1)
+        
+        # Prefer provided issue_id, fall back to detected
+        issue_id = issue_id or detected_id
+        target_document = source_link
+        print(f"--- Document mode: '{source_link}' | Issue ID: '{issue_id}' ---")
+    elif issue_id:
+        target_document = None
+        print(f"--- Issue mode: '{issue_id}' ---")
+    else:
+        print("Error: Please provide either a document link (positional) or an --issue-id.")
+        parser.print_help()
+        sys.exit(1)
+
     definitions = load_extraction_definitions()
 
-    # --- Step 1: Identify all fields to be processed ---
+    # --- Step 2: Identify all fields to be processed ---
     fields_to_process = []
     if extraction_field:
         if extraction_field in definitions:
             fields_to_process.append(extraction_field)
-            print(f"--- Running single extraction for issue '{issue_id}' | field '{extraction_field}' ---")
+            print(f"--- Processing field: '{extraction_field}' ---")
         else:
             print(f"Error: Extraction field '{extraction_field}' not found in definitions.")
             sys.exit(1)
     else:
         fields_to_process = list(definitions.keys())
-        print(f"--- Running all extractions for issue '{issue_id}' ---")
         print(f"Found {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
 
-    # --- Step 2: Find all source documents for the issue (ONCE) ---
+    # --- Step 3: Find all source documents for the issue ---
     print("\n--- Identifying source documents ---")
-    pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
-    html_sources_data = load_json_file(config.HTML_SOURCES_FILE)
     pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources_data, html_sources_data)
 
+    # Filter matches if a target document is specified
+    if target_document:
+        pdf_matches = [m for m in pdf_matches if target_document in m.get("source_url", "")]
+        html_matches = [m for m in html_matches if target_document in m.get("source_url", "")]
+        print(f"  - Filtering for document: '{target_document}'")
+
     if not pdf_matches and not html_matches:
-        print(f"Error: No source documents found for issue_id '{issue_id}'. Aborting.")
+        print(f"Error: No source documents found for issue_id '{issue_id}'" + (f" and document '{target_document}'" if target_document else "") + ". Aborting.")
         sys.exit(1)
     
     print(f"Found {len(pdf_matches)} PDF(s) and {len(html_matches)} HTML document(s) for the issue.")
 
-    # --- Step 3: Loop through and run each extraction ---
+    # --- Step 4: Loop through and run each extraction ---
     for field in fields_to_process:
         print(f"\n{'='*60}")
         print(f"--- Processing field: '{field}' ---")

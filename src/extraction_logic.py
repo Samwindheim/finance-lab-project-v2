@@ -208,120 +208,109 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
 
 def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
     """
-    Merges data from multiple temporary files, deduplicates based on the extraction
-    field type, and saves to a final output file.
+    Merges data from multiple temporary files and saves them to a final output file
+    grouped by document name.
     """
     if not temp_files:
         print("  - No temporary files to merge.")
         return
 
-    combined_data = []
-    source_docs_processed = []
-
-    for file_path in temp_files:
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                items = data.get(extraction_field)
-                
-                # Skip if the key exists but has no value (null, empty list)
-                if not items:
-                    continue
-
-                # The 'investors' field is a list that should be extended.
-                # Other fields (like 'record_date') are single values to be appended.
-                if isinstance(items, list):
-                    combined_data.extend(items)
-                else:
-                    combined_data.append(items)
-                
-                source_docs_processed.append(data.get("source_document", os.path.basename(file_path)))
-
-        except (json.JSONDecodeError, FileNotFoundError):
-            print(f"  - Warning: Could not read or parse temp file {os.path.basename(file_path)}. Skipping.")
-            continue
-
-    # --- Finalize based on the data type ---
-    final_field_value = None
-    
-    if extraction_field == "investors":
-        # Handle deduplication for a list of investor dicts
-        unique_items = []
-        seen_entries = set()
-        for item in combined_data:
-            # Ensure item is a dictionary before using .get()
-            if not isinstance(item, dict):
-                continue
-            name = item.get("name")
-            level = item.get("level")
-            unique_key = (name, level)
-            
-            if name and unique_key not in seen_entries:
-                unique_items.append(item)
-                seen_entries.add(unique_key)
-        
-        # --- Apply final formatting to numbers ---
-        formatted_items = []
-        for investor in unique_items:
-            # Format amount_in_cash to string with 3 decimal places
-            amount = investor.get("amount_in_cash")
-            if isinstance(amount, (int, float)):
-                investor["amount_in_cash"] = f"{amount:.3f}"
-            
-            # Format amount_in_percentage to string
-            percent = investor.get("amount_in_percentage")
-            if isinstance(percent, (int, float)):
-                investor["amount_in_percentage"] = str(percent)
-            
-            formatted_items.append(investor)
-
-        final_field_value = formatted_items
-    else:
-        # For simple fields (like record_date), find unique values and take the first one.
-        # Using a set handles deduplication automatically and ignores None.
-        unique_values = sorted(list(set(item for item in combined_data if item is not None)))
-        if len(unique_values) > 1:
-            print(f"  - Warning: Multiple different values found for '{extraction_field}': {unique_values}. Using the first one.")
-        if unique_values:
-            final_field_value = unique_values[0]
-
-    # --- Load existing data and update it ---
-    temp_data = {}
+    # 1. Load existing data if it exists
+    all_data = {}
     if os.path.exists(final_output_path):
         try:
             with open(final_output_path, 'r', encoding='utf-8') as f:
-                temp_data = json.load(f)
+                all_data = json.load(f)
         except json.JSONDecodeError:
-            print(f"  - Warning: Could not parse existing output file at {final_output_path}. A new file will be created.")
+            print(f"  - Warning: Could not parse existing output file. Creating new.")
 
-    # Update the temporary data object
-    temp_data["issue_id"] = issue_id
-    temp_data[extraction_field] = final_field_value
-    
-    # Combine and deduplicate contributing sources
-    existing_sources = temp_data.get("contributing_sources", [])
-    all_sources = sorted(list(set(existing_sources + source_docs_processed)))
-    temp_data["contributing_sources"] = all_sources
+    # 2. Process each temporary result file
+    for file_path in temp_files:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                temp_result = json.load(f)
+            
+            doc_name = temp_result.get("source_document")
+            if not doc_name:
+                continue
 
-    # --- Rebuild the dictionary to enforce key order ---
-    final_output = {
-        "issue_id": temp_data.get("issue_id"),
-        "contributing_sources": temp_data.get("contributing_sources", [])
-    }
+            # Ensure document entry exists
+            if doc_name not in all_data:
+                all_data[doc_name] = {"issue_id": issue_id}
+            
+            doc_entry = all_data[doc_name]
+            
+            # Get the extracted field value
+            field_value = temp_result.get(extraction_field)
+            if not field_value:
+                continue
 
-    # Add the rest of the keys, sorted alphabetically for consistency
-    other_keys = sorted([k for k in temp_data.keys() if k not in ["issue_id", "contributing_sources"]])
-    for key in other_keys:
-        final_output[key] = temp_data[key]
+            # --- Apply specific logic based on field type ---
+            if extraction_field == "investors":
+                # Investors logic: Deduplicate and format numbers
+                unique_items = []
+                seen_entries = set()
+                for item in field_value:
+                    if not isinstance(item, dict): continue
+                    name, level = item.get("name"), item.get("level")
+                    if name and (name, level) not in seen_entries:
+                        # Format numbers
+                        if isinstance(item.get("amount_in_cash"), (int, float)):
+                            item["amount_in_cash"] = f"{item['amount_in_cash']:.3f}"
+                        if isinstance(item.get("amount_in_percentage"), (int, float)):
+                            item["amount_in_percentage"] = str(item["amount_in_percentage"])
+                        unique_items.append(item)
+                        seen_entries.add((name, level))
+                doc_entry["investors"] = unique_items
+            
+            else:
+                # Simple field logic: Just update the value
+                doc_entry[extraction_field] = field_value
 
-    # Save the combined file
+            # --- Maintain "important_dates" grouping within document ---
+            date_fields = {
+                "record_date", "sub_start_date", "sub_end_date", 
+                "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"
+            }
+            
+            # Pull any existing dates out of the grouping temporarily
+            if "important_dates" in doc_entry:
+                for k, v in doc_entry["important_dates"].items():
+                    doc_entry[k] = v
+                del doc_entry["important_dates"]
+
+            # Re-group all available dates
+            important_dates = {}
+            keys_to_remove = []
+            for k, v in doc_entry.items():
+                if k in date_fields:
+                    important_dates[k] = v
+                    keys_to_remove.append(k)
+            
+            for k in keys_to_remove:
+                del doc_entry[k]
+            
+            if important_dates:
+                doc_entry["important_dates"] = important_dates
+
+        except (json.JSONDecodeError, FileNotFoundError):
+            print(f"  - Warning: Could not read temp file {file_path}")
+            continue
+
+    # 3. Save the finalized structure
+    # Sort keys: Move 'issue_id' to top of each document entry
+    final_output = {}
+    for doc_name, doc_data in sorted(all_data.items()):
+        ordered_doc = {"issue_id": doc_data.pop("issue_id", issue_id)}
+        # Add important_dates first if it exists
+        if "important_dates" in doc_data:
+            ordered_doc["important_dates"] = doc_data.pop("important_dates")
+        # Add remaining fields alphabetically
+        for key in sorted(doc_data.keys()):
+            ordered_doc[key] = doc_data[key]
+        final_output[doc_name] = ordered_doc
+
     with open(final_output_path, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2, ensure_ascii=False)
         
-    item_count_str = f"'{extraction_field}'"
-    if extraction_field == "investors":
-        item_count = len(final_field_value) if isinstance(final_field_value, list) else 0
-        item_count_str = f"{item_count} unique item(s) for '{extraction_field}'"
-
-    print(f"\n  - Successfully processed {item_count_str}.")
-    print(f"  - Updated data saved to: {final_output_path}")
+    print(f"  - Successfully updated results in: {final_output_path}")
