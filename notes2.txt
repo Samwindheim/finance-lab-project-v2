@@ -5,45 +5,5 @@ Underwriter docs
 source venv/bin/activate
 python src/run_extraction.py --issue-id 9fff9ce4-455d-424a-ab32-42314f3efa2c --extraction-field investors
 
-    "record_date": {
-        "description": "Extracts the record date ('Avstämningsdag') for determining shareholder rights.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Avstämningsdag",
-        "page_selection_strategy": "top_hit"
-    },
-    "sub_start_date": {
-        "description": "Extracts the start date for the subscription period.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Första datum för teckningsperioden",
-        "page_selection_strategy": "top_hit"
-    },
-    "sub_end_date": {
-        "description": "Extracts the end date for the subscription period.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Sista datum för teckningsperioden",
-        "page_selection_strategy": "top_hit"
-    },
-    "inc_rights_date": {
-        "description": "Extracts the date when the rights are included in the share price.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Sista datum när aktien handlas inklusive rätter",
-        "page_selection_strategy": "top_hit"
-    },
-    "ex_rights_date": {
-        "description": "Extracts the date when the rights are excluded from the share price.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Första datum när aktien handlas exklusive rätter",
-        "page_selection_strategy": "top_hit"
-    },
-    "rights_start_date": {
-        "description": "Första datum när rätterna handlas.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Första datum för handel med teckningsrätter",
-        "page_selection_strategy": "top_hit"
-    },
-    "rights_end_date": {
-        "description": "Sista datum som rätterna handlas.",
-        "source_types": ["Terms", "Publication"],
-        "semantic_search_query": "Sista datum för handel med teckningsrätter",
-        "page_selection_strategy": "top_hit"
-    },
+test issue:
+22461505-852f-413d-8cf5-ff3a4f5f5b64

@@ -46,28 +46,58 @@ def clean_and_parse_json(json_string: str) -> dict | None:
         logger.error(f"Failed to decode JSON from model response: {json_string}")
         return None
 
-def find_issue_id(source_path: str, pdf_sources: list, html_sources: list) -> str | None:
-    """Finds the issue_id for a given source path from all available source files."""
-    # Check for exact matches first (highest priority)
+def find_document_info(source_path: str, pdf_sources: list, html_sources: list) -> dict:
+    """
+    Finds document-related information (issue_id, id, etc.) for a given source path.
+    Returns a dictionary with the info.
+    """
+    info = {"issue_id": None, "doc_id": None}
     
+    # Check for document ID matches first (if source_path is already an ID)
+    for source in html_sources + pdf_sources:
+        if source.get("id") == source_path:
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+            return info
+
     # HTML/URL check
     for source in html_sources:
         if source.get("source_url") == source_path:
-            return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+            return info
     
     # PDF check
     pdf_filename = os.path.basename(source_path)
     for source in pdf_sources:
         if source.get("source_url") == pdf_filename:
-            return source.get("issue_id")
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id")
+            return info
 
-    # If no exact match, try partial matches
+    # Partial matches
     for source in html_sources:
         if source_path in (source.get("source_url") or ""):
-            return source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+            return info
             
     for source in pdf_sources:
         if source_path in (source.get("source_url") or ""):
-            return source.get("issue_id")
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id")
+            return info
             
+    return info
+
+def find_issue_id(source_path: str, pdf_sources: list, html_sources: list) -> str | None:
+    """Finds the issue_id for a given source path or document ID."""
+    info = find_document_info(source_path, pdf_sources, html_sources)
+    return info["issue_id"]
+
+def find_source_by_doc_id(doc_id: str, pdf_sources: list, html_sources: list) -> dict | None:
+    """Finds a specific source document entry by its unique ID."""
+    for source in html_sources + pdf_sources:
+        if source.get("id") == doc_id:
+            return source
     return None

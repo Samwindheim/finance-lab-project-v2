@@ -55,7 +55,7 @@ class ExtractionResult(BaseModel):
 
 class DocumentEntry(BaseModel):
     issue_id: str
-    contributing_sources: List[str] = Field(default_factory=list)
+    id: Optional[str] = None
     investors: Optional[List[Investor]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None

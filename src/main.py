@@ -184,11 +184,11 @@ def extract_command(args):
         target_filename = os.path.basename(target_document)
         pdf_matches = [
             m for m in pdf_matches 
-            if target_document == m.get("full_url") or target_filename == m.get("source_url") or target_document in m.get("source_url", "")
+            if target_document == m.get("id") or target_document == m.get("full_url") or target_filename == m.get("source_url") or target_document in m.get("source_url", "")
         ]
         html_matches = [
             m for m in html_matches 
-            if target_document == m.get("source_url") or target_document == m.get("full_url") or target_document in m.get("source_url", "")
+            if target_document == m.get("id") or target_document == m.get("source_url") or target_document == m.get("full_url") or target_document in m.get("source_url", "")
         ]
         logger.info(f"Filtering for document: '{target_document}'")
 

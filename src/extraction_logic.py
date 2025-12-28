@@ -16,7 +16,7 @@ from pdf_indexer import PDFIndexer
 from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
-from utils import find_issue_id, clean_and_parse_json
+from utils import find_issue_id, find_document_info, clean_and_parse_json
 from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, FinalOutput, DocumentEntry
 from logger import setup_logger
 
@@ -106,13 +106,17 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     """Post-processes and saves the extracted JSON data to a specified file path."""
     _load_sources_data() # Ensure source data is loaded
     
-    issue_id = find_issue_id(source_path, SOURCES_DATA, HTML_SOURCES_DATA)
+    doc_info = find_document_info(source_path, SOURCES_DATA, HTML_SOURCES_DATA)
+    issue_id = doc_info.get("issue_id")
+    doc_id = doc_info.get("doc_id")
+    
     if not issue_id:
         logger.warning(f"Could not find issue_id for '{os.path.basename(source_path)}'.")
 
     # The parsed_json from the model should contain the extraction_field as a key
     final_output = {
         "issue_id": issue_id,
+        "doc_id": doc_id,
         "source_document": os.path.basename(source_path),
         "source_pages": source_pages,
         extraction_field: parsed_json.get(extraction_field, []) # Default to empty list
@@ -261,9 +265,13 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
 
             # Ensure document entry exists
             if doc_name not in all_data:
-                all_data[doc_name] = DocumentEntry(issue_id=issue_id)
+                all_data[doc_name] = DocumentEntry(issue_id=issue_id, id=temp_result.get("doc_id"))
             
             doc_entry = all_data[doc_name]
+            
+            # Update doc_id if it's missing but present in temp_result
+            if not doc_entry.id and temp_result.get("doc_id"):
+                doc_entry.id = temp_result.get("doc_id")
             
             # --- Apply specific logic based on field type ---
             if extraction_field == "investors":
@@ -328,7 +336,10 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         doc_entry = all_data[doc_name]
         
         # Prepare an ordered dict for the document
-        ordered_doc = {"issue_id": doc_entry.issue_id}
+        ordered_doc = {
+            "issue_id": doc_entry.issue_id,
+            "id": doc_entry.id
+        }
         
         # Add important_dates next if it exists
         if doc_entry.important_dates:
@@ -343,9 +354,12 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         if doc_entry.investors:
             ordered_doc["investors"] = [i.model_dump(exclude_none=True) for i in doc_entry.investors]
             
-        # Add any other extra fields (like contributing_sources)
+        # Add any other extra fields
         # We exclude the ones we already handled
-        doc_dict = doc_entry.model_dump(exclude={"issue_id", "important_dates", "offering_terms", "investors"}, exclude_none=True)
+        doc_dict = doc_entry.model_dump(
+            exclude={"issue_id", "id", "important_dates", "offering_terms", "investors", "contributing_sources"}, 
+            exclude_none=True
+        )
         for key in sorted(doc_dict.keys()):
             ordered_doc[key] = doc_dict[key]
             
