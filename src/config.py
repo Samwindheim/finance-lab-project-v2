@@ -35,5 +35,9 @@ OUTPUT_JSON_DIR = BASE_DIR / "output_json"
 PROMPTS_DIR = BASE_DIR / "prompts"
 
 # --- Source File Paths ---
-PDF_SOURCES_FILE = BASE_DIR / "source_files" / "pdf-sources.json"
-HTML_SOURCES_FILE = BASE_DIR / "source_files" / "html-sources.json"
+PDF_SOURCES_FILE = BASE_DIR / "reference_files" / "pdf-sources.json"
+HTML_SOURCES_FILE = BASE_DIR / "reference_files" / "html-sources.json"
+
+# --- Logging settings ---
+LOG_LEVEL = "INFO" # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

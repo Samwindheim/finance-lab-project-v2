@@ -11,6 +11,9 @@ HTML content for analysis by the language model.
 
 from bs4 import BeautifulSoup
 import requests
+from logger import setup_logger
+
+logger = setup_logger(__name__)
 
 def _table_to_markdown(table):
     """Converts an HTML table to markdown format."""
@@ -59,17 +62,17 @@ def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True) 
             response.raise_for_status()  # Raise an exception for bad status codes
             html_content = response.text
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching URL {html_path_or_url}: {e}")
+            logger.error(f"Error fetching URL {html_path_or_url}: {e}")
             return ""
     else:
         try:
             with open(html_path_or_url, 'r', encoding='utf-8') as f:
                 html_content = f.read()
         except FileNotFoundError:
-            print(f"Error: File not found at {html_path_or_url}")
+            logger.error(f"File not found at {html_path_or_url}")
             return ""
         except Exception as e:
-            print(f"Error reading file {html_path_or_url}: {e}")
+            logger.error(f"Error reading file {html_path_or_url}: {e}")
             return ""
 
     try:
@@ -103,5 +106,5 @@ def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True) 
 
         return text
     except Exception as e:
-        print(f"Error processing HTML content: {e}")
+        logger.error(f"Error processing HTML content: {e}")
         return ""

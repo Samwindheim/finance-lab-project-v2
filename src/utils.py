@@ -11,17 +11,20 @@ Centralizing these functions here helps to reduce code duplication and improve m
 
 import json
 import os
+from logger import setup_logger
+
+logger = setup_logger(__name__)
 
 def load_json_file(file_path: str) -> list:
     """Loads a JSON file and returns its content."""
     if not os.path.exists(file_path):
-        print(f"Error: File not found at {file_path}")
+        logger.error(f"File not found at {file_path}")
         return []
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except json.JSONDecodeError:
-        print(f"Error: Could not decode JSON from {file_path}")
+        logger.error(f"Could not decode JSON from {file_path}")
         return []
 
 def find_sources_by_issue_id(issue_id: str, pdf_sources: list, html_sources: list) -> tuple[list, list]:
@@ -40,9 +43,7 @@ def clean_and_parse_json(json_string: str) -> dict | None:
     try:
         return json.loads(json_string)
     except json.JSONDecodeError:
-        print("\nError: Failed to decode JSON from model response.")
-        print("Raw response:")
-        print(json_string)
+        logger.error(f"Failed to decode JSON from model response: {json_string}")
         return None
 
 def find_issue_id(source_path: str, pdf_sources: list, html_sources: list) -> str | None:

@@ -10,3 +10,4 @@ tiktoken
 python-dotenv
 beautifulsoup4
 requests
+pydantic

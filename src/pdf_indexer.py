@@ -27,6 +27,10 @@ import fitz  # PyMuPDF
 import pickle # for saving and loading the index and metadata
 from typing import List, Dict
 import numpy as np # for storing the embeddings
+from logger import setup_logger
+
+logger = setup_logger(__name__)
+
 import faiss # for storing the index
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -81,9 +85,9 @@ class PDFIndexer:
                 self.index = faiss.read_index(f"{self.index_path}.index")
                 with open(f"{self.index_path}.metadata", "rb") as f:
                     self.metadata = pickle.load(f)
-                print(f"\nLoaded existing index with {len(self.metadata)} documents")
+                logger.info(f"Loaded existing index with {len(self.metadata)} documents")
             except Exception as e:
-                print(f"\nCould not load existing index: {e}")
+                logger.error(f"Could not load existing index: {e}")
     
     def _save_index(self):
         """Save FAISS index and metadata to disk."""
@@ -94,7 +98,7 @@ class PDFIndexer:
         faiss.write_index(self.index, f"{self.index_path}.index")
         with open(f"{self.index_path}.metadata", "wb") as f:
             pickle.dump(self.metadata, f)
-        print(f"\nSaved index for {self.index_path}")
+        logger.info(f"Saved index for {self.index_path}")
     
     def _chunk_text(self, text: str) -> List[str]:
         """Splits a long text into smaller, overlapping chunks based on tokens."""
@@ -133,7 +137,7 @@ class PDFIndexer:
         # --- Store the absolute path for robustness ---
         absolute_pdf_path = os.path.abspath(pdf_path)
         
-        print(f"\nProcessing PDF: {document_id}")
+        logger.info(f"Processing PDF: {document_id}")
         
         # Iterate through each page
         for page_num in range(len(pdf_document)):
@@ -160,7 +164,7 @@ class PDFIndexer:
                 all_chunks_data.append(chunk_data)
         
         pdf_document.close()
-        print(f"\nExtracted {len(all_chunks_data)} text chunks")
+        logger.info(f"Extracted {len(all_chunks_data)} text chunks from {document_id}")
         
         return all_chunks_data
     
@@ -202,7 +206,7 @@ class PDFIndexer:
         # If the index is not empty, it implies a re-indexing operation.
         # We clear it to ensure a fresh start.
         if self.index.ntotal > 0:
-            print(f"\nIndex already contains data. Clearing for re-indexing...")
+            logger.info(f"Index already contains data. Clearing for re-indexing...")
             self.reset_index()
 
         # Step 1: Extract text from all pages
@@ -228,19 +232,19 @@ class PDFIndexer:
                 self.metadata.extend(batch_chunks)
 
             except Exception as e:
-                print(f"\n\nError generating embeddings for batch starting at chunk {i}: {e}")
-                print("Aborting indexing process. No changes were saved.")
+                logger.error(f"Error generating embeddings for batch starting at chunk {i}: {e}")
+                logger.error("Aborting indexing process. No changes were saved.")
                 return 0
         
         # Convert list of embeddings to numpy array
         if not embeddings_list:
-            print("\nNo embeddings were generated. Aborting.")
+            logger.warning("No embeddings were generated. Aborting.")
             return 0
             
         embeddings_array = np.array(embeddings_list, dtype='float32')
         
         # Step 3: Add to FAISS index
-        print("\nStoring in vector database...")
+        logger.info("Storing embeddings in vector database...")
         self.index.add(embeddings_array)
         
         # Save index to disk
@@ -262,7 +266,7 @@ class PDFIndexer:
         """
         
         if self.index.ntotal == 0:
-            print("\nIndex is empty. Please index some documents first.")
+            logger.warning("Index is empty. Please index some documents first.")
             return []
         
         # Generate embedding for the query
@@ -303,7 +307,7 @@ class PDFIndexer:
         if os.path.exists(f"{self.index_path}.metadata"):
             os.remove(f"{self.index_path}.metadata")
         
-        print("\nIndex reset")
+        logger.info(f"Index reset for {self.index_path}")
 
     def get_text_for_page(self, pdf_path: str, page_number: int) -> str:
         """Extracts the full text from a single page of a PDF."""
@@ -315,7 +319,7 @@ class PDFIndexer:
             pdf_document.close()
             return text.strip()
         except Exception as e:
-            print(f"\nError extracting text from page {page_number}: {e}")
+            logger.error(f"Error extracting text from page {page_number} of {os.path.basename(pdf_path)}: {e}")
             return ""
 
     def get_page_count(self, pdf_path: str) -> int:
@@ -326,7 +330,7 @@ class PDFIndexer:
             doc.close()
             return count
         except Exception as e:
-            print(f"Warning: Could not get page count for {os.path.basename(pdf_path)}: {e}")
+            logger.warning(f"Could not get page count for {os.path.basename(pdf_path)}: {e}")
             return 0
 
     def extract_page_as_image(self, pdf_path: str, page_number: int, output_dir: str = config.OUTPUT_IMAGE_DIR, zoom: int = 2) -> str:
@@ -343,7 +347,7 @@ class PDFIndexer:
             The path to the saved image file, or an empty string on failure.
         """
         if not os.path.exists(pdf_path):
-            print(f"\nError: PDF file not found at {pdf_path}")
+            logger.error(f"PDF file not found at {pdf_path}")
             return ""
 
         # Create output directory if it doesn't exist
@@ -370,5 +374,5 @@ class PDFIndexer:
             return output_path
 
         except Exception as e:
-            print(f"\nError extracting image from page {page_number}: {e}")
+            logger.error(f"Error extracting image from page {page_number}: {e}")
             return ""

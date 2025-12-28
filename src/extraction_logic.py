@@ -17,6 +17,10 @@ from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
 from utils import find_issue_id, clean_and_parse_json
+from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, FinalOutput, DocumentEntry
+from logger import setup_logger
+
+logger = setup_logger(__name__)
 
 # --- Load sources data once for performance ---
 # This data is needed for `find_issue_id` in the post-processing step.
@@ -104,7 +108,7 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     
     issue_id = find_issue_id(source_path, SOURCES_DATA, HTML_SOURCES_DATA)
     if not issue_id:
-        print(f"Warning: Could not find issue_id for '{os.path.basename(source_path)}'.")
+        logger.warning(f"Could not find issue_id for '{os.path.basename(source_path)}'.")
 
     # The parsed_json from the model should contain the extraction_field as a key
     final_output = {
@@ -119,7 +123,7 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2, ensure_ascii=False)
-    print(f"  - Successfully extracted and saved data to: {output_path}")
+    logger.info(f"Successfully extracted and saved data to: {output_path}")
     return output_path
 
 
@@ -127,7 +131,7 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
     """
     Reusable logic to perform a full RAG extraction on a single PDF document.
     """
-    print(f"\n--- Processing PDF: {os.path.basename(pdf_path)} ---")
+    logger.info(f"Processing PDF: {os.path.basename(pdf_path)}")
     
     # Simplified index path generation
     index_name = os.path.splitext(os.path.basename(pdf_path))[0]
@@ -135,15 +139,15 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
 
     indexer = PDFIndexer(index_path=index_path)
     if indexer.index.ntotal == 0:
-        print(f"  - Index not found for {os.path.basename(pdf_path)}. Building it now...")
+        logger.info(f"Index not found for {os.path.basename(pdf_path)}. Building it now...")
         indexer.index_pdf(pdf_path)
 
     # 1. Query the index
-    print(f"  - Querying for relevant pages (strategy: {page_selection_strategy})...")
+    logger.info(f"Querying for relevant pages (strategy: {page_selection_strategy})...")
     results = indexer.query(search_query, top_k=5)
 
     if not results:
-        print("  - Could not find any relevant pages.")
+        logger.warning(f"Could not find any relevant pages for field '{extraction_field}' in {os.path.basename(pdf_path)}.")
         return None
 
     # 2. Select pages based on the specified strategy
@@ -154,7 +158,7 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
     else: # Default to "consecutive"
         page_numbers = select_consecutive_pages(results)
         
-    print(f"  - Selected {len(page_numbers)} pages to analyze: {page_numbers}")
+    logger.info(f"Selected {len(page_numbers)} pages to analyze: {page_numbers}")
 
     # 3. Extract images and text for context
     saved_image_paths = []
@@ -171,16 +175,23 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
                 page_texts.append(text)
     
     if not saved_image_paths:
-        print("  - Error: Could not extract any images for the identified pages.")
+        logger.error(f"Could not extract any images for the identified pages in {os.path.basename(pdf_path)}.")
         return None
 
     # 4. Call LLM and save result
-    combined_text = "\\n\\n--- Page Separator ---\\n\\n".join(page_texts)
+    combined_text = "\n\n--- Page Separator ---\n\n".join(page_texts)
     json_data = get_json_from_image(saved_image_paths, combined_text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
         parsed_json = clean_and_parse_json(json_data)
         if parsed_json:
-            return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path)
+            try:
+                # Validate the LLM output against our model
+                ExtractionResult.model_validate(parsed_json)
+                return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path)
+            except Exception as e:
+                logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
+                # We'll still save it for debugging, but return None to indicate failure
+                post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path)
     return None
 
 
@@ -188,12 +199,12 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     """
     Reusable logic to perform a full-text extraction on a single HTML document.
     """
-    print(f"--- Processing HTML: {os.path.basename(html_path)} ---")
+    logger.info(f"Processing HTML: {os.path.basename(html_path)}")
     
     # 1. Extract text
     text = extract_text_from_html(html_path, preserve_tables=True)
     if not text:
-        print("  - Could not extract any text from the HTML file.")
+        logger.error(f"Could not extract any text from the HTML file: {html_path}")
         return None
 
     # 2. Call LLM and save result
@@ -201,18 +212,24 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     if json_data:
         parsed_json = clean_and_parse_json(json_data)
         if parsed_json:
-            # For HTML, we consider it as a single "page"
-            return post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path)
+            try:
+                # Validate the LLM output against our model
+                ExtractionResult.model_validate(parsed_json)
+                # For HTML, we consider it as a single "page"
+                return post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path)
+            except Exception as e:
+                logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
+                post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path)
     return None
 
 
 def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
     """
     Merges data from multiple temporary files and saves them to a final output file
-    grouped by document name.
+    grouped by document name using Pydantic models for validation.
     """
     if not temp_files:
-        print("  - No temporary files to merge.")
+        logger.warning(f"No temporary files to merge for field '{extraction_field}'.")
         return
 
     # 1. Load existing data if it exists
@@ -220,9 +237,12 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
     if os.path.exists(final_output_path):
         try:
             with open(final_output_path, 'r', encoding='utf-8') as f:
-                all_data = json.load(f)
-        except json.JSONDecodeError:
-            print(f"  - Warning: Could not parse existing output file. Creating new.")
+                raw_data = json.load(f)
+                # Validate existing data
+                all_data = FinalOutput.model_validate(raw_data).root
+        except Exception as e:
+            logger.warning(f"Could not parse or validate existing output file: {e}. Creating new.")
+            all_data = {}
 
     # 2. Process each temporary result file
     for file_path in temp_files:
@@ -234,83 +254,104 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             if not doc_name:
                 continue
 
+            # Get the extracted field value
+            field_value = temp_result.get(extraction_field)
+            if field_value is None:
+                continue
+
             # Ensure document entry exists
             if doc_name not in all_data:
-                all_data[doc_name] = {"issue_id": issue_id}
+                all_data[doc_name] = DocumentEntry(issue_id=issue_id)
             
             doc_entry = all_data[doc_name]
             
-            # Get the extracted field value
-            field_value = temp_result.get(extraction_field)
-            if not field_value:
-                continue
-
             # --- Apply specific logic based on field type ---
             if extraction_field == "investors":
                 # Investors logic: Deduplicate and format numbers
-                unique_items = []
+                investors = []
                 seen_entries = set()
                 for item in field_value:
-                    if not isinstance(item, dict): continue
-                    name, level = item.get("name"), item.get("level")
-                    if name and (name, level) not in seen_entries:
-                        # Format numbers
-                        if isinstance(item.get("amount_in_cash"), (int, float)):
-                            item["amount_in_cash"] = f"{item['amount_in_cash']:.3f}"
-                        if isinstance(item.get("amount_in_percentage"), (int, float)):
-                            item["amount_in_percentage"] = str(item["amount_in_percentage"])
-                        unique_items.append(item)
-                        seen_entries.add((name, level))
-                doc_entry["investors"] = unique_items
+                    try:
+                        investor = Investor.model_validate(item)
+                        if investor.name and (investor.name, investor.level) not in seen_entries:
+                            # Format numbers to strings as requested previously
+                            if isinstance(investor.amount_in_cash, (int, float)):
+                                investor.amount_in_cash = f"{investor.amount_in_cash:.3f}"
+                            if isinstance(investor.amount_in_percentage, (int, float)):
+                                investor.amount_in_percentage = str(investor.amount_in_percentage)
+                            
+                            investors.append(investor)
+                            seen_entries.add((investor.name, investor.level))
+                    except Exception as e:
+                        logger.warning(f"Skipping invalid investor entry in {doc_name}: {e}")
+                
+                doc_entry.investors = investors
+            
+            elif extraction_field == "important_dates":
+                try:
+                    dates_data = ImportantDates.model_validate(field_value)
+                    doc_entry.important_dates = dates_data
+                except Exception as e:
+                    logger.warning(f"Skipping invalid important_dates entry in {doc_name}: {e}")
+            
+            elif extraction_field == "offering_terms":
+                try:
+                    terms_data = OfferingTerms.model_validate(field_value)
+                    doc_entry.offering_terms = terms_data
+                except Exception as e:
+                    logger.warning(f"Skipping invalid offering_terms entry in {doc_name}: {e}")
             
             else:
-                # Simple field logic: Just update the value
-                doc_entry[extraction_field] = field_value
+                # Handle individual date fields or other fields
+                date_fields = {
+                    "record_date", "sub_start_date", "sub_end_date", 
+                    "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"
+                }
+                
+                if extraction_field in date_fields:
+                    if not doc_entry.important_dates:
+                        doc_entry.important_dates = ImportantDates()
+                    setattr(doc_entry.important_dates, extraction_field, field_value)
+                else:
+                    # For other fields, we just set them directly on the model
+                    # Since DocumentEntry allows extra fields, this works
+                    setattr(doc_entry, extraction_field, field_value)
 
-            # --- Maintain "important_dates" grouping within document ---
-            date_fields = {
-                "record_date", "sub_start_date", "sub_end_date", 
-                "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"
-            }
-            
-            # Pull any existing dates out of the grouping temporarily
-            if "important_dates" in doc_entry:
-                for k, v in doc_entry["important_dates"].items():
-                    doc_entry[k] = v
-                del doc_entry["important_dates"]
-
-            # Re-group all available dates
-            important_dates = {}
-            keys_to_remove = []
-            for k, v in doc_entry.items():
-                if k in date_fields:
-                    important_dates[k] = v
-                    keys_to_remove.append(k)
-            
-            for k in keys_to_remove:
-                del doc_entry[k]
-            
-            if important_dates:
-                doc_entry["important_dates"] = important_dates
-
-        except (json.JSONDecodeError, FileNotFoundError):
-            print(f"  - Warning: Could not read temp file {file_path}")
+        except (json.JSONDecodeError, FileNotFoundError) as e:
+            logger.error(f"Could not read temp file {file_path}: {e}")
             continue
 
     # 3. Save the finalized structure
-    # Sort keys: Move 'issue_id' to top of each document entry
-    final_output = {}
-    for doc_name, doc_data in sorted(all_data.items()):
-        ordered_doc = {"issue_id": doc_data.pop("issue_id", issue_id)}
-        # Add important_dates first if it exists
-        if "important_dates" in doc_data:
-            ordered_doc["important_dates"] = doc_data.pop("important_dates")
-        # Add remaining fields alphabetically
-        for key in sorted(doc_data.keys()):
-            ordered_doc[key] = doc_data[key]
-        final_output[doc_name] = ordered_doc
+    # Sort keys for consistent output
+    sorted_output = {}
+    for doc_name in sorted(all_data.keys()):
+        doc_entry = all_data[doc_name]
+        
+        # Prepare an ordered dict for the document
+        ordered_doc = {"issue_id": doc_entry.issue_id}
+        
+        # Add important_dates next if it exists
+        if doc_entry.important_dates:
+            # model_dump(exclude_none=True) gives us a dict of the dates
+            ordered_doc["important_dates"] = doc_entry.important_dates.model_dump(exclude_none=True)
+        
+        # Add offering_terms next if it exists
+        if doc_entry.offering_terms:
+            ordered_doc["offering_terms"] = doc_entry.offering_terms.model_dump(exclude_none=True)
+        
+        # Add investors if it exists
+        if doc_entry.investors:
+            ordered_doc["investors"] = [i.model_dump(exclude_none=True) for i in doc_entry.investors]
+            
+        # Add any other extra fields (like contributing_sources)
+        # We exclude the ones we already handled
+        doc_dict = doc_entry.model_dump(exclude={"issue_id", "important_dates", "offering_terms", "investors"}, exclude_none=True)
+        for key in sorted(doc_dict.keys()):
+            ordered_doc[key] = doc_dict[key]
+            
+        sorted_output[doc_name] = ordered_doc
 
     with open(final_output_path, 'w', encoding='utf-8') as f:
-        json.dump(final_output, f, indent=2, ensure_ascii=False)
+        json.dump(sorted_output, f, indent=2, ensure_ascii=False)
         
-    print(f"  - Successfully updated results in: {final_output_path}")
+    logger.info(f"Successfully updated results in: {final_output_path}")

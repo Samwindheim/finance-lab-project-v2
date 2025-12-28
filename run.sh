@@ -1,10 +1,11 @@
 #!/bin/bash
-# This script is a wrapper for the PDF RAG Pipeline Developer Toolkit (cli.py).
-# It activates the Python virtual environment and then executes the cli.py script,
-# passing along all command-line arguments.
+# This script is a unified wrapper for the Finance Lab Pipeline (main.py).
+# It handles both production extractions and developer utility commands.
 #
-# For production data extraction, use:
-#   python src/run_extraction.py --issue-id <issue_id> [--extraction-field <field>]
+# Usage:
+#   ./run.sh extract <link> [--extraction-field <field>]
+#   ./run.sh index <pdf_path>
+#   ./run.sh query <pdf_path> <query>
 
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -22,23 +23,30 @@ fi
 # Activate the virtual environment
 source "$VENV_PATH/bin/activate"
 
-# Check if cli.py exists
-CLI_SCRIPT_PATH="$SCRIPT_DIR/src/cli.py"
-if [ ! -f "$CLI_SCRIPT_PATH" ]; then
-    echo "Error: Developer toolkit script not found at '$CLI_SCRIPT_PATH'."
+# Check if main.py exists
+MAIN_SCRIPT_PATH="$SCRIPT_DIR/src/main.py"
+if [ ! -f "$MAIN_SCRIPT_PATH" ]; then
+    echo "Error: Unified script not found at '$MAIN_SCRIPT_PATH'."
     exit 1
 fi
 
 # Main script logic
 case "$1" in
-  index|query|clear|extract-html-text)
-    python3 src/cli.py "$@"
+  extract|index|query|clear|html-text)
+    python3 src/main.py "$@"
     ;;
   *)
-    echo "Usage: $0 {index|query|clear|extract-html-text}"
-    echo ""
-    echo "For production data extraction, use:"
-    echo "  python src/run_extraction.py --issue-id <issue_id> [--extraction-field <field>]"
-    exit 1
+    # Default to 'extract' if the first argument looks like a link or starts with --issue-id
+    # This maintains backward compatibility with the old direct run_extraction.py calls
+    if [[ "$1" == http* ]] || [[ "$1" == --issue-id* ]]; then
+      python3 src/main.py extract "$@"
+    else
+      echo "Usage: $0 {extract|index|query|clear|html-text}"
+      echo ""
+      echo "Example:"
+      echo "  $0 extract https://example.com/doc.pdf"
+      echo "  $0 index pdfs/document.pdf"
+      exit 1
+    fi
     ;;
 esac

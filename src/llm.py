@@ -15,6 +15,10 @@ and returns the raw JSON string for further processing.
 """
 import os
 import base64
+from logger import setup_logger
+
+logger = setup_logger(__name__)
+
 from openai import OpenAI
 from dotenv import load_dotenv
 import mimetypes
@@ -41,7 +45,7 @@ def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type
     # Add each image
     for image_path in image_paths:
         if not os.path.exists(image_path):
-            print(f"Error: Image file not found at '{image_path}'")
+            logger.error(f"Image file not found at '{image_path}'")
             return None
         
         base64_image = encode_image(image_path)
@@ -59,7 +63,7 @@ def get_json_from_text(text: str, extraction_type: str = None, additional_conten
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        print("Error: GEMINI_API_KEY not found in .env file.")
+        logger.error("GEMINI_API_KEY not found in .env file.")
         return None
 
     client = OpenAI(
@@ -75,7 +79,7 @@ def get_json_from_text(text: str, extraction_type: str = None, additional_conten
         # Fallback to old method if no direct prompt_text is provided
         prompt_file_path = os.path.join(PROMPTS_DIR, f"{extraction_type}.txt")
         if not os.path.exists(prompt_file_path):
-            print(f"Error: Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
+            logger.error(f"Prompt file not found for extraction type '{extraction_type}' at '{prompt_file_path}'")
             return None
         with open(prompt_file_path, "r") as f:
             prompt_text = f.read()
@@ -91,7 +95,7 @@ def get_json_from_text(text: str, extraction_type: str = None, additional_conten
     if additional_content:
         content.extend(additional_content)
     
-    print(f"\nSending request to Gemini...")
+    logger.info(f"Sending request to Gemini for field '{extraction_type}'...")
 
     response = client.chat.completions.create(
         model=GEMINI_MODEL,
@@ -113,7 +117,7 @@ if __name__ == "__main__":
     dummy_text = "This is the extracted text from the page."
     json_data = get_json_from_image([test_image_path], dummy_text, "underwriters")
     if json_data:
-        print("\n--- Gemini Response ---")
-        print(json_data)
-        print("---------------------\n")
+        logger.info("\n--- Gemini Response ---")
+        logger.info(json_data)
+        logger.info("---------------------\n")
 

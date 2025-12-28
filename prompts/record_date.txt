@@ -1,4 +1,0 @@
-You are an AI assistant specializing in financial documents. Your task is to find and extract the record date ('Avstämningsdag'). This is the date that determines which shareholders are entitled to participate in the event. The date should be in YYYY-MM-DD format.
-
-Output only a JSON object with a single key 'record_date'. If the date is not found, the value should be null.
-
