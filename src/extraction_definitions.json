@@ -16,5 +16,17 @@
         "source_types": ["Prospectus", "Memorandum", "InformationDocument", "Terms", "Publication", "Outcome"],
         "semantic_search_query": "Villkor för företrädesemissionen (teckningskurs, teckningsrelation, erbjuden volym, units eller aktier)",
         "page_selection_strategy": "consecutive"
+    },
+    "offering_outcome": {
+        "description": "Extracts the outcome of the offering: total units subscribed, subscription with/without rights, and guarantor subscription (both in absolute numbers and percentages).",
+        "source_types": ["Outcome", "Publication"],
+        "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
+        "page_selection_strategy": "consecutive"
+    },
+    "identifiers": {
+        "description": "Extracts various identifiers related to the rights issue, such as ISIN codes for units and subscription rights.",
+        "source_types": ["Prospectus", "Memorandum", "InformationDocument", "Terms", "Publication"],
+        "semantic_search_query": "ISIN-kod för units, teckningsrätter, BTU, eller aktier",
+        "page_selection_strategy": "top_hit"
     }
 }

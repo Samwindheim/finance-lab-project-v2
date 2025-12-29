@@ -42,10 +42,28 @@ class OfferingTerms(BaseModel):
     unit_sub_price: Optional[Union[float, str]] = None
     offered_units: Optional[Union[int, str]] = None
 
+class OfferingOutcome(BaseModel):
+    unit_sub_total_pct: Optional[Union[float, str]] = None
+    unit_sub_total_count: Optional[Union[int, str]] = None
+    unit_sub_with_rights_count: Optional[Union[int, str]] = None
+    unit_sub_without_rights_count: Optional[Union[int, str]] = None
+    unit_sub_guarantor_count: Optional[Union[int, str]] = None
+    unit_sub_commitment_count: Optional[Union[int, str]] = None
+    total_amount_msek: Optional[Union[float, str]] = None
+    pct_with_rights: Optional[Union[float, str]] = None
+    pct_without_rights: Optional[Union[float, str]] = None
+    pct_guarantor: Optional[Union[float, str]] = None
+
+class Identifiers(BaseModel):
+    isin_units: Optional[str] = None
+    isin_rights: Optional[str] = None
+
 class ExtractionResult(BaseModel):
     investors: Optional[List[Investor]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
+    offering_outcome: Optional[OfferingOutcome] = None
+    identifiers: Optional[Identifiers] = None
     # Add other fields as needed, or use an extra field for flexibility
     # For now, we'll allow extra fields since the definitions are dynamic
     class Config:
@@ -59,6 +77,8 @@ class DocumentEntry(BaseModel):
     investors: Optional[List[Investor]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
+    offering_outcome: Optional[OfferingOutcome] = None
+    identifiers: Optional[Identifiers] = None
 
     class Config:
         extra = "allow"
