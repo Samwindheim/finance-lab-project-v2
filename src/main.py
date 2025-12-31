@@ -164,19 +164,7 @@ def extract_command(args):
         logger.error("Please provide either a document link (positional) or an --issue-id.")
         return
 
-    definitions = load_extraction_definitions()
-
-    fields_to_process = []
-    if extraction_field:
-        if extraction_field in definitions:
-            fields_to_process.append(extraction_field)
-        else:
-            logger.error(f"Extraction field '{extraction_field}' not found in definitions.")
-            sys.exit(1)
-    else:
-        fields_to_process = list(definitions.keys())
-        logger.info(f"Found {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
-
+    # --- Step 1: Identify source documents ---
     logger.info("Identifying source documents...")
     pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources_data, html_sources_data)
 
@@ -197,6 +185,45 @@ def extract_command(args):
         sys.exit(1)
     
     logger.info(f"Found {len(pdf_matches)} PDF(s) and {len(html_matches)} HTML document(s) for the issue.")
+
+    # --- Step 2: Determine fields to process (Smart Filtering) ---
+    definitions = load_extraction_definitions()
+    fields_to_process = []
+    
+    # Identify the source types of our target document(s)
+    target_source_types = set()
+    for m in pdf_matches:
+        if m.get("source_type"):
+            target_source_types.add(m.get("source_type"))
+    for m in html_matches:
+        if m.get("source_type"):
+            target_source_types.add(m.get("source_type"))
+
+    if extraction_field:
+        if extraction_field in definitions:
+            fields_to_process.append(extraction_field)
+        else:
+            logger.error(f"Extraction field '{extraction_field}' not found in definitions.")
+            sys.exit(1)
+    else:
+        # Smart Filter: Only include fields that match the target document's source type
+        for field_name, field_def in definitions.items():
+            if target_document:
+                if any(st in field_def.source_types for st in target_source_types):
+                    fields_to_process.append(field_name)
+                else:
+                    logger.debug(f"Skipping field '{field_name}' - not relevant for source types: {target_source_types}")
+            else:
+                fields_to_process.append(field_name)
+        
+        if target_document:
+            logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for source types {target_source_types}: {', '.join(fields_to_process)}")
+        else:
+            logger.info(f"Found {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
+
+    if not fields_to_process:
+        logger.warning(f"No relevant fields found for processing with source types: {target_source_types}")
+        return
 
     for field in fields_to_process:
         logger.info(f"Processing field: '{field}'")

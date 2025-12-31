@@ -45,10 +45,6 @@ class OfferingTerms(BaseModel):
 class OfferingOutcome(BaseModel):
     unit_sub_total_pct: Optional[Union[float, str]] = None
     unit_sub_total_count: Optional[Union[int, str]] = None
-    unit_sub_with_rights_count: Optional[Union[int, str]] = None
-    unit_sub_without_rights_count: Optional[Union[int, str]] = None
-    unit_sub_guarantor_count: Optional[Union[int, str]] = None
-    unit_sub_commitment_count: Optional[Union[int, str]] = None
     total_amount_msek: Optional[Union[float, str]] = None
     pct_with_rights: Optional[Union[float, str]] = None
     pct_without_rights: Optional[Union[float, str]] = None
