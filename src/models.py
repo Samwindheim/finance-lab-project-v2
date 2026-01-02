@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, RootModel
 
 class ExtractionDefinition(BaseModel):
     description: str
+    data_points: List[str] = Field(default_factory=list)
     source_types: List[str]
     semantic_search_query: str
     page_selection_strategy: str = "consecutive"

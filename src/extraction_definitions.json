@@ -1,30 +1,35 @@
 {
     "investors": {
         "description": "Extracts a list of all investors, including subscribers (Teckningsåtagare) and guarantors (Garantiåtagande), using a detailed, multi-level extraction logic.",
+        "data_points": ["name", "amount_in_cash", "amount_in_percentage", "level"],
         "source_types": ["Prospectus", "Memorandum", "InformationDocument"],
         "semantic_search_query": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), and guarantee commitments (garantiåtaganden or garanti)",
         "page_selection_strategy": "consecutive"
     },
     "important_dates": {
         "description": "Extracts all important dates for the rights issue (record date, subscription period, rights trading period, etc.) in a single pass.",
+        "data_points": ["record_date", "sub_start_date", "sub_end_date", "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"],
         "source_types": ["Publication"],
         "semantic_search_query": "Tidsplan eller tidplan med viktiga datum för företrädesemissionen (avstämningsdag, teckningsperiod, handel med teckningsrätter)",
         "page_selection_strategy": "consecutive"
     },
     "offering_terms": {
-        "description": "Extracts the financial terms of the offering: ratios (shares_required, rights_received, etc.), subscription price (unit_sub_price), and total volume (offered_units).",
+        "description": "Extracts the financial terms of the offering: ratios, subscription price, and total volume.",
+        "data_points": ["shares_required", "rights_received", "rights_required", "units_received", "shares_in_unit", "unit_sub_price", "offered_units"],
         "source_types": ["Publication"],
         "semantic_search_query": "Villkor för företrädesemissionen (teckningskurs, teckningsrelation, erbjuden volym, units eller aktier)",
         "page_selection_strategy": "consecutive"
     },
     "offering_outcome": {
-        "description": "Extracts the outcome of the offering",
+        "description": "Extracts the outcome of the offering, including subscription percentages and total amounts.",
+        "data_points": ["unit_sub_total_pct", "unit_sub_total_count", "total_amount_msek", "pct_with_rights", "pct_without_rights", "pct_guarantor"],
         "source_types": ["Outcome"],
         "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
         "page_selection_strategy": "consecutive"
     },
     "identifiers": {
         "description": "Extracts various identifiers related to the rights issue, such as ISIN codes for units and subscription rights.",
+        "data_points": ["isin_units", "isin_rights"],
         "source_types": [],
         "semantic_search_query": "ISIN-kod för units, teckningsrätter, BTU, eller aktier",
         "page_selection_strategy": "top_hit"
