@@ -50,6 +50,9 @@ class OfferingOutcome(BaseModel):
     pct_with_rights: Optional[Union[float, str]] = None
     pct_without_rights: Optional[Union[float, str]] = None
     pct_guarantor: Optional[Union[float, str]] = None
+    unit_sub_with_rights: Optional[Union[int, str]] = None
+    unit_sub_without_rights: Optional[Union[int, str]] = None
+    unit_sub_guarantor: Optional[Union[int, str]] = None
 
 class Identifiers(BaseModel):
     isin_units: Optional[str] = None

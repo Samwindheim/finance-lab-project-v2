@@ -22,7 +22,7 @@
     },
     "offering_outcome": {
         "description": "Extracts the outcome of the offering, including subscription percentages and total amounts.",
-        "data_points": ["unit_sub_total_pct", "unit_sub_total_count", "total_amount_msek", "pct_with_rights", "pct_without_rights", "pct_guarantor"],
+        "data_points": ["unit_sub_total_pct", "unit_sub_total_count", "total_amount_msek", "pct_with_rights", "pct_without_rights", "pct_guarantor", "unit_sub_with_rights", "unit_sub_without_rights", "unit_sub_guarantor"],
         "source_types": ["Outcome"],
         "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
         "page_selection_strategy": "consecutive"

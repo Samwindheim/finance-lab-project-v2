@@ -227,6 +227,76 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     return None
 
 
+def perform_outcome_calculations(all_data: Dict[str, DocumentEntry]):
+    """
+    Performs calculations for offering outcome fields if the required data is available.
+    Supports "looking across" documents to find offered_units if they aren't in the same document as the outcome.
+    
+    Calculations:
+    - unit_sub_with_rights = offered_units * (pct_with_rights / 100)
+    - unit_sub_without_rights = offered_units * (pct_without_rights / 100)
+    - unit_sub_guarantor = offered_units * (pct_guarantor / 100)
+    """
+    # Helper to convert to float/int for calculation
+    def to_num(val):
+        if val is None: return None
+        if isinstance(val, (int, float)): return val
+        try:
+            # Remove spaces or commas if they exist in string format
+            return float(str(val).replace(" ", "").replace(",", ".").replace("\xa0", ""))
+        except (ValueError, TypeError):
+            return None
+
+    # 1. Find a global "offered_units" value across all documents in this issue
+    global_offered_units = None
+    for doc_name, doc_entry in all_data.items():
+        if doc_entry.offering_terms and doc_entry.offering_terms.offered_units:
+            val = to_num(doc_entry.offering_terms.offered_units)
+            if val is not None:
+                global_offered_units = val
+                logger.debug(f"Found global offered_units: {global_offered_units} (from {doc_name})")
+                break
+
+    # 2. Iterate through documents to perform calculations
+    for doc_name, doc_entry in all_data.items():
+        if not doc_entry.offering_outcome:
+            continue
+            
+        # Determine which offered_units to use: local document preferred, then global
+        offered_units_num = None
+        if doc_entry.offering_terms and doc_entry.offering_terms.offered_units:
+            offered_units_num = to_num(doc_entry.offering_terms.offered_units)
+        
+        if offered_units_num is None:
+            offered_units_num = global_offered_units
+            
+        if offered_units_num is None:
+            continue
+
+        outcome = doc_entry.offering_outcome
+        
+        # Calculate unit_sub_with_rights
+        if outcome.pct_with_rights is not None and outcome.unit_sub_with_rights is None:
+            pct = to_num(outcome.pct_with_rights)
+            if pct is not None:
+                outcome.unit_sub_with_rights = int(round(offered_units_num * (pct / 100)))
+                logger.info(f"Calculated unit_sub_with_rights for {doc_name}: {outcome.unit_sub_with_rights}")
+
+        # Calculate unit_sub_without_rights
+        if outcome.pct_without_rights is not None and outcome.unit_sub_without_rights is None:
+            pct = to_num(outcome.pct_without_rights)
+            if pct is not None:
+                outcome.unit_sub_without_rights = int(round(offered_units_num * (pct / 100)))
+                logger.info(f"Calculated unit_sub_without_rights for {doc_name}: {outcome.unit_sub_without_rights}")
+
+        # Calculate unit_sub_guarantor
+        if outcome.pct_guarantor is not None and outcome.unit_sub_guarantor is None:
+            pct = to_num(outcome.pct_guarantor)
+            if pct is not None:
+                outcome.unit_sub_guarantor = int(round(offered_units_num * (pct / 100)))
+                logger.info(f"Calculated unit_sub_guarantor for {doc_name}: {outcome.unit_sub_guarantor}")
+
+
 def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
     """
     Merges data from multiple temporary files and saves them to a final output file
@@ -250,6 +320,7 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
 
     # 2. Process each temporary result file
     for file_path in temp_files:
+        # ... existing logic for processing temp files ...
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 temp_result = json.load(f)
@@ -343,7 +414,10 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             logger.error(f"Could not read temp file {file_path}: {e}")
             continue
 
-    # 3. Save the finalized structure
+    # 3. Perform calculations across fields
+    perform_outcome_calculations(all_data)
+
+    # 4. Save the finalized structure
     # Sort keys for consistent output
     sorted_output = {}
     for doc_name in sorted(all_data.keys()):
