@@ -9,7 +9,7 @@
     "important_dates": {
         "description": "Extracts all important dates for the rights issue (record date, subscription period, rights trading period, etc.) in a single pass.",
         "data_points": ["record_date", "sub_start_date", "sub_end_date", "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"],
-        "source_types": ["Publication"],
+        "source_types": ["Publication", "Memorandum"],
         "semantic_search_query": "Tidsplan eller tidplan med viktiga datum för företrädesemissionen (avstämningsdag, teckningsperiod, handel med teckningsrätter)",
         "page_selection_strategy": "consecutive"
     },
@@ -27,11 +27,18 @@
         "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
         "page_selection_strategy": "consecutive"
     },
-    "identifiers": {
-        "description": "Extracts various identifiers related to the rights issue, such as ISIN codes for units and subscription rights.",
-        "data_points": ["isin_units", "isin_rights"],
-        "source_types": [],
-        "semantic_search_query": "ISIN-kod för units, teckningsrätter, BTU, eller aktier",
+    "isin_units": {
+        "description": "Extracts the ISIN code for units.",
+        "data_points": ["isin_units"],
+        "source_types": ["Memorandum", "Prospectus", "InformationDocument"],
+        "semantic_search_query": "ISIN-kod för units",
+        "page_selection_strategy": "top_hit"
+    },
+    "isin_rights": {
+        "description": "Extracts the ISIN code for subscription rights (teckningsrätter).",
+        "data_points": ["isin_rights"],
+        "source_types": ["Memorandum", "Prospectus", "InformationDocument"],
+        "semantic_search_query": "ISIN-kod för teckningsrätter (TR)",
         "page_selection_strategy": "top_hit"
     }
 }

@@ -18,7 +18,7 @@ logger = setup_logger(__name__)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
-from utils import load_json_file, find_sources_by_issue_id, find_issue_id
+from utils import load_json_file, find_sources_by_issue_id, find_issue_id, download_pdf
 from extraction_logic import extract_from_pdf, extract_from_html, merge_and_finalize_outputs
 from models import ExtractionDefinitions, ExtractionDefinition
 from pdf_indexer import PDFIndexer
@@ -83,6 +83,19 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                 if not pdf_filename: continue
                 pdf_path = os.path.join(config.PDF_DIR, pdf_filename)
                 
+                # Check if file exists locally, if not download it
+                if not os.path.exists(pdf_path):
+                    full_url = pdf_info.get("full_url")
+                    if full_url:
+                        logger.info(f"PDF {pdf_filename} not found locally. Attempting to download...")
+                        success = download_pdf(full_url, pdf_path)
+                        if not success:
+                            logger.error(f"Could not download {pdf_filename}. Skipping.")
+                            continue
+                    else:
+                        logger.warning(f"PDF {pdf_filename} not found and no URL available. Skipping.")
+                        continue
+
                 temp_output_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_field}.json"
                 temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
@@ -239,17 +252,50 @@ def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
     return os.path.join(index_dir, index_name)
 
 def index_command(args):
-    logger.info(f"Indexing PDF Document: {args.pdf_path}")
-    index_path = get_index_path_for_pdf(args.pdf_path, args.index_dir)
+    pdf_path = args.pdf_path
+    
+    # Check if file exists, if not try to find it in manifests
+    if not os.path.exists(pdf_path):
+        pdf_filename = os.path.basename(pdf_path)
+        pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
+        
+        # Look for the filename in the manifest
+        match = next((m for m in pdf_sources_data if m.get("source_url") == pdf_filename), None)
+        if match and match.get("full_url"):
+            logger.info(f"PDF {pdf_filename} not found locally. Attempting to download from manifest...")
+            if not download_pdf(match["full_url"], pdf_path):
+                logger.error(f"Failed to download {pdf_filename}.")
+                return
+        else:
+            logger.error(f"PDF file not found: {pdf_path} (and no download URL found in manifests)")
+            return
+
+    logger.info(f"Indexing PDF Document: {pdf_path}")
+    index_path = get_index_path_for_pdf(pdf_path, args.index_dir)
     indexer = PDFIndexer(index_path=index_path)
-    indexer.index_pdf(args.pdf_path)
+    indexer.index_pdf(pdf_path)
 
 def query_command(args):
-    logger.info(f"Querying Vector Database for: {args.pdf_path}")
-    index_path = get_index_path_for_pdf(args.pdf_path, args.index_dir)
+    pdf_path = args.pdf_path
+    if not os.path.exists(pdf_path):
+        # Try to find it in manifests if it's just a filename
+        pdf_filename = os.path.basename(pdf_path)
+        pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
+        match = next((m for m in pdf_sources_data if m.get("source_url") == pdf_filename), None)
+        if match and match.get("full_url"):
+            logger.info(f"PDF {pdf_filename} not found locally. Attempting to download from manifest...")
+            if not download_pdf(match["full_url"], pdf_path):
+                logger.error(f"Failed to download {pdf_filename}.")
+                return
+        else:
+            logger.error(f"PDF file not found: {pdf_path}")
+            return
+
+    logger.info(f"Querying Vector Database for: {pdf_path}")
+    index_path = get_index_path_for_pdf(pdf_path, args.index_dir)
     indexer = PDFIndexer(index_path=index_path)
     if indexer.index.ntotal == 0:
-        logger.error(f"Index for {os.path.basename(args.pdf_path)} not found. Please index it first.")
+        logger.error(f"Index for {os.path.basename(pdf_path)} not found. Please index it first.")
         return
     results = indexer.query(args.query, top_k=args.n)
     logger.info(f"Found {len(results)} relevant pages:")
@@ -258,14 +304,17 @@ def query_command(args):
         logger.info(f"   Preview: {result['text'][:150]}...")
 
 def clear_command(args):
-    logger.info(f"Clearing Vector Database for: {args.pdf_path}")
-    index_path = get_index_path_for_pdf(args.pdf_path, args.index_dir)
+    pdf_path = args.pdf_path
+    # No download for clear, just check if it exists or if the index exists
+    index_path = get_index_path_for_pdf(pdf_path, args.index_dir)
     if not os.path.exists(f"{index_path}.index"):
-        logger.warning(f"Index for '{args.pdf_path}' not found.")
+        logger.warning(f"Index for '{pdf_path}' not found.")
         return
+    
     if not args.yes:
-        response = input(f"Delete index for '{args.pdf_path}'? (y/n): ")
+        response = input(f"Delete index for '{pdf_path}'? (y/n): ")
         if response.lower() not in ['y', 'yes']: return
+    
     indexer = PDFIndexer(index_path=index_path)
     indexer.reset_index()
     logger.info("Index cleared!")

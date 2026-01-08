@@ -54,16 +54,13 @@ class OfferingOutcome(BaseModel):
     unit_sub_without_rights: Optional[Union[int, str]] = None
     unit_sub_guarantor: Optional[Union[int, str]] = None
 
-class Identifiers(BaseModel):
-    isin_units: Optional[str] = None
-    isin_rights: Optional[str] = None
-
 class ExtractionResult(BaseModel):
     investors: Optional[List[Investor]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    identifiers: Optional[Identifiers] = None
+    isin_units: Optional[str] = None
+    isin_rights: Optional[str] = None
     # Add other fields as needed, or use an extra field for flexibility
     # For now, we'll allow extra fields since the definitions are dynamic
     class Config:
@@ -78,7 +75,8 @@ class DocumentEntry(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    identifiers: Optional[Identifiers] = None
+    isin_units: Optional[str] = None
+    isin_rights: Optional[str] = None
 
     class Config:
         extra = "allow"

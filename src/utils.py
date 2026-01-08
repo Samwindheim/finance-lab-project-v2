@@ -11,6 +11,7 @@ Centralizing these functions here helps to reduce code duplication and improve m
 
 import json
 import os
+import requests
 from logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -101,3 +102,27 @@ def find_source_by_doc_id(doc_id: str, pdf_sources: list, html_sources: list) ->
         if source.get("id") == doc_id:
             return source
     return None
+
+def download_pdf(url: str, save_path: str) -> bool:
+    """
+    Downloads a PDF file from a URL and saves it to the specified path.
+    Returns True if successful, False otherwise.
+    """
+    try:
+        logger.info(f"Downloading PDF from: {url}")
+        response = requests.get(url, stream=True, timeout=30)
+        response.raise_for_status()
+        
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        
+        with open(save_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        
+        logger.info(f"Successfully downloaded to: {save_path}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to download PDF from {url}: {e}")
+        return False

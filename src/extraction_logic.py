@@ -17,7 +17,7 @@ from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
 from utils import find_issue_id, find_document_info, clean_and_parse_json
-from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, Identifiers, FinalOutput, DocumentEntry
+from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, FinalOutput, DocumentEntry
 from logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -114,12 +114,14 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
         logger.warning(f"Could not find issue_id for '{os.path.basename(source_path)}'.")
 
     # The parsed_json from the model should contain the extraction_field as a key
+    field_value = parsed_json.get(extraction_field)
+    
     final_output = {
         "issue_id": issue_id,
         "doc_id": doc_id,
         "source_document": os.path.basename(source_path),
         "source_pages": source_pages,
-        extraction_field: parsed_json.get(extraction_field, []) # Default to empty list
+        extraction_field: field_value
     }
 
     # Create directory if it doesn't exist
@@ -397,13 +399,6 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                 except Exception as e:
                     logger.warning(f"Skipping invalid offering_outcome entry in {doc_name}: {e}")
             
-            elif extraction_field == "identifiers":
-                try:
-                    identifiers_data = Identifiers.model_validate(field_value)
-                    doc_entry.identifiers = identifiers_data
-                except Exception as e:
-                    logger.warning(f"Skipping invalid identifiers entry in {doc_name}: {e}")
-            
             else:
                 # Handle individual date fields or other fields
                 date_fields = {
@@ -452,9 +447,11 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         if doc_entry.offering_outcome:
             ordered_doc["offering_outcome"] = doc_entry.offering_outcome.model_dump(exclude_none=True)
         
-        # Add identifiers next if it exists
-        if doc_entry.identifiers:
-            ordered_doc["identifiers"] = doc_entry.identifiers.model_dump(exclude_none=True)
+        # Add identifiers next if they exist
+        if doc_entry.isin_units:
+            ordered_doc["isin_units"] = doc_entry.isin_units
+        if doc_entry.isin_rights:
+            ordered_doc["isin_rights"] = doc_entry.isin_rights
         
         # Add investors if it exists
         if doc_entry.investors:
@@ -463,7 +460,7 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         # Add any other extra fields
         # We exclude the ones we already handled
         doc_dict = doc_entry.model_dump(
-            exclude={"issue_id", "id", "important_dates", "offering_terms", "offering_outcome", "identifiers", "investors", "contributing_sources"}, 
+            exclude={"issue_id", "id", "important_dates", "offering_terms", "offering_outcome", "isin_units", "isin_rights", "investors", "contributing_sources"}, 
             exclude_none=True
         )
         for key in sorted(doc_dict.keys()):
