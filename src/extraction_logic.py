@@ -232,18 +232,22 @@ def perform_outcome_calculations(all_data: Dict[str, DocumentEntry]):
     Performs calculations for offering outcome fields if the required data is available.
     Supports "looking across" documents to find offered_units if they aren't in the same document as the outcome.
     
-    Calculations:
-    - unit_sub_with_rights = offered_units * (pct_with_rights / 100)
-    - unit_sub_without_rights = offered_units * (pct_without_rights / 100)
-    - unit_sub_guarantor = offered_units * (pct_guarantor / 100)
+    Logic:
+    - If percentage is present but unit count is missing -> Calculate unit count.
+    - If unit count is present but percentage is missing -> Calculate percentage.
+    - If both are missing, do nothing.
+    - If both are present, trust the extracted values (explicitly stated in text).
     """
     # Helper to convert to float/int for calculation
     def to_num(val):
         if val is None: return None
         if isinstance(val, (int, float)): return val
         try:
-            # Remove spaces or commas if they exist in string format
-            return float(str(val).replace(" ", "").replace(",", ".").replace("\xa0", ""))
+            # Remove spaces, commas, non-breaking spaces
+            s = str(val).replace(" ", "").replace(",", ".").replace("\xa0", "")
+            # Remove any trailing % or non-numeric chars for simple conversion
+            s = "".join(c for c in s if c.isdigit() or c in ".-")
+            return float(s)
         except (ValueError, TypeError):
             return None
 
@@ -270,31 +274,37 @@ def perform_outcome_calculations(all_data: Dict[str, DocumentEntry]):
         if offered_units_num is None:
             offered_units_num = global_offered_units
             
-        if offered_units_num is None:
+        if offered_units_num is None or offered_units_num == 0:
             continue
 
         outcome = doc_entry.offering_outcome
         
-        # Calculate unit_sub_with_rights
-        if outcome.pct_with_rights is not None and outcome.unit_sub_with_rights is None:
-            pct = to_num(outcome.pct_with_rights)
-            if pct is not None:
-                outcome.unit_sub_with_rights = int(round(offered_units_num * (pct / 100)))
-                logger.info(f"Calculated unit_sub_with_rights for {doc_name}: {outcome.unit_sub_with_rights}")
+        # Define the pairs to check
+        pairs = [
+            ("pct_with_rights", "unit_sub_with_rights"),
+            ("pct_without_rights", "unit_sub_without_rights"),
+            ("pct_guarantor", "unit_sub_guarantor")
+        ]
 
-        # Calculate unit_sub_without_rights
-        if outcome.pct_without_rights is not None and outcome.unit_sub_without_rights is None:
-            pct = to_num(outcome.pct_without_rights)
-            if pct is not None:
-                outcome.unit_sub_without_rights = int(round(offered_units_num * (pct / 100)))
-                logger.info(f"Calculated unit_sub_without_rights for {doc_name}: {outcome.unit_sub_without_rights}")
-
-        # Calculate unit_sub_guarantor
-        if outcome.pct_guarantor is not None and outcome.unit_sub_guarantor is None:
-            pct = to_num(outcome.pct_guarantor)
-            if pct is not None:
-                outcome.unit_sub_guarantor = int(round(offered_units_num * (pct / 100)))
-                logger.info(f"Calculated unit_sub_guarantor for {doc_name}: {outcome.unit_sub_guarantor}")
+        for pct_attr, unit_attr in pairs:
+            pct_val = getattr(outcome, pct_attr)
+            unit_val = getattr(outcome, unit_attr)
+            
+            # Scenario A: Percentage present, Unit missing -> Calculate Unit
+            if pct_val is not None and unit_val is None:
+                pct_num = to_num(pct_val)
+                if pct_num is not None:
+                    calculated_units = int(round(offered_units_num * (pct_num / 100)))
+                    setattr(outcome, unit_attr, calculated_units)
+                    logger.info(f"Calculated {unit_attr} for {doc_name}: {calculated_units}")
+            
+            # Scenario B: Unit present, Percentage missing -> Calculate Percentage
+            elif unit_val is not None and pct_val is None:
+                unit_num = to_num(unit_val)
+                if unit_num is not None:
+                    calculated_pct = round((unit_num / offered_units_num) * 100, 2)
+                    setattr(outcome, pct_attr, calculated_pct)
+                    logger.info(f"Calculated {pct_attr} for {doc_name}: {calculated_pct}%")
 
 
 def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
