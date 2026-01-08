@@ -1,4 +1,4 @@
-# PDF RAG Pipeline
+# Finance Lab: Financial Data Extraction Pipeline
 
 A modular RAG (Retrieval-Augmented Generation) pipeline for extracting financial data from PDF documents using semantic search and vision models.
 
@@ -6,16 +6,22 @@ A modular RAG (Retrieval-Augmented Generation) pipeline for extracting financial
 
 ```
 .
-├── faiss_index/      # Stores persistent FAISS vector indexes
-├── output_images/    # Stores temporary images for vision model analysis
-├── output_json/      # Stores the final structured JSON output
-├── pdfs/             # Directory for input PDF documents
-├── prompts/          # Contains prompts for the vision model
-├── src/              # Main source code for the pipeline
-├── tests/            # Test scripts and data
-├── .env              # API keys (not committed)
-├── config.py         # Main configuration file
-└── run.sh            # Main execution script
+├── faiss_index/          # Persistent FAISS vector indexes for PDFs
+├── output_images/        # Temporary page images for LLM analysis
+├── output_json/          # Final structured extraction results
+├── pdfs/                 # Local directory for PDF sources
+├── prompts/              # Field-specific extraction prompts (.txt)
+├── reference_files/      # Source manifests (pdf-sources.json, etc.)
+├── src/                  # Core application logic
+│   ├── main.py           # Unified CLI entry point
+│   ├── extraction_logic.py # Orchestrates RAG
+│   ├── models.py         # Pydantic data models
+│   ├── llm.py            # Gemini LLM interface
+│   ├── pdf_indexer.py    # PDF indexing and semantic search
+│   ├── html_processor.py # HTML text extraction
+│   └── config.py         # Central configuration (models, paths, etc.)
+├── run.sh                # CLI wrapper script
+└── requirements.txt      # Python dependencies
 ```
 
 ## Setup
@@ -36,51 +42,34 @@ A modular RAG (Retrieval-Augmented Generation) pipeline for extracting financial
 
 ## Usage
 
-The `run.sh` script provides a simple CLI for all operations:
+Use `./run.sh` to access the unified CLI.
 
-### Index a PDF
-Indexes all pages of a PDF document for semantic search. Each PDF gets its own vector index in the `faiss_index/` directory.
+### 1. Extract Structured Data (Production)
+Run the full pipeline on a document or an entire issue.
 ```bash
-./run.sh index pdfs/your_document.pdf
+# Extract all relevant fields from a specific document
+./run.sh extract "https://example.com/prospectus.pdf"
+```
+### 2. PDF Indexing (Developer Utilities)
+Manual index management for PDFs.
+```bash
+# Index a PDF
+./run.sh index pdfs/document.pdf
+
+# Query the index (Semantic Search)
+./run.sh query pdfs/document.pdf "teckningsåtaganden" -n 5
+
+# Clear an index
+./run.sh clear pdfs/document.pdf
 ```
 
-### Query the database
-Performs a semantic search over an indexed PDF.
-```bash
-./run.sh query pdfs/your_document.pdf "your query text" -n 5
-```
-*   The `-n` flag specifies the number of top results to return. (Default is 3)
+## How It Works
 
-### Extract Structured Data
-Extracts specific data types from a PDF using a multi-step RAG process.
-```bash
-./run.sh extract underwriters pdfs/your_document.pdf
-```
-*   The first argument is the `extraction_type`, which must be defined in `config.py` and have a corresponding prompt in the `prompts/` directory.
-*   The output is saved to a file in the `output_json/` directory.
-
-### Clear the vector database
-Deletes the existing FAISS index for a specific PDF.
-```bash
-./run.sh clear pdfs/your_document.pdf
-```
-
-## Architecture
-
--   **`src/cli.py`**: Command-line interface for all user interactions, powered by `argparse`.
--   **`src/pdf_indexer.py`**: Core class for PDF parsing (`PyMuPDF`), text chunking (`TikToken`), embedding generation (`OpenAI`), and vector indexing (`FAISS`).
--   **`src/vision.py`**: Module for vision-based data extraction using the Gemini API. It constructs the multi-modal payload (prompt, text, images) and handles the API request.
--   **`src/config.py`**: Central configuration file for models, prompts, and directory paths.
--   **FAISS**: Vector database for efficient similarity search on text embeddings.
--   **OpenAI Embeddings**: `text-embedding-3-large` for semantic text representation.
--   **Gemini 2.5 Flash**: Vision model for structured data extraction from images.
-
-## Features
-
-✅ Page-by-page PDF text extraction
-✅ Semantic search with OpenAI embeddings
-✅ Vision-based data extraction with Gemini
-✅ Persistent vector storage with FAISS
-✅ Clean, simplified CLI for core operations
-✅ Highly modular and configurable
-
+1.  **Identification**: The system identifies the `issue_id` and `source_type` of the target document using manifests in `reference_files/`.
+2.  **Smart Filtering**: It filters extraction fields from `extraction_definitions.json` that are relevant to that `source_type`.
+3.  **RAG Process**: 
+    - For PDFs, it performs semantic search to find the most relevant pages, extracts them as images and text, and sends them to Gemini.
+    - For HTML, it extracts the full text and sends it to Gemini.
+4.  **Validation**: Extracted JSON is validated against Pydantic models in `src/models.py`.
+5.  **Calculations**: A post-processing step (`perform_outcome_calculations`) fills in missing derived data points.
+6.  **Merging**: The results are merged into `{issue_id}_extraction.json` in `output_json/`.
