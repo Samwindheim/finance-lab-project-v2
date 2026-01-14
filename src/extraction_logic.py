@@ -229,86 +229,6 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     return None
 
 
-def perform_outcome_calculations(all_data: Dict[str, DocumentEntry]):
-    """
-    Performs calculations for offering outcome fields if the required data is available.
-    Supports "looking across" documents to find offered_units if they aren't in the same document as the outcome.
-    
-    Logic:
-    - If percentage is present but unit count is missing -> Calculate unit count.
-    - If unit count is present but percentage is missing -> Calculate percentage.
-    - If both are missing, do nothing.
-    - If both are present, trust the extracted values (explicitly stated in text).
-    """
-    # Helper to convert to float/int for calculation
-    def to_num(val):
-        if val is None: return None
-        if isinstance(val, (int, float)): return val
-        try:
-            # Remove spaces, commas, non-breaking spaces
-            s = str(val).replace(" ", "").replace(",", ".").replace("\xa0", "")
-            # Remove any trailing % or non-numeric chars for simple conversion
-            s = "".join(c for c in s if c.isdigit() or c in ".-")
-            return float(s)
-        except (ValueError, TypeError):
-            return None
-
-    # 1. Find a global "offered_units" value across all documents in this issue
-    global_offered_units = None
-    for doc_name, doc_entry in all_data.items():
-        if doc_entry.offering_terms and doc_entry.offering_terms.offered_units:
-            val = to_num(doc_entry.offering_terms.offered_units)
-            if val is not None:
-                global_offered_units = val
-                logger.debug(f"Found global offered_units: {global_offered_units} (from {doc_name})")
-                break
-
-    # 2. Iterate through documents to perform calculations
-    for doc_name, doc_entry in all_data.items():
-        if not doc_entry.offering_outcome:
-            continue
-            
-        # Determine which offered_units to use: local document preferred, then global
-        offered_units_num = None
-        if doc_entry.offering_terms and doc_entry.offering_terms.offered_units:
-            offered_units_num = to_num(doc_entry.offering_terms.offered_units)
-        
-        if offered_units_num is None:
-            offered_units_num = global_offered_units
-            
-        if offered_units_num is None or offered_units_num == 0:
-            continue
-
-        outcome = doc_entry.offering_outcome
-        
-        # Define the pairs to check
-        pairs = [
-            ("pct_with_rights", "unit_sub_with_rights"),
-            ("pct_without_rights", "unit_sub_without_rights"),
-            ("pct_guarantor", "unit_sub_guarantor")
-        ]
-
-        for pct_attr, unit_attr in pairs:
-            pct_val = getattr(outcome, pct_attr)
-            unit_val = getattr(outcome, unit_attr)
-            
-            # Scenario A: Percentage present, Unit missing -> Calculate Unit
-            if pct_val is not None and unit_val is None:
-                pct_num = to_num(pct_val)
-                if pct_num is not None:
-                    calculated_units = int(round(offered_units_num * (pct_num / 100)))
-                    setattr(outcome, unit_attr, calculated_units)
-                    logger.info(f"Calculated {unit_attr} for {doc_name}: {calculated_units}")
-            
-            # Scenario B: Unit present, Percentage missing -> Calculate Percentage
-            elif unit_val is not None and pct_val is None:
-                unit_num = to_num(unit_val)
-                if unit_num is not None:
-                    calculated_pct = round((unit_num / offered_units_num) * 100, 2)
-                    setattr(outcome, pct_attr, calculated_pct)
-                    logger.info(f"Calculated {pct_attr} for {doc_name}: {calculated_pct}%")
-
-
 def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
     """
     Merges data from multiple temporary files and saves them to a final output file
@@ -419,10 +339,7 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             logger.error(f"Could not read temp file {file_path}: {e}")
             continue
 
-    # 3. Perform calculations across fields
-    perform_outcome_calculations(all_data)
-
-    # 4. Save the finalized structure
+    # 3. Save the finalized structure
     # Sort keys for consistent output
     sorted_output = {}
     for doc_name in sorted(all_data.keys()):

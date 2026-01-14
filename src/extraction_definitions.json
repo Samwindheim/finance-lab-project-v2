@@ -27,6 +27,20 @@
         "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
         "page_selection_strategy": "consecutive"
     },
+    "general_info": {
+        "description": "Rådgivare, extracts general information about the rights issue.",
+        "data_points": ["Finansiella rådgivare", "Legalrådgivare", "Emissionsinstitut"],
+        "source_types": ["Publication"],
+        "semantic_search_query": "Generell information om företrädesemissionen (Finansiella rådgivare, legalrådgivare, emissionsinstitut)",
+        "page_selection_strategy": "consecutive"
+    },
+    "compensation_to_guarantor_investors": {
+        "description": "Extracts the compensation to the guarantor investors.",
+        "data_points": ["compensation_to_guarantor_investors"],
+        "source_types": ["Publication"],
+        "semantic_search_query": "Ersättning till garantiåtagare",
+        "page_selection_strategy": "consecutive"
+    },
     "isin_units": {
         "description": "Extracts the ISIN code for units.",
         "data_points": ["isin_units"],

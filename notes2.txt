@@ -7,3 +7,11 @@ python src/run_extraction.py --issue-id 9fff9ce4-455d-424a-ab32-42314f3efa2c --e
 
 test issue:
 22461505-852f-413d-8cf5-ff3a4f5f5b64
+
+Övertilldelning
+Rådgivare
+
+1/14
+
+- Information extract field
+- Create project description doc for cursor
