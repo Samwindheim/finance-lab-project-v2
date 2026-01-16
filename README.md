@@ -71,5 +71,4 @@ Manual index management for PDFs.
     - For PDFs, it performs semantic search to find the most relevant pages, extracts them as images and text, and sends them to Gemini.
     - For HTML, it extracts the full text and sends it to Gemini.
 4.  **Validation**: Extracted JSON is validated against Pydantic models in `src/models.py`.
-5.  **Calculations**: A post-processing step (`perform_outcome_calculations`) fills in missing derived data points.
 6.  **Merging**: The results are merged into `{issue_id}_extraction.json` in `output_json/`.
