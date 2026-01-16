@@ -45,7 +45,14 @@ class OfferingTerms(BaseModel):
     offered_units: Optional[Union[int, str]] = None
 
 class IPOTerms(BaseModel):
-    temp: Optional[Union[float, str]] = None
+    listing_price: Optional[Union[float, str]] = None
+    new_shares: Optional[Union[int, str]] = None
+    existing_shares_sold: Optional[Union[int, str]] = None
+    over_allotment_shares: Optional[Union[int, str]] = None
+    pre_money_valuation: Optional[Union[float, str]] = None
+
+class IPOOutcome(BaseModel):
+    TODO: "TODO"
 
 class OfferingOutcome(BaseModel):
     unit_sub_total_pct: Optional[Union[float, str]] = None
@@ -63,6 +70,8 @@ class ExtractionResult(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
+    ipo_terms: Optional[IPOTerms] = None
+    ipo_outcome: Optional[IPOOutcome] = None
     isin_units: Optional[str] = None
     isin_rights: Optional[str] = None
     # Add other fields as needed, or use an extra field for flexibility

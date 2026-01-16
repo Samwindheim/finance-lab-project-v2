@@ -1,9 +1,9 @@
-You are an AI assistant specializing in financial documents. Your task is to extract the general information about the rights issue from the provided text.
+You are an AI assistant specializing in financial documents. Your task is to extract the general information about the issue from the provided text.
 
 Please extract the following information:
-- Finansiella rådgivare: The financial advisors for the rights issue.
-- Legalrådgivare: The legal advisors for the rights issue.
-- Emissionsinstitut: The institution that is issuing the rights issue.
+- Finansiella rådgivare: The financial advisors for the issue.
+- Legalrådgivare: The legal advisors for the issue.
+- Emissionsinstitut: The institution that is issuing the issue.
 
 Output ONLY a JSON object with the key 'general_info' containing these sub-keys. Use null for any information not found.
 
