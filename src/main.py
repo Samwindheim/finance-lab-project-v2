@@ -181,6 +181,22 @@ def extract_command(args):
     logger.info("Identifying source documents...")
     pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources_data, html_sources_data)
 
+    # Detect the issue type from the first match
+    issue_type = None
+    all_matches = pdf_matches + html_matches
+    if all_matches:
+        # Check if any match has an issue_type
+        for m in all_matches:
+            if m.get("issue_type"):
+                issue_type = m.get("issue_type")
+                break
+    
+    if not issue_type:
+        logger.warning(f"Could not detect issue_type for issue_id '{issue_id}'. Assuming 'Rights issue'.")
+        issue_type = "Rights issue"
+    else:
+        logger.info(f"Detected issue_type: '{issue_type}'")
+
     if target_document:
         target_filename = os.path.basename(target_document)
         pdf_matches = [
@@ -219,8 +235,13 @@ def extract_command(args):
             logger.error(f"Extraction field '{extraction_field}' not found in definitions.")
             sys.exit(1)
     else:
-        # Smart Filter: Only include fields that match the target document's source type
+        # Smart Filter: Only include fields that match the target document's source type AND issue type
         for field_name, field_def in definitions.items():
+            # Filter by issue type first
+            if field_def.issue_types and issue_type not in field_def.issue_types:
+                logger.debug(f"Skipping field '{field_name}' - not relevant for issue_type: {issue_type}")
+                continue
+
             if target_document:
                 if any(st in field_def.source_types for st in target_source_types):
                     fields_to_process.append(field_name)
@@ -230,9 +251,9 @@ def extract_command(args):
                 fields_to_process.append(field_name)
         
         if target_document:
-            logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for source types {target_source_types}: {', '.join(fields_to_process)}")
+            logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for source types {target_source_types} and issue_type '{issue_type}': {', '.join(fields_to_process)}")
         else:
-            logger.info(f"Found {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
+            logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for issue_type '{issue_type}': {', '.join(fields_to_process)}")
 
     if not fields_to_process:
         logger.warning(f"No relevant fields found for processing with source types: {target_source_types}")

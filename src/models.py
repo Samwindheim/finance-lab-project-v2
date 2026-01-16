@@ -11,6 +11,7 @@ class ExtractionDefinition(BaseModel):
     description: str
     data_points: List[str] = Field(default_factory=list)
     source_types: List[str]
+    issue_types: Optional[List[str]] = None
     semantic_search_query: str
     page_selection_strategy: str = "consecutive"
 
@@ -43,6 +44,9 @@ class OfferingTerms(BaseModel):
     unit_sub_price: Optional[Union[float, str]] = None
     offered_units: Optional[Union[int, str]] = None
 
+class IPOTerms(BaseModel):
+    temp: Optional[Union[float, str]] = None
+
 class OfferingOutcome(BaseModel):
     unit_sub_total_pct: Optional[Union[float, str]] = None
     unit_sub_total_count: Optional[Union[int, str]] = None
@@ -74,6 +78,7 @@ class DocumentEntry(BaseModel):
     investors: Optional[List[Investor]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
+    ipo_terms: Optional[IPOTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
     isin_units: Optional[str] = None
     isin_rights: Optional[str] = None
