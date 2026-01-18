@@ -348,6 +348,15 @@ def html_text_command(args):
     else:
         logger.error("Could not extract text.")
 
+def test_command(args):
+    """Handles the 'test' command for evaluating extraction accuracy."""
+    from tests.run_db_evaluation import main as run_eval
+    # Adjust sys.argv so the imported main() can parse them
+    sys.argv = ['tests/run_db_evaluation.py', '--issue-id', args.issue_id]
+    if args.output_dir:
+        sys.argv.extend(['--output-dir', args.output_dir])
+    run_eval()
+
 # --- Main CLI Entry Point ---
 
 def main():
@@ -386,6 +395,12 @@ def main():
     html_parser = subparsers.add_parser('html-text', help='Extract text from HTML')
     html_parser.add_argument('html_path', help='Path or URL')
     html_parser.set_defaults(func=html_text_command)
+
+    # Test
+    test_parser = subparsers.add_parser('test', help='Evaluate AI extraction against SQL Database')
+    test_parser.add_argument('--issue-id', required=True, help='The issue_id to evaluate')
+    test_parser.add_argument('--output-dir', default='output_json', help='Directory containing AI JSON results')
+    test_parser.set_defaults(func=test_command)
 
     if len(sys.argv) == 1:
         parser.print_help()

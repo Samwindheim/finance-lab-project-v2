@@ -4,6 +4,7 @@
 #
 # Usage:
 #   ./run.sh extract <link> [--extraction-field <field>]
+#   ./run.sh test --issue-id <id>
 #   ./run.sh index <pdf_path>
 #   ./run.sh query <pdf_path> <query>
 
@@ -32,7 +33,7 @@ fi
 
 # Main script logic
 case "$1" in
-  extract|index|query|clear|html-text)
+  extract|index|query|clear|html-text|test)
     python3 src/main.py "$@"
     ;;
   *)

@@ -11,3 +11,7 @@ python-dotenv
 beautifulsoup4
 requests
 pydantic
+tabulate
+sqlalchemy
+mysql-connector-python
+pandas
