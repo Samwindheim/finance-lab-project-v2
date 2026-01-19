@@ -5,6 +5,7 @@ import pandas as pd
 from src.database import FinanceDB
 from tests.evaluator import Evaluator
 from tabulate import tabulate
+from src.models import get_fields_for_category
 
 def log_header(text):
     print(f"\n{'='*20} {text} {'='*20}")
@@ -60,32 +61,27 @@ def main():
 
     if inv_report['details']:
         table_data = []
-        for d in inv_report['details']:
+        # Sort details so Correct matches are together, etc.
+        sorted_details = sorted(inv_report['details'], key=lambda x: x['type'])
+        for d in sorted_details:
+            status_icon = "✅" if d['type'] == "Correct" else "❌"
             row = [
-                d['type'],
+                f"{status_icon} {d['type']}",
                 d['predicted'].get('name') if d['predicted'] else "N/A",
                 d['ground_truth'].get('name') if d['ground_truth'] else "N/A",
-                ", ".join(d.get('errors', [])) if 'errors' in d else "N/A"
+                ", ".join(d.get('errors', [])) if 'errors' in d else ""
             ]
             table_data.append(row)
-        print(tabulate(table_data, headers=["Type", "AI Found", "DB Ground Truth", "Errors"], tablefmt="grid"))
+        print(tabulate(table_data, headers=["Status/Type", "AI Found", "DB Ground Truth", "Errors"], tablefmt="grid"))
 
     # --- EVALUATE TERMS & DATES ---
     log_header("TERMS & DATES EVALUATION")
     
     # Map model fields to DB columns
     fields_to_check = {
-        "important_dates": [
-            "record_date", "sub_start_date", "sub_end_date", 
-            "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"
-        ],
-        "offering_terms": [
-            "shares_required", "rights_received", "rights_required", 
-            "units_received", "shares_in_unit", "unit_sub_price", "offered_units"
-        ],
-        "offering_outcome": [
-            "unit_sub_total", "unit_sub_with_rights", "unit_sub_without_rights", "unit_sub_guarantor"
-        ]
+        "important_dates": get_fields_for_category("important_dates"),
+        "offering_terms": get_fields_for_category("offering_terms"),
+        "offering_outcome": get_fields_for_category("offering_outcome")
     }
 
     all_field_details = []
@@ -93,13 +89,20 @@ def main():
         ai_group_data = merged_ai_data.get(model_group, {})
         field_results = evaluator.compare_fields(ai_group_data, db_issue, fields)
         
-        for d in field_results['details']:
-            all_field_details.append([model_group, d['field'], d['predicted'], d['ground_truth']])
+        for r in field_results:
+            status_icon = "✅" if r['is_match'] else "❌"
+            all_field_details.append([
+                status_icon,
+                model_group,
+                r['field'],
+                r['predicted'] if r['predicted'] is not None else "-",
+                r['ground_truth'] if r['ground_truth'] is not None else "-"
+            ])
 
     if all_field_details:
-        print(tabulate(all_field_details, headers=["Group", "Field", "AI Value", "DB Value"], tablefmt="grid"))
+        print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid"))
     else:
-        print("All Terms and Dates match perfectly!")
+        print("No fields found to evaluate.")
 
 if __name__ == "__main__":
     main()

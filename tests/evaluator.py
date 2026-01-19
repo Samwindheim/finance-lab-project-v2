@@ -22,11 +22,14 @@ class Evaluator:
 
     def normalize_amount(self, amount: Any) -> Optional[Decimal]:
         """Normalizes amount to a Decimal."""
-        if amount is None or amount == "":
+        if amount is None or amount == "" or (isinstance(amount, float) and math.isnan(amount)):
             return None
         try:
             # Handle strings with spaces or commas
             clean_val = str(amount).replace(" ", "").replace(",", "")
+            # If the string itself is 'nan' or 'None'
+            if clean_val.lower() in ['nan', 'none']:
+                return None
             return Decimal(clean_val)
         except (InvalidOperation, TypeError, ValueError):
             return None
@@ -59,6 +62,11 @@ class Evaluator:
                 
                 if not errors:
                     report["correct"] += 1
+                    report["details"].append({
+                        "type": "Correct",
+                        "predicted": pred,
+                        "ground_truth": best_match
+                    })
                 else:
                     report["incorrect"] += 1
                     report["details"].append({
@@ -89,7 +97,12 @@ class Evaluator:
             gt_norm = self.normalize_name(gt.get("name", ""))
             similarity = fuzz.token_sort_ratio(pred_norm, gt_norm)
 
-            if similarity < self.similarity_threshold:
+            # Check for name containment (e.g., "Sven Olof Kulldorf" in "Sven Olof Kulldorf / Bank")
+            # We check if one normalized name is a substring of the other
+            is_contained = (gt_norm in pred_norm and len(gt_norm) > 5) or \
+                          (pred_norm in gt_norm and len(pred_norm) > 5)
+
+            if similarity < self.similarity_threshold and not is_contained:
                 continue
 
             errors = self._get_investor_errors(pred, gt)
@@ -130,33 +143,30 @@ class Evaluator:
 
         return errors
 
-    def compare_fields(self, predicted: Dict[str, Any], ground_truth: Dict[str, Any], fields: List[str]) -> Dict[str, Any]:
-        """Compares individual fields (dates, terms, etc.) between two dicts."""
-        field_report = {"correct": 0, "incorrect": 0, "details": []}
+    def compare_fields(self, predicted: Dict[str, Any], ground_truth: Dict[str, Any], fields: List[str]) -> List[Dict[str, Any]]:
+        """Compares individual fields (dates, terms, etc.) and returns all results."""
+        results = []
         
         for field in fields:
             pred_val = predicted.get(field)
             gt_val = ground_truth.get(field)
 
-            # Basic normalization for comparison
-            # If dates, they should be compared as strings or date objects
-            # If numbers, handle rounding
-            
+            is_match = False
             if str(pred_val).strip() == str(gt_val).strip():
-                field_report["correct"] += 1
+                is_match = True
             else:
                 # Try numerical comparison if applicable
                 p_num = self.normalize_amount(pred_val)
                 g_num = self.normalize_amount(gt_val)
                 
                 if p_num is not None and g_num is not None and p_num == g_num:
-                    field_report["correct"] += 1
-                else:
-                    field_report["incorrect"] += 1
-                    field_report["details"].append({
-                        "field": field,
-                        "predicted": pred_val,
-                        "ground_truth": gt_val
-                    })
+                    is_match = True
+            
+            results.append({
+                "field": field,
+                "predicted": pred_val,
+                "ground_truth": gt_val,
+                "is_match": is_match
+            })
         
-        return field_report
+        return results

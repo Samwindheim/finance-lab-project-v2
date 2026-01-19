@@ -6,19 +6,17 @@ Extraction Rules:
 
 unit_sub_total_pct: The total subscription grade including guarantees (teckningsgrad). (e.g., "85,00%" -> 85.0).
 
-unit_sub_total_count: Total number of units subscribed. Extract this ONLY if the exact number is explicitly written in the text.
+unit_sub_total: Total number of units subscribed. Extract this ONLY if the exact number is explicitly written in the text.
 
-total_amount_msek: Total amount raised in millions of SEK. (e.g., "21,0 MSEK" -> 21.0).
-
-pct_with_rights: Percentage subscribed with the support of rights (med stöd av rätter).
+unit_pct_sub_with_rights: Percentage subscribed with the support of rights (med stöd av rätter).
 
 unit_sub_with_rights: Exact number of units subscribed with the support of rights.
 
-pct_without_rights: Percentage subscribed without the support of rights (utan stöd av rätter).
+unit_pct_sub_without_rights: Percentage subscribed without the support of rights (utan stöd av rätter).
 
 unit_sub_without_rights: Exact number of units subscribed without the support of rights.
 
-pct_guarantor: Percentage subscribed by/allocated to guarantors (emissionsgaranter).
+unit_pct_sub_guarantor: Percentage subscribed by/allocated to guarantors (emissionsgaranter).
 
 unit_sub_guarantor: Exact number of units subscribed by/allocated to guarantors.
 
@@ -37,14 +35,13 @@ Example Output:
 JSON
 {
   "offering_outcome": {
-    "unit_sub_total_pct": 85.0,
-    "unit_sub_total_count": 14980479,
-    "total_amount_msek": 21.0,
-    "pct_with_rights": 43.5,
-    "pct_without_rights": 0.3,
-    "pct_guarantor": 41.2,
-    "unit_sub_with_rights": 7666480,
-    "unit_sub_without_rights": 52872,
-    "unit_sub_guarantor": 7261126
+    "unit_sub_total_pct": null,
+    "unit_sub_total": null,
+    "unit_sub_with_rights": null,
+    "unit_sub_without_rights": null,
+    "unit_sub_guarantor": null,
+    "unit_pct_sub_with_rights": null,
+    "unit_pct_sub_without_rights": null,
+    "unit_pct_sub_guarantor": null
   }
 }

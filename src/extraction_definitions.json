@@ -1,7 +1,6 @@
 {
     "investors": {
         "description": "Extracts a list of all investors, including subscribers (Teckningsåtagare) and guarantors (Garantiåtagande), using a detailed, multi-level extraction logic.",
-        "data_points": ["name", "amount_in_cash", "amount_in_percentage", "level"],
         "source_types": ["Prospectus", "Memorandum", "InformationDocument"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue", "Warrant"],
         "semantic_search_query": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), and guarantee commitments (garantiåtaganden or garanti)",
@@ -9,7 +8,6 @@
     },
     "important_dates": {
         "description": "Extracts all important dates for the rights issue (record date, subscription period, rights trading period, etc.) in a single pass.",
-        "data_points": ["record_date", "sub_start_date", "sub_end_date", "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"],
         "source_types": ["Publication", "Memorandum"],
         "issue_types": ["Rights issue"],
         "semantic_search_query": "Tidsplan eller tidplan med viktiga datum för företrädesemissionen (avstämningsdag, teckningsperiod, handel med teckningsrätter)",
@@ -17,7 +15,6 @@
     },
     "offering_terms": {
         "description": "Extracts the financial terms of the offering: ratios, subscription price, and total volume.",
-        "data_points": ["shares_required", "rights_received", "rights_required", "units_received", "shares_in_unit", "unit_sub_price", "offered_units"],
         "source_types": ["Publication"],
         "issue_types": ["Rights issue"],
         "semantic_search_query": "Villkor för företrädesemissionen (teckningskurs, teckningsrelation, erbjuden volym, units eller aktier)",
@@ -25,7 +22,6 @@
     },
     "offering_outcome": {
         "description": "Extracts the outcome of the offering, including subscription percentages and total amounts.",
-        "data_points": ["unit_sub_total_pct", "unit_sub_total_count", "total_amount_msek", "pct_with_rights", "pct_without_rights", "pct_guarantor", "unit_sub_with_rights", "unit_sub_without_rights", "unit_sub_guarantor"],
         "source_types": ["Outcome"],
         "issue_types": ["Rights issue"],
         "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
@@ -33,7 +29,6 @@
     },
     "general_info": {
         "description": "Rådgivare, extracts general information about the rights issue.",
-        "data_points": ["Finansiella rådgivare", "Legalrådgivare", "Emissionsinstitut"],
         "source_types": ["Publication"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
         "semantic_search_query": "Generell information om företrädesemissionen (Finansiella rådgivare, legalrådgivare, emissionsinstitut)",
@@ -41,7 +36,6 @@
     },
     "isin_units": {
         "description": "Extracts the ISIN code for units.",
-        "data_points": ["isin_units"],
         "source_types": ["Memorandum", "Prospectus", "InformationDocument"],
         "issue_types": ["Rights issue"],
         "semantic_search_query": "ISIN-kod för units",
@@ -49,7 +43,6 @@
     },
     "isin_rights": {
         "description": "Extracts the ISIN code for subscription rights (teckningsrätter).",
-        "data_points": ["isin_rights"],
         "source_types": ["Memorandum", "Prospectus", "InformationDocument"],
         "issue_types": ["Rights issue"],
         "semantic_search_query": "ISIN-kod för teckningsrätter (TR)",
@@ -57,13 +50,16 @@
     },
     "ipo_terms": {
         "description": "Extracts the financial terms of an IPO",
-        "data_points": ["listing_price", "new_shares", "existing_shares_sold", "over_allotment_shares", "pre_money_valuation"],
         "source_types": ["Publication"],
         "issue_types": ["IPO"],
         "semantic_search_query": "Erbjudandets villkor (teckningskurs, nya aktier, befintliga aktier som säljs, övertilldelning, pre-money värdering, handelsplats)",
         "page_selection_strategy": "consecutive"
     },
     "ipo_outcome": {
-        "TODO": "TODO"
+        "description": "Extracts the outcome of an IPO, including subscription percentages and final pricing.",
+        "source_types": [],
+        "issue_types": ["IPO"],
+        "semantic_search_query": "Slutgiltigt utfall i börsnoteringen (IPO)",
+        "page_selection_strategy": "consecutive"
     }
 }

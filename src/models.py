@@ -2,14 +2,13 @@
 This file defines the Pydantic models used for data validation across the extraction pipeline.
 """
 
-from typing import List, Optional, Dict, Union
+from typing import List, Optional, Dict, Union, get_args, get_origin
 from pydantic import BaseModel, Field, RootModel
 
 # --- Extraction Definitions (src/extraction_definitions.json) ---
 
 class ExtractionDefinition(BaseModel):
     description: str
-    data_points: List[str] = Field(default_factory=list)
     source_types: List[str]
     issue_types: Optional[List[str]] = None
     semantic_search_query: str
@@ -52,15 +51,14 @@ class IPOTerms(BaseModel):
     pre_money_valuation: Optional[Union[float, str]] = None
 
 class IPOOutcome(BaseModel):
-    TODO: "TODO"
+    final_price: Optional[Union[float, str]] = None
+    total_shares_issued: Optional[Union[int, str]] = None
 
 class OfferingOutcome(BaseModel):
-    unit_sub_total_pct: Optional[Union[float, str]] = None
-    unit_sub_total_count: Optional[Union[int, str]] = None
-    total_amount_msek: Optional[Union[float, str]] = None
-    pct_with_rights: Optional[Union[float, str]] = None
-    pct_without_rights: Optional[Union[float, str]] = None
-    pct_guarantor: Optional[Union[float, str]] = None
+    unit_sub_total: Optional[Union[int, str]] = None
+    unit_pct_sub_with_rights: Optional[Union[float, str]] = None
+    unit_pct_sub_without_rights: Optional[Union[float, str]] = None
+    unit_pct_sub_guarantor: Optional[Union[float, str]] = None
     unit_sub_with_rights: Optional[Union[int, str]] = None
     unit_sub_without_rights: Optional[Union[int, str]] = None
     unit_sub_guarantor: Optional[Union[int, str]] = None
@@ -98,3 +96,26 @@ class DocumentEntry(BaseModel):
 class FinalOutput(RootModel):
     root: Dict[str, DocumentEntry]
 
+def get_fields_for_category(category: str) -> List[str]:
+    """Dynamically retrieves field names for a given category from ExtractionResult."""
+    field_info = ExtractionResult.model_fields.get(category)
+    if not field_info:
+        return []
+    
+    # Unwrap Optional/Union to get the actual type
+    annotation = field_info.annotation
+    if get_origin(annotation) is Union:
+        args = get_args(annotation)
+        # Find the one that isn't NoneType
+        annotation = next((a for a in args if a is not type(None)), None)
+
+    # If it's a List[Investor], get the Investor fields
+    if get_origin(annotation) is list:
+        annotation = get_args(annotation)[0]
+
+    # If it's a Pydantic model, return its fields
+    if hasattr(annotation, "model_fields"):
+        return list(annotation.model_fields.keys())
+    
+    # Otherwise it's a single field (like isin_units)
+    return [category]
