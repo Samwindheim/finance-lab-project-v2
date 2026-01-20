@@ -47,19 +47,5 @@
         "issue_types": ["Rights issue"],
         "semantic_search_query": "ISIN-kod för teckningsrätter (TR)",
         "page_selection_strategy": "top_hit"
-    },
-    "ipo_terms": {
-        "description": "Extracts the financial terms of an IPO",
-        "source_types": ["Publication"],
-        "issue_types": ["IPO"],
-        "semantic_search_query": "Erbjudandets villkor (teckningskurs, nya aktier, befintliga aktier som säljs, övertilldelning, pre-money värdering, handelsplats)",
-        "page_selection_strategy": "consecutive"
-    },
-    "ipo_outcome": {
-        "description": "Extracts the outcome of an IPO, including subscription percentages and final pricing.",
-        "source_types": [],
-        "issue_types": ["IPO"],
-        "semantic_search_query": "Slutgiltigt utfall i börsnoteringen (IPO)",
-        "page_selection_strategy": "consecutive"
     }
 }

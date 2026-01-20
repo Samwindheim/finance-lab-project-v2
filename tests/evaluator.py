@@ -143,6 +143,76 @@ class Evaluator:
 
         return errors
 
+    def detect_conflicts(self, ai_data_full: Dict[str, Any]) -> Dict[str, Dict[str, List[Dict[str, Any]]]]:
+        """
+        Identifies fields that have different values across multiple documents.
+        Returns a dict mapping category -> field -> list of {doc, val}
+        """
+        conflicts = {}
+        # category -> field -> {val -> [docs]}
+        registry = {}
+
+        for doc_name, doc_data in ai_data_full.items():
+            for category, category_data in doc_data.items():
+                if category in ["issue_id", "id", "source_document", "source_pages"]:
+                    continue
+                
+                if isinstance(category_data, dict):
+                    for field, value in category_data.items():
+                        if value is None or value == "":
+                            continue
+                        
+                        reg_key = f"{category}.{field}"
+                        registry.setdefault(reg_key, {})
+                        
+                        # Use string representation for registry key to handle unhashable types
+                        val_str = str(value).strip()
+                        registry[reg_key].setdefault(val_str, []).append({"doc": doc_name, "val": value})
+                
+                elif isinstance(category_data, list):
+                    # For lists like investors, we look for same name AND level but different amounts
+                    if category == "investors":
+                        for inv in category_data:
+                            name = self.normalize_name(inv.get("name", ""))
+                            level = inv.get("level")
+                            if not name: continue
+                            
+                            # Inclusion of level in key prevents valid multi-level entries from being conflicts
+                            reg_key = f"investors.{name}.{level}"
+                            registry.setdefault(reg_key, {})
+                            
+                            # We'll just serialize the whole investor dict for comparison (minus source info)
+                            inv_clean = {k: v for k, v in inv.items() if k not in ["source_document", "source_pages"]}
+                            val_str = json.dumps(inv_clean, sort_keys=True)
+                            registry[reg_key].setdefault(val_str, []).append({"doc": doc_name, "val": inv})
+
+        # Now identify where we have different values across DIFFERENT documents
+        for key, values in registry.items():
+            if len(values) > 1:
+                # We have multiple unique values. 
+                # Check if these values come from at least two different documents.
+                all_docs = set()
+                for doc_list in values.values():
+                    for d in doc_list:
+                        all_docs.add(d['doc'])
+                
+                if len(all_docs) < 2:
+                    continue # Skip if all differences are within a single document
+                
+                parts = key.split(".")
+                category = parts[0]
+                # Reconstruct field name (it might contain dots if it's an investor name)
+                field = ".".join(parts[1:])
+                
+                # Flatten the values for the report
+                flat_values = []
+                for doc_list in values.values():
+                    flat_values.extend(doc_list)
+                
+                conflicts.setdefault(category, {})[field] = flat_values
+
+        return conflicts
+
     def compare_fields(self, predicted: Dict[str, Any], ground_truth: Dict[str, Any], fields: List[str]) -> List[Dict[str, Any]]:
         """Compares individual fields (dates, terms, etc.) and returns all results."""
         results = []

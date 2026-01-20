@@ -5,7 +5,7 @@ import pandas as pd
 from src.database import FinanceDB
 from tests.evaluator import Evaluator
 from tabulate import tabulate
-from src.models import get_fields_for_category
+from src.models import get_fields_for_category, ExtractionResult
 
 def log_header(text):
     print(f"\n{'='*20} {text} {'='*20}")
@@ -41,7 +41,24 @@ def main():
             else:
                 merged_ai_data[field] = value
 
-    # 2. Load DB Ground Truth
+    # 2. Detect Conflicts Across Documents
+    conflicts = evaluator.detect_conflicts(ai_data_full)
+    if conflicts:
+        log_header("MULTI-DOCUMENT CONFLICTS DETECTED")
+        conflict_table = []
+        for category, fields in conflicts.items():
+            for field, instances in fields.items():
+                for inst in instances:
+                    conflict_table.append([
+                        category, 
+                        field, 
+                        inst['doc'][:30] + "..." if len(inst['doc']) > 30 else inst['doc'], 
+                        inst['val']
+                    ])
+        print(tabulate(conflict_table, headers=["Category", "Field", "Source Document", "Conflicting Value"], tablefmt="grid"))
+        print("\nNOTE: The evaluation below uses the 'latest' value seen for each field.")
+
+    # 3. Load DB Ground Truth
     db_issue = db.get_issue_data(issue_id)
     db_investors = db.get_investors_data(issue_id)
 
@@ -64,7 +81,19 @@ def main():
         # Sort details so Correct matches are together, etc.
         sorted_details = sorted(inv_report['details'], key=lambda x: x['type'])
         for d in sorted_details:
-            status_icon = "✅" if d['type'] == "Correct" else "❌"
+            name = d['predicted'].get('name', '') if d['predicted'] else ''
+            level = d['predicted'].get('level') if d['predicted'] else None
+            norm_name = evaluator.normalize_name(name)
+            
+            # Check for conflict using name and level
+            inv_key = f"{norm_name}.{level}"
+            has_conflict = "investors" in conflicts and inv_key in conflicts["investors"]
+            
+            # Skip matches that have no conflicts to keep output focused on issues
+            if d['type'] == "Correct" and not has_conflict:
+                continue
+
+            status_icon = "⚠️" if has_conflict else ("✅" if d['type'] == "Correct" else "❌")
             row = [
                 f"{status_icon} {d['type']}",
                 d['predicted'].get('name') if d['predicted'] else "N/A",
@@ -74,23 +103,39 @@ def main():
             table_data.append(row)
         print(tabulate(table_data, headers=["Status/Type", "AI Found", "DB Ground Truth", "Errors"], tablefmt="grid"))
 
-    # --- EVALUATE TERMS & DATES ---
-    log_header("TERMS & DATES EVALUATION")
+    # --- EVALUATE TERMS, OUTCOME & DATES ---
+    log_header("TERMS, OUTCOME & DATES EVALUATION")
     
-    # Map model fields to DB columns
+    # Dynamically build fields to check from ExtractionResult model
+    # Exclude investors as it's handled separately
     fields_to_check = {
-        "important_dates": get_fields_for_category("important_dates"),
-        "offering_terms": get_fields_for_category("offering_terms"),
-        "offering_outcome": get_fields_for_category("offering_outcome")
+        field_name: get_fields_for_category(field_name)
+        for field_name in ExtractionResult.model_fields.keys()
+        if field_name != "investors"
     }
 
     all_field_details = []
     for model_group, fields in fields_to_check.items():
         ai_group_data = merged_ai_data.get(model_group, {})
-        field_results = evaluator.compare_fields(ai_group_data, db_issue, fields)
+        
+        # Handle the case where the group is a single field (like isin_units)
+        # instead of a nested object/dict.
+        if not isinstance(ai_group_data, dict):
+            ai_eval_data = {model_group: ai_group_data}
+        else:
+            ai_eval_data = ai_group_data
+
+        field_results = evaluator.compare_fields(ai_eval_data, db_issue, fields)
         
         for r in field_results:
-            status_icon = "✅" if r['is_match'] else "❌"
+            has_conflict = model_group in conflicts and r['field'] in conflicts[model_group]
+            
+            # Only show if there's a mismatch or a conflict
+            if r['is_match'] and not has_conflict:
+                continue
+
+            status_icon = "⚠️" if has_conflict else ("✅" if r['is_match'] else "❌")
+            
             all_field_details.append([
                 status_icon,
                 model_group,
