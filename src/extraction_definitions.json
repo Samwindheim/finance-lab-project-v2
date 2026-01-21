@@ -7,31 +7,31 @@
         "page_selection_strategy": "consecutive"
     },
     "important_dates": {
-        "description": "Extracts all important dates for the rights issue (record date, subscription period, rights trading period, etc.) in a single pass.",
-        "source_types": ["Publication", "Memorandum"],
-        "issue_types": ["Rights issue"],
-        "semantic_search_query": "Tidsplan eller tidplan med viktiga datum för företrädesemissionen (avstämningsdag, teckningsperiod, handel med teckningsrätter)",
+        "description": "Extracts all relevant dates including subscription periods, trading dates, and record dates.",
+        "source_types": ["Publication", "Memorandum", "Prospectus"],
+        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
+        "semantic_search_query": "Tidsplan eller tidplan med viktiga datum (avstämningsdag, teckningsperiod, IPO trading date, handel med teckningsrätter)",
         "page_selection_strategy": "consecutive"
     },
     "offering_terms": {
-        "description": "Extracts the financial terms of the offering: ratios, subscription price, and total volume.",
+        "description": "Extracts financial terms, ratios, price, and volume.",
         "source_types": ["Publication"],
-        "issue_types": ["Rights issue"],
-        "semantic_search_query": "Villkor för företrädesemissionen (teckningskurs, teckningsrelation, erbjuden volym, units eller aktier)",
+        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
+        "semantic_search_query": "Villkor för erbjudandet (teckningskurs, teckningsrelation, erbjuden volym, interval, over-allotment, non-cash consideration)",
         "page_selection_strategy": "consecutive"
     },
     "offering_outcome": {
-        "description": "Extracts the outcome of the offering, including subscription percentages and total amounts.",
+        "description": "Extracts the outcome of the offering, including subscription percentages and final amounts.",
         "source_types": ["Outcome"],
-        "issue_types": ["Rights issue"],
-        "semantic_search_query": "Slutgiltigt utfall i företrädesemissionen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning)",
+        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
+        "semantic_search_query": "Slutgiltigt utfall i erbjudandet eller börsnoteringen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning, over-allotment allocation)",
         "page_selection_strategy": "consecutive"
     },
     "general_info": {
-        "description": "Rådgivare, extracts general information about the rights issue.",
+        "description": "Extracts general information about the issue such as advisors.",
         "source_types": ["Publication"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
-        "semantic_search_query": "Generell information om företrädesemissionen (Finansiella rådgivare, legalrådgivare, emissionsinstitut)",
+        "semantic_search_query": "Generell information om erbjudandet (Finansiella rådgivare, legalrådgivare, emissionsinstitut)",
         "page_selection_strategy": "consecutive"
     },
     "isin_units": {

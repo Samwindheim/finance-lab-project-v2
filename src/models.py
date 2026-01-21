@@ -33,6 +33,8 @@ class ImportantDates(BaseModel):
     ex_rights_date: Optional[str] = None
     rights_start_date: Optional[str] = None
     rights_end_date: Optional[str] = None
+    general_meeting_date: Optional[str] = None
+    ipo_trading_date: Optional[str] = None
 
 class OfferingTerms(BaseModel):
     shares_required: Optional[int] = None
@@ -42,6 +44,9 @@ class OfferingTerms(BaseModel):
     shares_in_unit: Optional[int] = None
     unit_sub_price: Optional[Union[float, str]] = None
     offered_units: Optional[Union[int, str]] = None
+    # From IPO
+    secondary_offering: Optional[Union[int, str]] = None
+    over_allotment_size_secondary: Optional[Union[int, str]] = None
 
 class OfferingOutcome(BaseModel):
     unit_sub_total: Optional[Union[int, str]] = None
@@ -51,12 +56,20 @@ class OfferingOutcome(BaseModel):
     unit_sub_with_rights: Optional[Union[int, str]] = None
     unit_sub_without_rights: Optional[Union[int, str]] = None
     unit_sub_guarantor: Optional[Union[int, str]] = None
+    # From IPO
+    secondary_sub: Optional[Union[int, str]] = None
+
+class GeneralInfo(BaseModel):
+    finansiella_radgivare: Optional[str] = None
+    legalradgivare: Optional[str] = None
+    emissionsinstitut: Optional[str] = None
 
 class ExtractionResult(BaseModel):
     investors: Optional[List[Investor]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
+    general_info: Optional[GeneralInfo] = None
     isin_units: Optional[str] = None
     isin_rights: Optional[str] = None
     # Add other fields as needed, or use an extra field for flexibility
@@ -73,6 +86,7 @@ class DocumentEntry(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
+    general_info: Optional[GeneralInfo] = None
     isin_units: Optional[str] = None
     isin_rights: Optional[str] = None
 

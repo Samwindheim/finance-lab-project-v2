@@ -17,7 +17,7 @@ from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
 from utils import find_issue_id, find_document_info, clean_and_parse_json
-from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, FinalOutput, DocumentEntry
+from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, GeneralInfo, FinalOutput, DocumentEntry
 from logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -319,6 +319,13 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                 except Exception as e:
                     logger.warning(f"Skipping invalid offering_outcome entry in {doc_name}: {e}")
             
+            elif extraction_field == "general_info":
+                try:
+                    general_data = GeneralInfo.model_validate(field_value)
+                    doc_entry.general_info = general_data
+                except Exception as e:
+                    logger.warning(f"Skipping invalid general_info entry in {doc_name}: {e}")
+            
             else:
                 # Handle individual date fields or other fields
                 date_fields = {
@@ -363,6 +370,10 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         # Add offering_outcome next if it exists
         if doc_entry.offering_outcome:
             ordered_doc["offering_outcome"] = doc_entry.offering_outcome.model_dump(exclude_none=True)
+        
+        # Add general_info if it exists
+        if doc_entry.general_info:
+            ordered_doc["general_info"] = doc_entry.general_info.model_dump(exclude_none=True)
         
         # Add identifiers next if they exist
         if doc_entry.isin_units:
