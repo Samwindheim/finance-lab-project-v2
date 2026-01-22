@@ -1,14 +1,14 @@
 {
     "investors": {
         "description": "Extracts a list of all investors, including subscribers (Teckningsåtagare) and guarantors (Garantiåtagande), using a detailed, multi-level extraction logic.",
-        "source_types": ["Prospectus", "Memorandum", "InformationDocument"],
+        "source_types": ["Prospectus", "Memorandum", "InformationDocument", "Publication"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue", "Warrant"],
         "semantic_search_query": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), and guarantee commitments (garantiåtaganden or garanti)",
         "page_selection_strategy": "consecutive"
     },
     "important_dates": {
         "description": "Extracts all relevant dates including subscription periods, trading dates, and record dates.",
-        "source_types": ["Publication", "Memorandum", "Prospectus"],
+        "source_types": ["Publication", "Memorandum", "Prospectus", "InformationDocument"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
         "semantic_search_query": "Tidsplan eller tidplan med viktiga datum (avstämningsdag, teckningsperiod, IPO trading date, handel med teckningsrätter)",
         "page_selection_strategy": "consecutive"

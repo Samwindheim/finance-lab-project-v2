@@ -5,6 +5,19 @@ This file defines the Pydantic models used for data validation across the extrac
 from typing import List, Optional, Dict, Union, get_args, get_origin
 from pydantic import BaseModel, Field, RootModel
 
+# From database table issues
+"""
+general_meeting_date, inc_rights_date, ex_rights_date, record_date, rights_start_date, rights_end_date, sub_start_date, sub_end_date, ipo_trading_date,
+
+minimum_sub_condition, shares_required, rights_received, rights_required, units_received, shares_in_unit, unit_extra_content, unit_sub_price, outstanding_shares, offered_units, offered_units_unlisted, earnout, abb_target, approx_total_commitment, approx_commitment, approx_guarantor, over_allotment_size, 
+
+isin_rights, isin_units, noncash_consideration, unit_sub_total, unit_sub_with_rights, unit_sub_without_rights, unit_sub_guarantor, unit_pct_sub_with_rights, unit_pct_sub_without_rights, unit_pct_sub_guarantor, over_allotment_allocation, secondary_offering, secondary_sub, 
+
+ipo_interval_low, ipo_interval_high, over_allotment_size_secondary, over_allotment_allocation_secondary, 
+
+no_financial_advisor, no_issuing_agent, no_legal_advisor, no_over_allotment, no_terms_initially, no_secondary_offering, no_guarantors, no_isin_units, no_participants_named, investors_after_terms, investors_after_prospectus, rto, published_at, created_at, updated_at, no_investors_named
+"""
+
 # --- Extraction Definitions (src/extraction_definitions.json) ---
 
 class ExtractionDefinition(BaseModel):

@@ -11,6 +11,8 @@ Please extract the following dates in YYYY-MM-DD format:
 - general_meeting_date (Bolagsstämma): The date of the general meeting where the issue was approved.
 - ipo_trading_date (Första dag för handel): For IPOs, the first day of trading on the exchange.
 
+Important: Do not infer any dates, only extract the dates that are explicitly stated in the text.
+
 Output ONLY a JSON object with the key 'important_dates' containing these sub-keys. Use null for any dates not found.
 
 Example output:

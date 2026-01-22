@@ -115,11 +115,14 @@ def main():
     }
 
     all_field_details = []
+    terms_correct = 0
+    terms_incorrect = 0
+    terms_missing = 0
+    terms_conflicts = 0
+
     for model_group, fields in fields_to_check.items():
         ai_group_data = merged_ai_data.get(model_group, {})
         
-        # Handle the case where the group is a single field (like isin_units)
-        # instead of a nested object/dict.
         if not isinstance(ai_group_data, dict):
             ai_eval_data = {model_group: ai_group_data}
         else:
@@ -130,12 +133,25 @@ def main():
         for r in field_results:
             has_conflict = model_group in conflicts and r['field'] in conflicts[model_group]
             
-            # Only show if there's a mismatch or a conflict
             if r['is_match'] and not has_conflict:
+                terms_correct += 1
                 continue
 
-            status_icon = "⚠️" if has_conflict else ("✅" if r['is_match'] else "❌")
-            
+            # Determine if it's Missing or Incorrect
+            # Missing: DB has a value, but AI does not.
+            is_missing = (r['predicted'] is None or str(r['predicted']).strip() == "") and \
+                         (r['ground_truth'] is not None and str(r['ground_truth']).strip() != "")
+
+            if has_conflict:
+                terms_conflicts += 1
+                status_icon = "⚠️"
+            elif is_missing:
+                terms_missing += 1
+                status_icon = "⭕" # Circle icon for Missing
+            else:
+                terms_incorrect += 1
+                status_icon = "❌" # X icon for Incorrect
+
             all_field_details.append([
                 status_icon,
                 model_group,
@@ -144,10 +160,12 @@ def main():
                 r['ground_truth'] if r['ground_truth'] is not None else "-"
             ])
 
+    print(f"Summary: {terms_correct} Correct, {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts")
+
     if all_field_details:
         print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid"))
     else:
-        print("No fields found to evaluate.")
+        print("All Terms, Outcome & Dates match perfectly!")
 
 if __name__ == "__main__":
     main()

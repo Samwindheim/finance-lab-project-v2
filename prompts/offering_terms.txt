@@ -29,6 +29,6 @@ Example output:
     "unit_sub_price": 1.4,
     "offered_units": 91285230,
     "secondary_offering": 100,
-    "over_allotment_size_secondary": 20
+    "over_allotment_size_secondary": null
   }
 }
