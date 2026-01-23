@@ -111,7 +111,7 @@ def main():
     fields_to_check = {
         field_name: get_fields_for_category(field_name)
         for field_name in ExtractionResult.model_fields.keys()
-        if field_name not in ["investors", "general_info"]
+        if field_name not in ["investors", "general_info", "isin_units", "isin_rights"]
     }
 
     all_field_details = []

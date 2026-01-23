@@ -8,7 +8,7 @@ Please extract the following dates in YYYY-MM-DD format:
 - ex_rights_date (Första dag för handel exklusive rätt): The first day the share is traded without the right to receive subscription rights.
 - rights_start_date (Handel med teckningsrätter börjar): The first day that subscription rights (TR) can be traded.
 - rights_end_date (Handel med teckningsrätter slutar): The last day that subscription rights (TR) can be traded.
-- general_meeting_date (Bolagsstämma): The date of the general meeting where the issue was approved.
+- general_meeting_date (Bolagsstämma): The date of the general meeting where the issue was approved. This should be specific to the issue, not a general date.
 - ipo_trading_date (Första dag för handel): For IPOs, the first day of trading on the exchange.
 
 Important: Do not infer any dates, only extract the dates that are explicitly stated in the text.
