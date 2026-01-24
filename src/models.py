@@ -82,9 +82,12 @@ class ExtractionResult(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    general_info: Optional[GeneralInfo] = None
-    isin_units: Optional[str] = None
-    isin_rights: Optional[str] = None
+    # General info is not in issue db so removing for testing, isin
+    # data isn't extracting reliably.
+    # general_info: Optional[GeneralInfo] = None
+    # isin_units: Optional[str] = None
+    # isin_rights: Optional[str] = None
+
     # Add other fields as needed, or use an extra field for flexibility
     # For now, we'll allow extra fields since the definitions are dynamic
     class Config:
@@ -99,9 +102,11 @@ class DocumentEntry(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    general_info: Optional[GeneralInfo] = None
-    isin_units: Optional[str] = None
-    isin_rights: Optional[str] = None
+    # General info is not in issue db so removing for testing, isin
+    # data isn't extracting reliably.
+    # general_info: Optional[GeneralInfo] = None
+    # isin_units: Optional[str] = None
+    # isin_rights: Optional[str] = None
 
     class Config:
         extra = "allow"

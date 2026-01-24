@@ -1,7 +1,7 @@
 {
     "investors": {
         "description": "Extracts a list of all investors, including subscribers (Teckningsåtagare) and guarantors (Garantiåtagande), using a detailed, multi-level extraction logic.",
-        "source_types": ["Prospectus", "Memorandum", "InformationDocument", "Publication"],
+        "source_types": ["Prospectus", "Memorandum", "InformationDocument", "Publication", "New commitments"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue", "Warrant"],
         "semantic_search_query": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), and guarantee commitments (garantiåtaganden or garanti)",
         "page_selection_strategy": "consecutive"
@@ -26,26 +26,5 @@
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
         "semantic_search_query": "Slutgiltigt utfall i erbjudandet eller börsnoteringen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning, over-allotment allocation)",
         "page_selection_strategy": "consecutive"
-    },
-    "general_info": {
-        "description": "Extracts general information about the issue such as advisors.",
-        "source_types": ["Publication"],
-        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
-        "semantic_search_query": "Generell information om erbjudandet (Finansiella rådgivare, legalrådgivare, emissionsinstitut)",
-        "page_selection_strategy": "consecutive"
-    },
-    "isin_units": {
-        "description": "Extracts the ISIN code for units.",
-        "source_types": ["Memorandum", "Prospectus", "InformationDocument"],
-        "issue_types": ["Rights issue"],
-        "semantic_search_query": "ISIN-kod för units",
-        "page_selection_strategy": "top_hit"
-    },
-    "isin_rights": {
-        "description": "Extracts the ISIN code for subscription rights (teckningsrätter).",
-        "source_types": ["Memorandum", "Prospectus", "InformationDocument"],
-        "issue_types": ["Rights issue"],
-        "semantic_search_query": "ISIN-kod för teckningsrätter (TR)",
-        "page_selection_strategy": "top_hit"
     }
 }

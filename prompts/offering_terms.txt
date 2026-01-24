@@ -6,7 +6,7 @@ Please extract the following fields:
 - rights_required (Antal rätter för teckning): The number of rights required to subscribe for new shares/units.
 - units_received (Antal units/aktier erhållna): The number of units or shares received per 'rights_required'.
 - shares_in_unit (Aktier per unit): The number of shares contained in each unit. Default to 1 if it's a simple share issue (not units).
-- unit_sub_price (Teckningskurs): The subscription price per unit or share. Extract as a number if possible, or a string if it includes currency (e.g., "1.4 SEK").
+- unit_sub_price (Teckningskurs): The subscription price per unit or share. Extract as a number if possible.
 - offered_units (Erbjuden volym): The total number of NEW units or shares offered in the issue.
 
 - secondary_offering (Befintliga aktier som erbjuds): The number of EXISTING shares that are being offered in the secondary offering.

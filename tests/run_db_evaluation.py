@@ -107,11 +107,11 @@ def main():
     log_header("TERMS, OUTCOME & DATES EVALUATION")
     
     # Dynamically build fields to check from ExtractionResult model
-    # Exclude investors and general_info as requested
+    # Exclude investors and general_info and isin_units and isin_rights as requested
     fields_to_check = {
         field_name: get_fields_for_category(field_name)
         for field_name in ExtractionResult.model_fields.keys()
-        if field_name not in ["investors", "general_info", "isin_units", "isin_rights"]
+        if field_name not in ["investors"]
     }
 
     all_field_details = []

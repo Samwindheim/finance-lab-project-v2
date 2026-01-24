@@ -10,7 +10,7 @@ like `run_extraction.py`.
 """
 import os
 import json
-from typing import List, Dict
+from typing import List, Dict, Union, get_args, get_origin
 
 from pdf_indexer import PDFIndexer
 from llm import get_json_from_image, get_json_from_text
@@ -276,9 +276,11 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             if not doc_entry.id and temp_result.get("doc_id"):
                 doc_entry.id = temp_result.get("doc_id")
             
-            # --- Apply specific logic based on field type ---
+            # --- Dynamic field handling based on DocumentEntry model ---
+            field_info = DocumentEntry.model_fields.get(extraction_field)
+            
             if extraction_field == "investors":
-                # Investors logic: Deduplicate and format numbers
+                # Special logic for investors: Deduplicate and format numbers
                 investors = []
                 seen_entries = set()
                 for item in field_value:
@@ -298,97 +300,63 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                 
                 doc_entry.investors = investors
             
-            elif extraction_field == "important_dates":
+            elif field_info:
                 try:
-                    dates_data = ImportantDates.model_validate(field_value)
-                    doc_entry.important_dates = dates_data
+                    # Determine the type for validation
+                    annotation = field_info.annotation
+                    if get_origin(annotation) is Union:
+                        # Extract the non-None type from Union/Optional
+                        annotation = next((a for a in get_args(annotation) if a is not type(None)), annotation)
+                    
+                    if hasattr(annotation, "model_validate"):
+                        setattr(doc_entry, extraction_field, annotation.model_validate(field_value))
+                    else:
+                        setattr(doc_entry, extraction_field, field_value)
                 except Exception as e:
-                    logger.warning(f"Skipping invalid important_dates entry in {doc_name}: {e}")
-            
-            elif extraction_field == "offering_terms":
-                try:
-                    terms_data = OfferingTerms.model_validate(field_value)
-                    doc_entry.offering_terms = terms_data
-                except Exception as e:
-                    logger.warning(f"Skipping invalid offering_terms entry in {doc_name}: {e}")
-            
-            elif extraction_field == "offering_outcome":
-                try:
-                    outcome_data = OfferingOutcome.model_validate(field_value)
-                    doc_entry.offering_outcome = outcome_data
-                except Exception as e:
-                    logger.warning(f"Skipping invalid offering_outcome entry in {doc_name}: {e}")
-            
-            elif extraction_field == "general_info":
-                try:
-                    general_data = GeneralInfo.model_validate(field_value)
-                    doc_entry.general_info = general_data
-                except Exception as e:
-                    logger.warning(f"Skipping invalid general_info entry in {doc_name}: {e}")
+                    logger.warning(f"Skipping invalid {extraction_field} entry in {doc_name}: {e}")
             
             else:
-                # Handle individual date fields or other fields
-                date_fields = {
-                    "record_date", "sub_start_date", "sub_end_date", 
-                    "inc_rights_date", "ex_rights_date", "rights_start_date", "rights_end_date"
-                }
-                
-                if extraction_field in date_fields:
+                # Field not explicitly in DocumentEntry, but could be an individual field for important_dates
+                if extraction_field in ImportantDates.model_fields:
                     if not doc_entry.important_dates:
                         doc_entry.important_dates = ImportantDates()
                     setattr(doc_entry.important_dates, extraction_field, field_value)
                 else:
-                    # For other fields, we just set them directly on the model
-                    # Since DocumentEntry allows extra fields, this works
+                    # Truly extra field (allowed by DocumentEntry Config)
                     setattr(doc_entry, extraction_field, field_value)
 
         except (json.JSONDecodeError, FileNotFoundError) as e:
             logger.error(f"Could not read temp file {file_path}: {e}")
             continue
 
-    # 3. Save the finalized structure
-    # Sort keys for consistent output
+    # 3. Save the finalized structure (ordered by DocumentEntry field definitions)
     sorted_output = {}
     for doc_name in sorted(all_data.keys()):
         doc_entry = all_data[doc_name]
         
-        # Prepare an ordered dict for the document
+        # Start with the basic issue info
         ordered_doc = {
             "issue_id": doc_entry.issue_id,
             "id": doc_entry.id
         }
         
-        # Add important_dates next if it exists
-        if doc_entry.important_dates:
-            # model_dump(exclude_none=True) gives us a dict of the dates
-            ordered_doc["important_dates"] = doc_entry.important_dates.model_dump(exclude_none=True)
-        
-        # Add offering_terms next if it exists
-        if doc_entry.offering_terms:
-            ordered_doc["offering_terms"] = doc_entry.offering_terms.model_dump(exclude_none=True)
-        
-        # Add offering_outcome next if it exists
-        if doc_entry.offering_outcome:
-            ordered_doc["offering_outcome"] = doc_entry.offering_outcome.model_dump(exclude_none=True)
-        
-        # Add general_info if it exists
-        if doc_entry.general_info:
-            ordered_doc["general_info"] = doc_entry.general_info.model_dump(exclude_none=True)
-        
-        # Add identifiers next if they exist
-        if doc_entry.isin_units:
-            ordered_doc["isin_units"] = doc_entry.isin_units
-        if doc_entry.isin_rights:
-            ordered_doc["isin_rights"] = doc_entry.isin_rights
-        
-        # Add investors if it exists
-        if doc_entry.investors:
-            ordered_doc["investors"] = [i.model_dump(exclude_none=True) for i in doc_entry.investors]
+        # Dynamically add all other fields from DocumentEntry if they have data
+        for field_name in DocumentEntry.model_fields.keys():
+            if field_name in ["issue_id", "id"]:
+                continue
             
-        # Add any other extra fields
-        # We exclude the ones we already handled
+            value = getattr(doc_entry, field_name)
+            if value is not None:
+                if hasattr(value, "model_dump"):
+                    ordered_doc[field_name] = value.model_dump(exclude_none=True)
+                elif isinstance(value, list) and all(hasattr(i, "model_dump") for i in value):
+                    ordered_doc[field_name] = [i.model_dump(exclude_none=True) for i in value]
+                else:
+                    ordered_doc[field_name] = value
+        
+        # Add any other extra fields not defined in DocumentEntry
         doc_dict = doc_entry.model_dump(
-            exclude={"issue_id", "id", "important_dates", "offering_terms", "offering_outcome", "isin_units", "isin_rights", "investors", "contributing_sources"}, 
+            exclude=set(DocumentEntry.model_fields.keys()),
             exclude_none=True
         )
         for key in sorted(doc_dict.keys()):
