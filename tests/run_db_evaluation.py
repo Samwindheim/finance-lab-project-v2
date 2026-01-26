@@ -116,6 +116,7 @@ def main():
 
     all_field_details = []
     terms_correct = 0
+    terms_share_matches = 0
     terms_incorrect = 0
     terms_missing = 0
     terms_conflicts = 0
@@ -134,7 +135,10 @@ def main():
             has_conflict = model_group in conflicts and r['field'] in conflicts[model_group]
             
             if r['is_match'] and not has_conflict:
-                terms_correct += 1
+                if r.get('is_share_match'):
+                    terms_share_matches += 1
+                else:
+                    terms_correct += 1
                 continue
 
             # Determine if it's Missing or Incorrect
@@ -160,7 +164,7 @@ def main():
                 r['ground_truth'] if r['ground_truth'] is not None else "-"
             ])
 
-    print(f"Summary: {terms_correct} Correct, {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts")
+    print(f"Summary: {terms_correct} Correct, {terms_share_matches} Matched (as Shares), {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts")
 
     if all_field_details:
         print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid"))

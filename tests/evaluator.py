@@ -217,11 +217,26 @@ class Evaluator:
         """Compares individual fields (dates, terms, etc.) and returns all results."""
         results = []
         
+        # Get shares_in_unit for unit/share conversion check
+        shares_in_unit = self.normalize_amount(ground_truth.get("shares_in_unit"))
+        if shares_in_unit is None or shares_in_unit <= 0:
+            shares_in_unit = Decimal("1")
+
+        # Fields that might be reported in shares instead of units
+        unit_fields = {
+            "offered_units", "offered_units_unlisted", "secondary_offering", 
+            "over_allotment_size", "unit_sub_total", "unit_sub_with_rights", 
+            "unit_sub_without_rights", "unit_sub_guarantor", "secondary_sub",
+            "over_allotment_allocation", "over_allotment_allocation_secondary"
+        }
+        
         for field in fields:
             pred_val = predicted.get(field)
             gt_val = ground_truth.get(field)
 
             is_match = False
+            is_share_match = False
+            
             if str(pred_val).strip() == str(gt_val).strip():
                 is_match = True
             else:
@@ -229,14 +244,22 @@ class Evaluator:
                 p_num = self.normalize_amount(pred_val)
                 g_num = self.normalize_amount(gt_val)
                 
-                if p_num is not None and g_num is not None and p_num == g_num:
-                    is_match = True
+                if p_num is not None and g_num is not None:
+                    if p_num == g_num:
+                        is_match = True
+                    elif field in unit_fields and shares_in_unit > 1:
+                        # Check if predicted is actually the share count (DB value * shares_in_unit)
+                        # This happens when the AI extracts the 'aktier' count instead of 'units', and 1 share != 1 unit
+                        if p_num == (g_num * shares_in_unit):
+                            is_match = True
+                            is_share_match = True
             
             results.append({
                 "field": field,
                 "predicted": pred_val,
                 "ground_truth": gt_val,
-                "is_match": is_match
+                "is_match": is_match,
+                "is_share_match": is_share_match
             })
         
         return results

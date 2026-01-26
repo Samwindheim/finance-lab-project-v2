@@ -23,6 +23,7 @@ You will be given one or more images of a document page and the raw text extract
 - For underwriters, only extract amounts associated with "teckna i Företrädesemissionen" or similar phrases explicitly linking the commitment to the Rights Issue
 
 - Guarantor (“Garantier” or "Brygglån") → 1
+- Only extract "Brygglån" (Bridge Loans) if they are explicitly described as being part of the **guarantee structure** for the current share issue. Do not extract general "Bank financing" unless they are specifically named as underwriters or guarantors for the new units/shares.
 - If a tiered guarantee system is specified (e.g., “Botten-garantier”, “Bottom-up garantiåtaganden”), assign level 1 to bottom-tier guarantors and level 2 to top-tier guarantors (“Toppgarantier”, “Top-down garantiåtaganden”)
 - Pay close attention to text describing guarantor roles. An investor who has priority should be classified as a top-tier guarantor (level 2).
 - If percentage range table headers are provided ex: higher = level 2 or lower = level 1

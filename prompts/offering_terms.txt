@@ -7,8 +7,7 @@ Please extract the following fields:
 - units_received (Antal units/aktier erhållna): The number of units or shares received per 'rights_required'.
 - shares_in_unit (Aktier per unit): The number of shares contained in each unit. Default to 1 if it's a simple share issue (not units).
 - unit_sub_price (Teckningskurs): The subscription price per unit or share. Extract as a number if possible.
-- offered_units (Erbjuden volym): The total number of NEW units or shares offered in the issue.
-
+- offered_units (Erbjuden volym): The total volume of the issue. Extract the total number of NEW units if stated; if units are not totaled but the total number of NEW shares is stated, extract the share total instead
 - secondary_offering (Befintliga aktier som erbjuds): The number of EXISTING shares that are being offered in the secondary offering.
 - over_allotment_size_secondary (Övertilldelningsoption): The maximum number of additional shares/units that can be issued via an over-allotment option.
 

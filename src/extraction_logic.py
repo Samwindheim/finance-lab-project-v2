@@ -150,7 +150,7 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
 
     # 1. Query the index
     logger.info(f"Querying for relevant pages (strategy: {page_selection_strategy})...")
-    results = indexer.query(search_query, top_k=5)
+    results = indexer.query(search_query, top_k=6)
 
     if not results:
         logger.warning(f"Could not find any relevant pages for field '{extraction_field}' in {os.path.basename(pdf_path)}.")

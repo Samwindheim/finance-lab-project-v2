@@ -8,14 +8,14 @@
     },
     "important_dates": {
         "description": "Extracts all relevant dates including subscription periods, trading dates, and record dates.",
-        "source_types": ["Publication", "Memorandum", "Prospectus", "InformationDocument"],
+        "source_types": ["Publication", "Terms", "Memorandum", "Prospectus", "InformationDocument"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
         "semantic_search_query": "Tidsplan eller tidplan med viktiga datum (avstämningsdag, teckningsperiod, IPO trading date, handel med teckningsrätter)",
         "page_selection_strategy": "consecutive"
     },
     "offering_terms": {
         "description": "Extracts financial terms, ratios, price, and volume.",
-        "source_types": ["Publication"],
+        "source_types": ["Publication", "Terms"],
         "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
         "semantic_search_query": "Villkor för erbjudandet (teckningskurs, teckningsrelation, erbjuden volym, interval, over-allotment, non-cash consideration)",
         "page_selection_strategy": "consecutive"
