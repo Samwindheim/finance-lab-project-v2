@@ -47,47 +47,65 @@ def clean_and_parse_json(json_string: str) -> dict | None:
         logger.error(f"Failed to decode JSON from model response: {json_string}")
         return None
 
-def find_document_info(source_path: str, pdf_sources: list, html_sources: list) -> dict:
+def find_document_info(source_path: str, pdf_sources: list, html_sources: list, issue_id: str = None) -> dict:
     """
     Finds document-related information (issue_id, id, etc.) for a given source path.
+    If issue_id is provided, prioritizes matches for that specific issue when multiple sources share the same URL.
     Returns a dictionary with the info.
     """
     info = {"issue_id": None, "doc_id": None}
     
+    # Helper function to check if source matches the issue_id filter
+    def matches_issue(source):
+        if not issue_id:
+            return True
+        source_issue_id = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+        return source_issue_id == issue_id
+    
     # Check for document ID matches first (if source_path is already an ID)
     for source in html_sources + pdf_sources:
         if source.get("id") == source_path:
-            info["doc_id"] = source.get("id")
-            info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-            return info
+            if matches_issue(source):
+                info["doc_id"] = source.get("id")
+                info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+                return info
 
     # HTML/URL check
     for source in html_sources:
         if source.get("source_url") == source_path:
-            info["doc_id"] = source.get("id")
-            info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-            return info
+            if matches_issue(source):
+                info["doc_id"] = source.get("id")
+                info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+                return info
     
     # PDF check
     pdf_filename = os.path.basename(source_path)
     for source in pdf_sources:
         if source.get("source_url") == pdf_filename:
-            info["doc_id"] = source.get("id")
-            info["issue_id"] = source.get("issue_id")
-            return info
+            if matches_issue(source):
+                info["doc_id"] = source.get("id")
+                info["issue_id"] = source.get("issue_id")
+                return info
 
     # Partial matches
     for source in html_sources:
         if source_path in (source.get("source_url") or ""):
-            info["doc_id"] = source.get("id")
-            info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-            return info
+            if matches_issue(source):
+                info["doc_id"] = source.get("id")
+                info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
+                return info
             
     for source in pdf_sources:
         if source_path in (source.get("source_url") or ""):
-            info["doc_id"] = source.get("id")
-            info["issue_id"] = source.get("issue_id")
-            return info
+            if matches_issue(source):
+                info["doc_id"] = source.get("id")
+                info["issue_id"] = source.get("issue_id")
+                return info
+    
+    # If we didn't find a match with the issue_id filter, try without it as fallback
+    if issue_id:
+        logger.warning(f"No document found for '{source_path}' with issue_id '{issue_id}'. Trying without filter...")
+        return find_document_info(source_path, pdf_sources, html_sources, issue_id=None)
             
     return info
 

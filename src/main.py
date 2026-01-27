@@ -96,7 +96,8 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                         logger.warning(f"PDF {pdf_filename} not found and no URL available. Skipping.")
                         continue
 
-                temp_output_filename = f"{os.path.splitext(pdf_filename)[0]}_{extraction_field}.json"
+                doc_id = pdf_info.get("id", "unknown_pdf")
+                temp_output_filename = f"{doc_id}_{extraction_field}.json"
                 temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
                 result_path = extract_from_pdf(
@@ -105,7 +106,8 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                     extraction_prompt=extraction_prompt,
                     extraction_field=extraction_field,
                     output_path=temp_output_path,
-                    page_selection_strategy=page_selection_strategy
+                    page_selection_strategy=page_selection_strategy,
+                    issue_id=issue_id
                 )
                 if result_path:
                     temp_output_files.append(result_path)
@@ -120,15 +122,16 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                 html_url = html_info.get("source_url")
                 if not html_url: continue
                 
-                safe_filename = "".join(c for c in os.path.basename(html_url) if c.isalnum() or c in ('-', '_')).rstrip()
-                temp_output_filename = f"{safe_filename}_{extraction_field}.json"
+                doc_id = html_info.get("id", "unknown_html")
+                temp_output_filename = f"{doc_id}_{extraction_field}.json"
                 temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
                 result_path = extract_from_html(
                     html_path=html_url,
                     extraction_prompt=extraction_prompt,
                     extraction_field=extraction_field,
-                    output_path=temp_output_path
+                    output_path=temp_output_path,
+                    issue_id=issue_id
                 )
                 if result_path:
                     temp_output_files.append(result_path)

@@ -102,12 +102,14 @@ def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[in
     return [p['page_number'] for p in unique_pages]
 
 
-def post_process_and_save(parsed_json: dict, source_path: str, extraction_field: str, source_pages: list, output_path: str):
+def post_process_and_save(parsed_json: dict, source_path: str, extraction_field: str, source_pages: list, output_path: str, issue_id: str = None):
     """Post-processes and saves the extracted JSON data to a specified file path."""
     _load_sources_data() # Ensure source data is loaded
     
-    doc_info = find_document_info(source_path, SOURCES_DATA, HTML_SOURCES_DATA)
-    issue_id = doc_info.get("issue_id")
+    doc_info = find_document_info(source_path, SOURCES_DATA, HTML_SOURCES_DATA, issue_id=issue_id)
+    # Use the issue_id from doc_info if we didn't have one passed in
+    if not issue_id:
+        issue_id = doc_info.get("issue_id")
     doc_id = doc_info.get("doc_id")
     
     if not issue_id:
@@ -133,7 +135,7 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     return output_path
 
 
-def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive"):
+def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive", issue_id: str = None):
     """
     Reusable logic to perform a full RAG extraction on a single PDF document.
     """
@@ -193,15 +195,15 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
             try:
                 # Validate the LLM output against our model
                 ExtractionResult.model_validate(parsed_json)
-                return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path)
+                return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id)
             except Exception as e:
                 logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
                 # We'll still save it for debugging, but return None to indicate failure
-                post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path)
+                post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id)
     return None
 
 
-def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: str, output_path: str):
+def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: str, output_path: str, issue_id: str = None):
     """
     Reusable logic to perform a full-text extraction on a single HTML document.
     """
@@ -222,10 +224,10 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
                 # Validate the LLM output against our model
                 ExtractionResult.model_validate(parsed_json)
                 # For HTML, we consider it as a single "page"
-                return post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path)
+                return post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path, issue_id=issue_id)
             except Exception as e:
                 logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
-                post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path)
+                post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path, issue_id=issue_id)
     return None
 
 

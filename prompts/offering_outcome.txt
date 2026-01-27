@@ -16,7 +16,8 @@ Extraction Rules:
 
 Constraints:
 
-- NO CALCULATIONS: Do not calculate any values. Only extract numbers that are explicitly stated in the text.
+- IMPORTANT: DO NOT CALCULATE ANY VALUES. Only extract numbers that are explicitly stated in the text.
+- Before outputting a number, verify it appears exactly as a sequence of digits in the source text. If you have to add two or more numbers together to reach the value, you are violating the DO NOT CALCULATE ANY VALUES rule.
 - NULLS: Use null if a specific value or percentage is not explicitly mentioned.
 - FORMATTING: Convert European number formats (e.g., 24,16) to standard decimals (24.16). Remove spaces in large numbers (e.g., 14 980 479 -> 14980479).
 
