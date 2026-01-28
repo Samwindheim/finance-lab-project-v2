@@ -67,14 +67,8 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
     temp_output_files = []
     temp_dir = os.path.join(config.OUTPUT_JSON_DIR, 'temp', f"{issue_id}_{extraction_field}")
     os.makedirs(temp_dir, exist_ok=True)
-    
-    data_found = False
 
     for doc_type in source_types:
-        if data_found:
-            logger.info(f"Data already extracted for '{extraction_field}'. Skipping remaining source types.")
-            break
-        
         logger.info(f"Looking for '{doc_type}' documents for field '{extraction_field}'...")
             
         for pdf_info in pdf_matches:
@@ -111,11 +105,6 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                 )
                 if result_path:
                     temp_output_files.append(result_path)
-                    data_found = True
-                    break
-        
-        if data_found:
-            break
         
         for html_info in html_matches:
             if html_info.get("source_type") == doc_type:
@@ -135,8 +124,6 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
                 )
                 if result_path:
                     temp_output_files.append(result_path)
-                    data_found = True
-                    break
 
     # --- Step 4: Merging and Finalization ---
     if temp_output_files:
@@ -360,6 +347,19 @@ def test_command(args):
         sys.argv.extend(['--output-dir', args.output_dir])
     run_eval()
 
+def batch_test_command(args):
+    """Handles the 'batch_test' command for batch evaluation."""
+    from tests.batch_test import main as run_batch_test
+    # Adjust sys.argv so the imported main() can parse them
+    sys.argv = ['tests/batch_test.py']
+    if args.n:
+        sys.argv.extend(['-n', str(args.n)])
+    if args.output_dir:
+        sys.argv.extend(['--output-dir', args.output_dir])
+    if args.output_file:
+        sys.argv.extend(['--output-file', args.output_file])
+    run_batch_test()
+
 # --- Main CLI Entry Point ---
 
 def main():
@@ -404,6 +404,13 @@ def main():
     test_parser.add_argument('--issue-id', required=True, help='The issue_id to evaluate')
     test_parser.add_argument('--output-dir', default='output_json', help='Directory containing AI JSON results')
     test_parser.set_defaults(func=test_command)
+    
+    # Batch Test
+    batch_test_parser = subparsers.add_parser('batch_test', help='Batch evaluate multiple extractions')
+    batch_test_parser.add_argument('-n', type=int, help='Number of files to process (default: all)')
+    batch_test_parser.add_argument('--output-dir', default='output_json', help='Directory containing AI JSON results')
+    batch_test_parser.add_argument('--output-file', default='batch_test_results.json', help='Output JSON file for results')
+    batch_test_parser.set_defaults(func=batch_test_command)
 
     if len(sys.argv) == 1:
         parser.print_help()

@@ -9,7 +9,8 @@ Please extract the following fields:
 - unit_sub_price (Teckningskurs): The subscription price per unit or share. Extract as a number if possible.
 - offered_units (Erbjuden volym): The total volume of the issue. Extract the total number of NEW units if stated; if units are not totaled but the total number of NEW shares is stated, extract the share total instead
 - secondary_offering (Befintliga aktier som erbjuds): The number of EXISTING shares that are being offered in the secondary offering.
-- over_allotment_size_secondary (Övertilldelningsoption): The maximum number of additional shares/units that can be issued via an over-allotment option.
+- over_allotment_size (Övertilldelningsoption): The maximum number of additional shares/units that can be issued via an over-allotment option.
+- over_allotment_size_secondary (Övertilldelningsoption secondary): The maximum number of additional shares/units that can be issued via an over-allotment option in the secondary offering.
 
 Constraints:
 
@@ -28,6 +29,7 @@ Example output:
     "unit_sub_price": 1.4,
     "offered_units": 91285230,
     "secondary_offering": 100,
+    "over_allotment_size": null,
     "over_allotment_size_secondary": null
   }
 }

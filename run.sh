@@ -7,6 +7,7 @@
 #   ./run.sh test --issue-id <id>
 #   ./run.sh index <pdf_path>
 #   ./run.sh query <pdf_path> <query>
+#   ./run.sh batch_test -n <number>
 
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -33,7 +34,7 @@ fi
 
 # Main script logic
 case "$1" in
-  extract|index|query|clear|html-text|test)
+  extract|index|query|clear|html-text|test|batch_test)
     python3 src/main.py "$@"
     ;;
   *)
@@ -42,7 +43,7 @@ case "$1" in
     if [[ "$1" == http* ]] || [[ "$1" == --issue-id* ]]; then
       python3 src/main.py extract "$@"
     else
-      echo "Usage: $0 {extract|index|query|clear|html-text}"
+      echo "Usage: $0 {extract|index|query|clear|html-text|test|batch_test}"
       echo ""
       echo "Example:"
       echo "  $0 extract https://example.com/doc.pdf"
