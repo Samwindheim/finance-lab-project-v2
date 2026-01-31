@@ -230,9 +230,38 @@ class Evaluator:
             "over_allotment_allocation", "over_allotment_allocation_secondary"
         }
         
+        # Mutually exclusive field pairs: only one (count OR percentage) is stored in DB
+        mutually_exclusive_pairs = {
+            "unit_sub_with_rights": "unit_pct_sub_with_rights",
+            "unit_pct_sub_with_rights": "unit_sub_with_rights",
+            "unit_sub_without_rights": "unit_pct_sub_without_rights",
+            "unit_pct_sub_without_rights": "unit_sub_without_rights",
+            "unit_sub_guarantor": "unit_pct_sub_guarantor",
+            "unit_pct_sub_guarantor": "unit_sub_guarantor"
+        }
+        
         for field in fields:
             pred_val = predicted.get(field)
             gt_val = ground_truth.get(field)
+            
+            # Check if this field is part of a mutually exclusive pair
+            counterpart_field = mutually_exclusive_pairs.get(field)
+            if counterpart_field:
+                counterpart_gt_val = ground_truth.get(counterpart_field)
+                # If counterpart exists in DB, flag for manual check
+                if counterpart_gt_val is not None and str(counterpart_gt_val).strip() != "":
+                    # Counterpart exists, so this field is not stored in DB - flag for manual review
+                    results.append({
+                        "field": field,
+                        "predicted": pred_val,
+                        "ground_truth": gt_val,
+                        "is_match": False,  # Not a match, but not incorrect either
+                        "is_share_match": False,
+                        "needs_manual_check": True,
+                        "counterpart_field": counterpart_field,
+                        "counterpart_value": counterpart_gt_val
+                    })
+                    continue
 
             is_match = False
             is_share_match = False

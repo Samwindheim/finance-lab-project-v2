@@ -120,6 +120,7 @@ def main():
     terms_incorrect = 0
     terms_missing = 0
     terms_conflicts = 0
+    terms_manual_check = 0
 
     for model_group, fields in fields_to_check.items():
         ai_group_data = merged_ai_data.get(model_group, {})
@@ -133,6 +134,19 @@ def main():
         
         for r in field_results:
             has_conflict = model_group in conflicts and r['field'] in conflicts[model_group]
+            
+            # Handle manual check flag (mutually exclusive pairs)
+            if r.get('needs_manual_check'):
+                terms_manual_check += 1
+                status_icon = "🔍"  # Magnifying glass icon for manual check
+                all_field_details.append([
+                    status_icon,
+                    model_group,
+                    r['field'],
+                    r['predicted'] if r['predicted'] is not None else "-",
+                    f"NULL (Manually check)"
+                ])
+                continue
             
             if r['is_match'] and not has_conflict:
                 if r.get('is_share_match'):
@@ -164,7 +178,7 @@ def main():
                 r['ground_truth'] if r['ground_truth'] is not None else "-"
             ])
 
-    print(f"Summary: {terms_correct} Correct, {terms_share_matches} Matched (as Shares), {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts")
+    print(f"Summary: {terms_correct} Correct, {terms_share_matches} Matched (as Shares), {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts, {terms_manual_check} Manual Check")
 
     if all_field_details:
         print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid"))

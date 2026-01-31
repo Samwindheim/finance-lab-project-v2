@@ -52,6 +52,7 @@ def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluat
         terms_share_matches = 0
         terms_incorrect = 0
         terms_missing = 0
+        terms_manual_check = 0
         
         for model_group, fields in fields_to_check.items():
             ai_group_data = merged_ai_data.get(model_group, {})
@@ -63,7 +64,9 @@ def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluat
             field_results = evaluator.compare_fields(ai_eval_data, db_issue, fields)
             
             for r in field_results:
-                if r['is_match']:
+                if r.get('needs_manual_check'):
+                    terms_manual_check += 1
+                elif r['is_match']:
                     if r.get('is_share_match'):
                         terms_share_matches += 1
                     else:
@@ -88,7 +91,8 @@ def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluat
                 "correct": terms_correct,
                 "share_matches": terms_share_matches,
                 "incorrect": terms_incorrect,
-                "missing": terms_missing
+                "missing": terms_missing,
+                "manual_check": terms_manual_check
             }
         }
     except Exception as e:
@@ -146,7 +150,8 @@ def main():
             "correct": sum(r.get("terms_dates_outcome", {}).get("correct", 0) for r in results if "error" not in r),
             "share_matches": sum(r.get("terms_dates_outcome", {}).get("share_matches", 0) for r in results if "error" not in r),
             "incorrect": sum(r.get("terms_dates_outcome", {}).get("incorrect", 0) for r in results if "error" not in r),
-            "missing": sum(r.get("terms_dates_outcome", {}).get("missing", 0) for r in results if "error" not in r)
+            "missing": sum(r.get("terms_dates_outcome", {}).get("missing", 0) for r in results if "error" not in r),
+            "manual_check": sum(r.get("terms_dates_outcome", {}).get("manual_check", 0) for r in results if "error" not in r)
         }
     }
     

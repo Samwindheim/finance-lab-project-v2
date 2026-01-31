@@ -4,14 +4,15 @@ Task: Extract the final outcome (slutgiltigt utfall) of an issue from the provid
 
 Extraction Rules:
 
-- unit_sub_total: Total number of NEW units or shares subscribed. Extract this ONLY if the exact number is explicitly written in the text.
+- unit_sub_total: Total number of NEW units or shares subscribed among underwriters and guarantors. Extract this ONLY if the exact number is explicitly written in the text.
 - unit_pct_sub_with_rights: Percentage subscribed with the support of rights (med stöd av rätter).
 - unit_sub_with_rights: Exact number of units subscribed with the support of rights.
 - unit_pct_sub_without_rights: Percentage subscribed without the support of rights (utan stöd av rätter).
 - unit_sub_without_rights: Exact number of units subscribed without the support of rights.
 - unit_pct_sub_guarantor: Percentage subscribed by/allocated to guarantors (emissionsgaranter).
 - unit_sub_guarantor: Exact number of units subscribed by/allocated to guarantors.
-
+- overallotment_allocation: Exact number of units allocated via an over-allotment option.
+- overallotment_allocation_secondary: Exact number of units allocated via an over-allotment option in the secondary offering.
 - secondary_sub: Number of EXISTING units or shares subscribed in the secondary offering. Extract this ONLY if the exact number is explicitly written in the text.
 
 Constraints:
@@ -26,13 +27,15 @@ Output ONLY a JSON object with the key 'offering_outcome'.
 Example Output:
 {
   "offering_outcome": {
-    "unit_sub_total": 6888555,
-    "unit_sub_with_rights": null,
+    "unit_sub_total": 0,
+    "unit_sub_with_rights": 0,
     "unit_sub_without_rights": 0,
     "unit_sub_guarantor": 0,
-    "unit_pct_sub_with_rights": 100.0,
-    "unit_pct_sub_without_rights": null,
-    "unit_pct_sub_guarantor": null,
-    "secondary_sub": null,
+    "unit_pct_sub_with_rights": 0.00,
+    "unit_pct_sub_without_rights": 0.00,
+    "unit_pct_sub_guarantor": 0.00,
+    "overallotment_allocation": 0,
+    "overallotment_allocation_secondary": 0,
+    "secondary_sub": 0
   }
 }
