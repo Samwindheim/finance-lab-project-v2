@@ -44,8 +44,8 @@ class OfferingTerms(BaseModel):
     shares_in_unit: Optional[int] = None
     unit_sub_price: Optional[Union[float, str]] = None
     offered_units: Optional[Union[int, str]] = None
-    overallotment_size: Optional[Union[int, str]] = None
-    overallotment_size_secondary: Optional[Union[int, str]] = None
+    over_allotment_size: Optional[Union[int, str]] = None
+    over_allotment_size_secondary: Optional[Union[int, str]] = None
     secondary_offering: Optional[Union[int, str]] = None
     # new
     minimum_sub_condition: Optional[Union[float, str]] = None
@@ -60,8 +60,8 @@ class OfferingOutcome(BaseModel):
     unit_pct_sub_without_rights: Optional[Union[float, str]] = None
     unit_pct_sub_guarantor: Optional[Union[float, str]] = None
     # new
-    overallotment_allocation: Optional[Union[int, str]] = None
-    overallotment_allocation_secondary: Optional[Union[int, str]] = None
+    over_allotment_allocation: Optional[Union[int, str]] = None
+    over_allotment_allocation_secondary: Optional[Union[int, str]] = None
     secondary_sub: Optional[Union[int, str]] = None
 
 class GeneralInfo(BaseModel):

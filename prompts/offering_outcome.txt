@@ -11,8 +11,8 @@ Extraction Rules:
 - unit_sub_without_rights: Exact number of units subscribed without the support of rights.
 - unit_pct_sub_guarantor: Percentage subscribed by/allocated to guarantors (emissionsgaranter).
 - unit_sub_guarantor: Exact number of units subscribed by/allocated to guarantors.
-- overallotment_allocation: Exact number of units allocated via an over-allotment option.
-- overallotment_allocation_secondary: Exact number of units allocated via an over-allotment option in the secondary offering.
+- over_allotment_allocation: Exact number of units allocated via an over-allotment option.
+- over_allotment_allocation_secondary: Exact number of units allocated via an over-allotment option in the secondary offering.
 - secondary_sub: Number of EXISTING units or shares subscribed in the secondary offering. Extract this ONLY if the exact number is explicitly written in the text.
 
 Constraints:
@@ -34,8 +34,8 @@ Example Output:
     "unit_pct_sub_with_rights": 0.00,
     "unit_pct_sub_without_rights": 0.00,
     "unit_pct_sub_guarantor": 0.00,
-    "overallotment_allocation": 0,
-    "overallotment_allocation_secondary": 0,
+    "over_allotment_allocation": 0,
+    "over_allotment_allocation_secondary": 0,
     "secondary_sub": 0
   }
 }

@@ -96,13 +96,14 @@ class Evaluator:
         for gt in potential_matches:
             gt_norm = self.normalize_name(gt.get("name", ""))
             similarity = fuzz.token_sort_ratio(pred_norm, gt_norm)
+            partial_similarity = fuzz.partial_ratio(pred_norm, gt_norm)
 
             # Check for name containment (e.g., "Sven Olof Kulldorf" in "Sven Olof Kulldorf / Bank")
-            # We check if one normalized name is a substring of the other
             is_contained = (gt_norm in pred_norm and len(gt_norm) > 5) or \
                           (pred_norm in gt_norm and len(pred_norm) > 5)
 
-            if similarity < self.similarity_threshold and not is_contained:
+            # If either ratio is high enough, or it's a solid substring match, consider it a candidate
+            if similarity < self.similarity_threshold and partial_similarity < 85 and not is_contained:
                 continue
 
             errors = self._get_investor_errors(pred, gt)
