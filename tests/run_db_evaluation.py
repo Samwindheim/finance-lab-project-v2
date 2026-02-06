@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 import pandas as pd
+from decimal import Decimal
 from src.database import FinanceDB
 from tests.evaluator import Evaluator
 from tabulate import tabulate
@@ -106,6 +107,22 @@ def main():
     # --- EVALUATE TERMS, OUTCOME & DATES ---
     log_header("TERMS, OUTCOME & DATES EVALUATION")
     
+    # Format values for display to avoid scientific notation
+    def format_val(val):
+        if val is None or str(val).strip() == "":
+            return "-"
+        try:
+            # If it's a number, format without scientific notation
+            # First convert to string and remove any existing formatting
+            s_val = str(val).replace(" ", "").replace(",", "")
+            num = Decimal(s_val)
+            if num == num.to_integral_value():
+                return f"{num:,.0f}".replace(",", " ") # Use space as thousands separator
+            # For percentages/decimals, keep up to 2 decimal places if needed, but no scientific notation
+            return f"{num:f}".rstrip('0').rstrip('.')
+        except:
+            return str(val)
+
     # Dynamically build fields to check from ExtractionResult model
     # Exclude investors and general_info and isin_units and isin_rights as requested
     fields_to_check = {
@@ -139,11 +156,12 @@ def main():
             if r.get('needs_manual_check'):
                 terms_manual_check += 1
                 status_icon = "🔍"  # Magnifying glass icon for manual check
+                
                 all_field_details.append([
                     status_icon,
                     model_group,
                     r['field'],
-                    r['predicted'] if r['predicted'] is not None else "-",
+                    format_val(r['predicted']),
                     f"NULL (Manually check)"
                 ])
                 continue
@@ -174,14 +192,16 @@ def main():
                 status_icon,
                 model_group,
                 r['field'],
-                r['predicted'] if r['predicted'] is not None else "-",
-                r['ground_truth'] if r['ground_truth'] is not None else "-"
+                format_val(r['predicted']),
+                format_val(r['ground_truth'])
             ])
 
     print(f"Summary: {terms_correct} Correct, {terms_share_matches} Matched (as Shares), {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts, {terms_manual_check} Manual Check")
 
     if all_field_details:
-        print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid"))
+        # Prevent tabulate from formatting numbers automatically (which causes scientific notation)
+        # Also use colalign to keep things neat
+        print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid", disable_numparse=True))
     else:
         print("All Terms, Outcome & Dates match perfectly!")
 

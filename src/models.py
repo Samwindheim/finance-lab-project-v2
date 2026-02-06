@@ -44,6 +44,7 @@ class OfferingTerms(BaseModel):
     shares_in_unit: Optional[int] = None
     unit_sub_price: Optional[Union[float, str]] = None
     offered_units: Optional[Union[int, str]] = None
+    offered_units_unlisted: Optional[Union[int, str]] = None
     over_allotment_size: Optional[Union[int, str]] = None
     over_allotment_size_secondary: Optional[Union[int, str]] = None
     secondary_offering: Optional[Union[int, str]] = None
@@ -94,8 +95,7 @@ class DocumentEntry(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    # General info is not in issue db so removing for testing, isin
-    # data isn't extracting reliably.
+    # General info is not in issue db so removing for testing, isin data isn't extracting reliably.
     # general_info: Optional[GeneralInfo] = None
     # isin_units: Optional[str] = None
     # isin_rights: Optional[str] = None

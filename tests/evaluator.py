@@ -27,6 +27,9 @@ class Evaluator:
         try:
             # Handle strings with spaces or commas
             clean_val = str(amount).replace(" ", "").replace(",", "")
+            # Handle scientific notation if it's already a float/string
+            if 'e' in clean_val.lower():
+                return Decimal(format(float(clean_val), 'f'))
             # If the string itself is 'nan' or 'None'
             if clean_val.lower() in ['nan', 'none']:
                 return None
@@ -249,8 +252,9 @@ class Evaluator:
             counterpart_field = mutually_exclusive_pairs.get(field)
             if counterpart_field:
                 counterpart_gt_val = ground_truth.get(counterpart_field)
-                # If counterpart exists in DB, flag for manual check
-                if counterpart_gt_val is not None and str(counterpart_gt_val).strip() != "":
+                # Only flag for manual check if AI found a value AND DB has the counterpart
+                if (pred_val is not None and str(pred_val).strip() != "") and \
+                   (counterpart_gt_val is not None and str(counterpart_gt_val).strip() != ""):
                     # Counterpart exists, so this field is not stored in DB - flag for manual review
                     results.append({
                         "field": field,
