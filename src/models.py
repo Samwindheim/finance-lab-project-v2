@@ -14,8 +14,9 @@ class ExtractionDefinition(BaseModel):
     semantic_search_query: str
     page_selection_strategy: str = "consecutive"
 
-class ExtractionDefinitions(RootModel):
-    root: Dict[str, ExtractionDefinition]
+class ExtractionDefinitions(BaseModel):
+    field_definitions: Dict[str, ExtractionDefinition]
+    issue_type_guidance: Optional[Dict[str, str]] = None
 
 # --- LLM Extraction Outputs ---
 

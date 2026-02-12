@@ -1,30 +1,39 @@
 {
-    "investors": {
-        "description": "Extracts a list of all investors, including subscribers (Teckningsåtagare) and guarantors (Garantiåtagande), using a detailed, multi-level extraction logic.",
-        "source_types": ["Prospectus", "Memorandum", "InformationDocument", "New commitments"],
-        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue", "Warrant"],
-        "semantic_search_query": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), and guarantee commitments (garantiåtaganden or garanti)",
-        "page_selection_strategy": "consecutive"
+    "field_definitions": {
+        "investors": {
+            "description": "Extracts a list of all investors, including subscribers (Teckningsåtagare) and guarantors (Garantiåtagande), using a detailed, multi-level extraction logic.",
+            "source_types": ["Prospectus", "Memorandum", "InformationDocument", "New commitments", "Update", "Publication", "Terms"],
+            "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue", "Warrant"],
+            "semantic_search_query": "Section or table listing investor names, subscription commitments (teckningsåtaganden or teckningsförbindelser), and guarantee commitments (garantiåtaganden or garanti)",
+            "page_selection_strategy": "consecutive"
+        },
+        "important_dates": {
+            "description": "Extracts all relevant dates including subscription periods, trading dates, and record dates.",
+            "source_types": ["Publication", "Terms", "Memorandum", "Prospectus", "InformationDocument"],
+            "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
+            "semantic_search_query": "Tidsplan eller tidplan med viktiga datum (avstämningsdag, teckningsperiod, IPO trading date, handel med teckningsrätter)",
+            "page_selection_strategy": "consecutive"
+        },
+        "offering_terms": {
+            "description": "Extracts financial terms, ratios, price, and volume.",
+            "source_types": ["Publication", "Terms"],
+            "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
+            "semantic_search_query": "Villkor för erbjudandet (teckningskurs, teckningsrelation, erbjuden volym, interval, over-allotment, non-cash consideration)",
+            "page_selection_strategy": "consecutive"
+        },
+        "offering_outcome": {
+            "description": "Extracts the outcome of the offering, including subscription percentages and final amounts.",
+            "source_types": ["Outcome"],
+            "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
+            "semantic_search_query": "Slutgiltigt utfall i erbjudandet eller börsnoteringen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning, over-allotment allocation)",
+            "page_selection_strategy": "consecutive"
+        }
     },
-    "important_dates": {
-        "description": "Extracts all relevant dates including subscription periods, trading dates, and record dates.",
-        "source_types": ["Publication", "Terms", "Memorandum", "Prospectus", "InformationDocument"],
-        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
-        "semantic_search_query": "Tidsplan eller tidplan med viktiga datum (avstämningsdag, teckningsperiod, IPO trading date, handel med teckningsrätter)",
-        "page_selection_strategy": "consecutive"
-    },
-    "offering_terms": {
-        "description": "Extracts financial terms, ratios, price, and volume.",
-        "source_types": ["Publication", "Terms"],
-        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
-        "semantic_search_query": "Villkor för erbjudandet (teckningskurs, teckningsrelation, erbjuden volym, interval, over-allotment, non-cash consideration)",
-        "page_selection_strategy": "consecutive"
-    },
-    "offering_outcome": {
-        "description": "Extracts the outcome of the offering, including subscription percentages and final amounts.",
-        "source_types": ["Outcome"],
-        "issue_types": ["Rights issue", "IPO", "Directed issue", "Non-cash issue"],
-        "semantic_search_query": "Slutgiltigt utfall i erbjudandet eller börsnoteringen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning, over-allotment allocation)",
-        "page_selection_strategy": "consecutive"
+    "issue_type_guidance": {
+        "Rights issue": "This is a RIGHTS ISSUE (Företrädesemission). Do not grab data not related to the rights issue.",
+        "Directed issue": "This is a DIRECTED ISSUE (Riktad emission). Do not grab data not related to the directed issue.",
+        "IPO": "This is an INITIAL PUBLIC OFFERING (Börsnotering). Do not grab data not related to the IPO.",
+        "Warrant": "This is a WARRANT EXERCISE (Teckningsoptioner). Do not grab data not related to the warrant exercise.",
+        "Non-cash issue": "This is a NON-CASH ISSUE (Apportemission). Do not grab data not related to the non-cash issue."
     }
 }

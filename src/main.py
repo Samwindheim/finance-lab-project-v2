@@ -34,17 +34,24 @@ def load_extraction_definitions():
     
     try:
         validated = ExtractionDefinitions.model_validate(raw_definitions)
-        return validated.root
+        return validated
     except Exception as e:
         logger.error(f"Extraction definitions in {definitions_path} failed validation: {e}")
         sys.exit(1)
 
-def run_single_extraction(issue_id: str, extraction_field: str, definitions: dict[str, ExtractionDefinition], pdf_matches: list, html_matches: list):
+def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj: ExtractionDefinitions, pdf_matches: list, html_matches: list, issue_type: str = None):
     """Runs the full extraction and merge pipeline for a single field."""
-    field_definition = definitions.get(extraction_field)
+    field_definition = definitions_obj.field_definitions.get(extraction_field)
     if not field_definition:
         logger.warning(f"No definition found for '{extraction_field}'. Skipping.")
         return
+
+    # Get issue-specific guidance if available
+    issue_guidance = ""
+    if issue_type and definitions_obj.issue_type_guidance:
+        issue_guidance = definitions_obj.issue_type_guidance.get(issue_type, "")
+        if issue_guidance:
+            logger.info(f"Applying guidance for issue type: '{issue_type}'")
 
     # --- Step 1: Load the Prompt Text from its File ---
     prompt_filename = f"{extraction_field}.txt"
@@ -52,6 +59,9 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions: dic
     try:
         with open(prompt_path, 'r', encoding='utf-8') as f:
             extraction_prompt = f.read()
+            # Append guidance if present
+            if issue_guidance:
+                extraction_prompt = f"{extraction_prompt}\n\nIMPORTANT CONTEXT FOR THIS EXTRACTION:\n{issue_guidance}"
     except FileNotFoundError:
         logger.error(f"Prompt file not found for '{extraction_field}'. Please create '{prompt_filename}' in the prompts directory.")
         return
@@ -206,7 +216,8 @@ def extract_command(args):
     logger.info(f"Found {len(pdf_matches)} PDF(s) and {len(html_matches)} HTML document(s) for the issue.")
 
     # --- Step 2: Determine fields to process (Smart Filtering) ---
-    definitions = load_extraction_definitions()
+    definitions_obj = load_extraction_definitions()
+    definitions = definitions_obj.field_definitions
     fields_to_process = []
     
     # Identify the source types of our target document(s)
@@ -251,7 +262,7 @@ def extract_command(args):
 
     for field in fields_to_process:
         logger.info(f"Processing field: '{field}'")
-        run_single_extraction(issue_id, field, definitions, pdf_matches, html_matches)
+        run_single_extraction(issue_id, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type)
 
     logger.info(f"All processing for issue '{issue_id}' complete.")
 
