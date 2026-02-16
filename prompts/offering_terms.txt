@@ -12,7 +12,7 @@ Please extract the following fields:
 - over_allotment_size (Övertilldelningsoption): The maximum number of additional shares/units that can be issued via an over-allotment option.
 - over_allotment_size_secondary (Övertilldelningsoption secondary): The maximum number of additional shares/units that can be issued via an over-allotment option in the secondary offering.
 - secondary_offering (Befintliga aktier som erbjuds): The number of EXISTING shares that are being offered in the secondary offering.
-- minimum_sub_condition: The percentage of the issue that must be subscribed to in order to receive the rights.
+- minimum_sub_condition (Lägsta teckningsnivå)ß: The minimum subscription threshold required for the rights issue to proceed or be completed. This is a pre-defined condition, not the final result.
 
 Constraints:
 
