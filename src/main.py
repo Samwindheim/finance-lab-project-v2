@@ -369,6 +369,8 @@ def batch_test_command(args):
         sys.argv.extend(['--output-dir', args.output_dir])
     if args.output_file:
         sys.argv.extend(['--output-file', args.output_file])
+    if args.exclude_fields:
+        sys.argv.extend(['--exclude-fields'] + args.exclude_fields)
     run_batch_test()
 
 # --- Main CLI Entry Point ---
@@ -421,6 +423,7 @@ def main():
     batch_test_parser.add_argument('-n', type=int, help='Number of files to process (default: all)')
     batch_test_parser.add_argument('--output-dir', default='output_json', help='Directory containing AI JSON results')
     batch_test_parser.add_argument('--output-file', default='batch_test_results.json', help='Output JSON file for results')
+    batch_test_parser.add_argument('--exclude-fields', nargs='+', help='Fields to exclude from evaluation')
     batch_test_parser.set_defaults(func=batch_test_command)
 
     if len(sys.argv) == 1:

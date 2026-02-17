@@ -1,0 +1,11 @@
+Analyze the provided text to determine if there have been any changes, updates, or cancellations to the subscription or guarantee commitments compared to what was previously announced.
+
+Extract the following boolean flag:
+- flag_investors_changed: Set to true if the document describes ANY changes, cancellations, releases, or updates to the subscription or guarantee commitments.
+
+Output ONLY a JSON object with the key 'investors_changed'.
+
+Example output:
+{
+  "flag_investors_changed": true
+}

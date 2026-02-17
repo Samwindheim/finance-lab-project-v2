@@ -125,10 +125,11 @@ def main():
 
     # Dynamically build fields to check from ExtractionResult model
     # Exclude investors and general_info and isin_units and isin_rights as requested
+    # exclude general meeting date as it is not always present
     fields_to_check = {
         field_name: get_fields_for_category(field_name)
         for field_name in ExtractionResult.model_fields.keys()
-        if field_name not in ["investors"]
+        if field_name not in ["investors", "general_meeting_date"]
     }
 
     all_field_details = []

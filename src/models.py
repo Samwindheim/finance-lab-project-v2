@@ -11,8 +11,8 @@ class ExtractionDefinition(BaseModel):
     description: str
     source_types: List[str]
     issue_types: Optional[List[str]] = None
-    semantic_search_query: str
-    page_selection_strategy: str = "consecutive"
+    semantic_search_query: Optional[str] = None
+    page_selection_strategy: Optional[str] = "consecutive"
 
 class ExtractionDefinitions(BaseModel):
     field_definitions: Dict[str, ExtractionDefinition]
@@ -76,11 +76,7 @@ class ExtractionResult(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    # General info is not in issue db so removing for testing, isin
-    # data isn't extracting reliably.
-    # general_info: Optional[GeneralInfo] = None
-    # isin_units: Optional[str] = None
-    # isin_rights: Optional[str] = None
+    flag_investors_changed: Optional[bool] = None
 
     # Add other fields as needed, or use an extra field for flexibility
     # For now, we'll allow extra fields since the definitions are dynamic
@@ -96,10 +92,7 @@ class DocumentEntry(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    # General info is not in issue db so removing for testing, isin data isn't extracting reliably.
-    # general_info: Optional[GeneralInfo] = None
-    # isin_units: Optional[str] = None
-    # isin_rights: Optional[str] = None
+    flag_investors_changed: Optional[bool] = None
 
     class Config:
         extra = "allow"

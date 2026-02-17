@@ -6,8 +6,11 @@ from src.database import FinanceDB
 from tests.evaluator import Evaluator
 from src.models import get_fields_for_category, ExtractionResult
 
-def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluator: Evaluator):
+def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluator: Evaluator, exclude_fields: list = None):
     """Evaluate a single issue and return accuracy metrics."""
+    if exclude_fields is None:
+        exclude_fields = []
+    
     ai_file = os.path.join(output_dir, f"{issue_id}_extraction.json")
     
     if not os.path.exists(ai_file):
@@ -43,7 +46,7 @@ def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluat
         
         # Evaluate Terms, Outcome & Dates
         fields_to_check = {
-            field_name: get_fields_for_category(field_name)
+            field_name: [f for f in get_fields_for_category(field_name) if f not in exclude_fields]
             for field_name in ExtractionResult.model_fields.keys()
             if field_name not in ["investors"]
         }
@@ -55,6 +58,9 @@ def evaluate_single_issue(issue_id: str, output_dir: str, db: FinanceDB, evaluat
         terms_manual_check = 0
         
         for model_group, fields in fields_to_check.items():
+            if not fields:
+                continue
+            
             ai_group_data = merged_ai_data.get(model_group, {})
             if not isinstance(ai_group_data, dict):
                 ai_eval_data = {model_group: ai_group_data}
@@ -106,6 +112,7 @@ def main():
     parser.add_argument("-n", type=int, help="Number of files to process (default: all)")
     parser.add_argument("--output-dir", default="output_json", help="Directory containing AI JSON results")
     parser.add_argument("--output-file", default="batch_test_results.json", help="Output JSON file for results")
+    parser.add_argument("--exclude-fields", nargs="+", default=[], help="Fields to exclude from evaluation (e.g., general_meeting_date)")
     args = parser.parse_args()
     
     db = FinanceDB()
@@ -124,6 +131,8 @@ def main():
         json_files = json_files[:args.n]
     
     print(f"Processing {len(json_files)} files...")
+    if args.exclude_fields:
+        print(f"Excluding fields: {', '.join(args.exclude_fields)}")
     
     results = []
     for json_file in json_files:
@@ -132,7 +141,7 @@ def main():
         issue_id = filename.replace("_extraction.json", "")
         
         print(f"Evaluating {issue_id}...")
-        result = evaluate_single_issue(issue_id, args.output_dir, db, evaluator)
+        result = evaluate_single_issue(issue_id, args.output_dir, db, evaluator, args.exclude_fields)
         
         if result:
             results.append(result)
