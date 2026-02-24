@@ -263,14 +263,18 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             if not doc_name:
                 continue
 
-            # Get the extracted field value
+            # Get the extracted field value and source pages
             field_value = temp_result.get(extraction_field)
+            source_pages = temp_result.get("source_pages", [])
             if field_value is None:
                 continue
 
             # Ensure document entry exists
             if doc_name not in all_data:
-                all_data[doc_name] = DocumentEntry(issue_id=issue_id, id=temp_result.get("doc_id"))
+                all_data[doc_name] = DocumentEntry(
+                    issue_id=issue_id, 
+                    id=temp_result.get("doc_id")
+                )
             
             doc_entry = all_data[doc_name]
             
@@ -301,6 +305,7 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                         logger.warning(f"Skipping invalid investor entry in {doc_name}: {e}")
                 
                 doc_entry.investors = investors
+                doc_entry.investors_source_pages = source_pages
             
             elif field_info:
                 try:
@@ -311,7 +316,11 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                         annotation = next((a for a in get_args(annotation) if a is not type(None)), annotation)
                     
                     if hasattr(annotation, "model_validate"):
-                        setattr(doc_entry, extraction_field, annotation.model_validate(field_value))
+                        validated_value = annotation.model_validate(field_value)
+                        # Set source pages on the validated model
+                        if hasattr(validated_value, "source_pages"):
+                            validated_value.source_pages = source_pages
+                        setattr(doc_entry, extraction_field, validated_value)
                     else:
                         setattr(doc_entry, extraction_field, field_value)
                 except Exception as e:
@@ -323,6 +332,8 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                     if not doc_entry.important_dates:
                         doc_entry.important_dates = ImportantDates()
                     setattr(doc_entry.important_dates, extraction_field, field_value)
+                    # Update source pages for important_dates if it's being updated
+                    doc_entry.important_dates.source_pages = source_pages
                 else:
                     # Truly extra field (allowed by DocumentEntry Config)
                     setattr(doc_entry, extraction_field, field_value)
@@ -346,6 +357,17 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         for field_name in DocumentEntry.model_fields.keys():
             if field_name in ["issue_id", "id"]:
                 continue
+            
+            # Special handling for investors to keep source_pages next to it
+            if field_name == "investors":
+                if doc_entry.investors is not None:
+                    ordered_doc["investors"] = [i.model_dump(exclude_none=True) for i in doc_entry.investors]
+                    if doc_entry.investors_source_pages is not None:
+                        ordered_doc["investors_source_pages"] = doc_entry.investors_source_pages
+                continue
+            
+            if field_name == "investors_source_pages":
+                continue # Handled above
             
             value = getattr(doc_entry, field_name)
             if value is not None:

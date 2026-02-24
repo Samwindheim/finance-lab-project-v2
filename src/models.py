@@ -27,6 +27,7 @@ class Investor(BaseModel):
     level: Optional[int] = None
 
 class ImportantDates(BaseModel):
+    source_pages: Optional[List[int]] = None
     record_date: Optional[str] = None
     sub_start_date: Optional[str] = None
     sub_end_date: Optional[str] = None
@@ -38,6 +39,7 @@ class ImportantDates(BaseModel):
     ipo_trading_date: Optional[str] = None
 
 class OfferingTerms(BaseModel):
+    source_pages: Optional[List[int]] = None
     shares_required: Optional[int] = None
     rights_received: Optional[int] = None
     rights_required: Optional[int] = None
@@ -54,6 +56,7 @@ class OfferingTerms(BaseModel):
 
 
 class OfferingOutcome(BaseModel):
+    source_pages: Optional[List[int]] = None
     unit_sub_total: Optional[Union[int, str]] = None
     unit_sub_with_rights: Optional[Union[int, str]] = None
     unit_sub_without_rights: Optional[Union[int, str]] = None
@@ -67,12 +70,14 @@ class OfferingOutcome(BaseModel):
     secondary_sub: Optional[Union[int, str]] = None
 
 class GeneralInfo(BaseModel):
+    source_pages: Optional[List[int]] = None
     finansiella_radgivare: Optional[str] = None
     legalradgivare: Optional[str] = None
     emissionsinstitut: Optional[str] = None
 
 class ExtractionResult(BaseModel):
     investors: Optional[List[Investor]] = None
+    investors_source_pages: Optional[List[int]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
@@ -89,6 +94,7 @@ class DocumentEntry(BaseModel):
     issue_id: str
     id: Optional[str] = None
     investors: Optional[List[Investor]] = None
+    investors_source_pages: Optional[List[int]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
