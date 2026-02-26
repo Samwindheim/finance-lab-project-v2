@@ -18,7 +18,7 @@ logger = setup_logger(__name__)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
-from utils import load_json_file, find_sources_by_issue_id, find_issue_id, download_pdf
+from utils import find_sources_by_issue_id, find_issue_id, download_pdf
 from extraction_logic import extract_from_pdf, extract_from_html, merge_and_finalize_outputs
 from models import ExtractionDefinitions, ExtractionDefinition
 from pdf_indexer import PDFIndexer
@@ -39,7 +39,7 @@ def load_extraction_definitions():
         logger.error(f"Extraction definitions in {definitions_path} failed validation: {e}")
         sys.exit(1)
 
-def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj: ExtractionDefinitions, pdf_matches: list, html_matches: list, issue_type: str = None):
+def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj: ExtractionDefinitions, pdf_matches: list, html_matches: list, issue_type: str = None, force_unlinked: bool = False):
     """Runs the full extraction and merge pipeline for a single field."""
     field_definition = definitions_obj.field_definitions.get(extraction_field)
     if not field_definition:
@@ -78,67 +78,136 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
     temp_dir = os.path.join(config.OUTPUT_JSON_DIR, 'temp', f"{issue_id}_{extraction_field}")
     os.makedirs(temp_dir, exist_ok=True)
 
-    for doc_type in source_types:
-        logger.info(f"Looking for '{doc_type}' documents for field '{extraction_field}'...")
-            
+    # If force_unlinked is True, we ignore source_type matching and process all provided matches
+    if force_unlinked:
+        logger.info(f"Unlinked document mode: Processing all provided matches for field '{extraction_field}'...")
         for pdf_info in pdf_matches:
-            if pdf_info.get("source_type") == doc_type:
-                pdf_filename = pdf_info.get("source_url")
-                if not pdf_filename: continue
+            pdf_filename = pdf_info.get("source_url")
+            if not pdf_filename: continue
+            
+            # If pdf_filename is a URL, use the basename for local storage
+            if pdf_filename.startswith("http"):
+                local_pdf_filename = os.path.basename(pdf_filename)
+                pdf_path = os.path.join(config.PDF_DIR, local_pdf_filename)
+            else:
                 pdf_path = os.path.join(config.PDF_DIR, pdf_filename)
-                
-                # Check if file exists locally, if not download it
-                if not os.path.exists(pdf_path):
-                    full_url = pdf_info.get("full_url")
-                    if full_url:
-                        logger.info(f"PDF {pdf_filename} not found locally. Attempting to download...")
-                        success = download_pdf(full_url, pdf_path)
-                        if not success:
-                            logger.error(f"Could not download {pdf_filename}. Skipping.")
-                            continue
-                    else:
-                        logger.warning(f"PDF {pdf_filename} not found and no URL available. Skipping.")
+            
+            # Check if file exists locally, if not download it
+            if not os.path.exists(pdf_path):
+                full_url = pdf_info.get("source_url") if pdf_info.get("source_url", "").startswith("http") else None
+                if full_url:
+                    logger.info(f"PDF {pdf_filename} not found locally. Attempting to download...")
+                    success = download_pdf(full_url, pdf_path)
+                    if not success:
+                        logger.error(f"Could not download {pdf_filename}. Skipping.")
                         continue
+                else:
+                    logger.warning(f"PDF {pdf_filename} not found and no URL available. Skipping.")
+                    continue
 
-                doc_id = pdf_info.get("id", "unknown_pdf")
-                temp_output_filename = f"{doc_id}_{extraction_field}.json"
-                temp_output_path = os.path.join(temp_dir, temp_output_filename)
+            doc_id = pdf_info.get("id", "unknown_pdf")
+            temp_output_filename = f"{doc_id}_{extraction_field}.json"
+            temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
-                result_path = extract_from_pdf(
-                    pdf_path=pdf_path,
-                    search_query=semantic_search_query,
-                    extraction_prompt=extraction_prompt,
-                    extraction_field=extraction_field,
-                    output_path=temp_output_path,
-                    page_selection_strategy=page_selection_strategy,
-                    issue_id=issue_id
-                )
-                if result_path:
-                    temp_output_files.append(result_path)
+            result_path = extract_from_pdf(
+                pdf_path=pdf_path,
+                search_query=semantic_search_query,
+                extraction_prompt=extraction_prompt,
+                extraction_field=extraction_field,
+                output_path=temp_output_path,
+                page_selection_strategy=page_selection_strategy,
+                issue_id=issue_id
+            )
+            if result_path:
+                temp_output_files.append(result_path)
         
         for html_info in html_matches:
-            if html_info.get("source_type") == doc_type:
-                html_url = html_info.get("source_url")
-                if not html_url: continue
-                
-                doc_id = html_info.get("id", "unknown_html")
-                temp_output_filename = f"{doc_id}_{extraction_field}.json"
-                temp_output_path = os.path.join(temp_dir, temp_output_filename)
+            html_url = html_info.get("source_url")
+            if not html_url: continue
+            
+            doc_id = html_info.get("id", "unknown_html")
+            temp_output_filename = f"{doc_id}_{extraction_field}.json"
+            temp_output_path = os.path.join(temp_dir, temp_output_filename)
 
-                result_path = extract_from_html(
-                    html_path=html_url,
-                    extraction_prompt=extraction_prompt,
-                    extraction_field=extraction_field,
-                    output_path=temp_output_path,
-                    issue_id=issue_id
-                )
-                if result_path:
-                    temp_output_files.append(result_path)
+            result_path = extract_from_html(
+                html_path=html_url,
+                extraction_prompt=extraction_prompt,
+                extraction_field=extraction_field,
+                output_path=temp_output_path,
+                issue_id=issue_id
+            )
+            if result_path:
+                temp_output_files.append(result_path)
+    else:
+        # Standard logic: Filter by source_type
+        for doc_type in source_types:
+            logger.info(f"Looking for '{doc_type}' documents for field '{extraction_field}'...")
+                
+            for pdf_info in pdf_matches:
+                if pdf_info.get("source_type") == doc_type:
+                    pdf_filename = pdf_info.get("source_url")
+                    if not pdf_filename: continue
+                    
+                    # If pdf_filename is a URL, use the basename for local storage
+                    if pdf_filename.startswith("http"):
+                        local_pdf_filename = os.path.basename(pdf_filename)
+                        pdf_path = os.path.join(config.PDF_DIR, local_pdf_filename)
+                    else:
+                        pdf_path = os.path.join(config.PDF_DIR, pdf_filename)
+                    
+                    # Check if file exists locally, if not download it
+                    if not os.path.exists(pdf_path):
+                        full_url = pdf_info.get("source_url") if pdf_info.get("source_url", "").startswith("http") else None
+                        if full_url:
+                            logger.info(f"PDF {pdf_filename} not found locally. Attempting to download...")
+                            success = download_pdf(full_url, pdf_path)
+                            if not success:
+                                logger.error(f"Could not download {pdf_filename}. Skipping.")
+                                continue
+                        else:
+                            logger.warning(f"PDF {pdf_filename} not found and no URL available. Skipping.")
+                            continue
+
+                    doc_id = pdf_info.get("id", "unknown_pdf")
+                    temp_output_filename = f"{doc_id}_{extraction_field}.json"
+                    temp_output_path = os.path.join(temp_dir, temp_output_filename)
+
+                    result_path = extract_from_pdf(
+                        pdf_path=pdf_path,
+                        search_query=semantic_search_query,
+                        extraction_prompt=extraction_prompt,
+                        extraction_field=extraction_field,
+                        output_path=temp_output_path,
+                        page_selection_strategy=page_selection_strategy,
+                        issue_id=issue_id
+                    )
+                    if result_path:
+                        temp_output_files.append(result_path)
+            
+            for html_info in html_matches:
+                if html_info.get("source_type") == doc_type:
+                    html_url = html_info.get("source_url")
+                    if not html_url: continue
+                    
+                    doc_id = html_info.get("id", "unknown_html")
+                    temp_output_filename = f"{doc_id}_{extraction_field}.json"
+                    temp_output_path = os.path.join(temp_dir, temp_output_filename)
+
+                    result_path = extract_from_html(
+                        html_path=html_url,
+                        extraction_prompt=extraction_prompt,
+                        extraction_field=extraction_field,
+                        output_path=temp_output_path,
+                        issue_id=issue_id
+                    )
+                    if result_path:
+                        temp_output_files.append(result_path)
 
     # --- Step 4: Merging and Finalization ---
     if temp_output_files:
         logger.info(f"Merging {len(temp_output_files)} extraction output(s) for '{extraction_field}'...")
-        final_filename = f"{issue_id}_extraction.json"
+        # Use 'unlinked' for the filename if issue_id is None
+        final_filename = f"{issue_id or 'unlinked'}_extraction.json"
         final_output_path = os.path.join(config.OUTPUT_JSON_DIR, final_filename)
         
         merge_and_finalize_outputs(
@@ -153,49 +222,30 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
     else:
         logger.info(f"No results to merge for field '{extraction_field}'.")
 
-def extract_command(args):
-    """Handles the 'extract' command for production data extraction."""
+def extract_historical_command(args):
+    """Handles the 'extract-historical' command for production data extraction."""
     source_link = args.source_link
     issue_id = args.issue_id
     extraction_field = args.extraction_field
 
-    pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
-    html_sources_data = load_json_file(config.HTML_SOURCES_FILE)
-
     if source_link:
-        detected_id = find_issue_id(source_link, pdf_sources_data, html_sources_data)
+        detected_id = find_issue_id(source_link)
         if not detected_id and not issue_id:
-            logger.error(f"Could not find an issue_id associated with '{source_link}'. Please provide --issue-id manually.")
+            logger.error(f"Could not find an issue_id associated with '{source_link}' in the database. Please provide --issue-id manually or use 'extract-new'.")
             sys.exit(1)
         issue_id = issue_id or detected_id
         target_document = source_link
-        logger.info(f"Document mode: '{source_link}' | Issue ID: '{issue_id}'")
+        logger.info(f"Historical Mode: '{source_link}' | Issue ID: '{issue_id}'")
     elif issue_id:
         target_document = None
-        logger.info(f"Issue mode: '{issue_id}'")
+        logger.info(f"Historical Mode: '{issue_id}'")
     else:
         logger.error("Please provide either a document link (positional) or an --issue-id.")
         return
 
     # --- Step 1: Identify source documents ---
     logger.info("Identifying source documents...")
-    pdf_matches, html_matches = find_sources_by_issue_id(issue_id, pdf_sources_data, html_sources_data)
-
-    # Detect the issue type from the first match
-    issue_type = None
-    all_matches = pdf_matches + html_matches
-    if all_matches:
-        # Check if any match has an issue_type
-        for m in all_matches:
-            if m.get("issue_type"):
-                issue_type = m.get("issue_type")
-                break
-    
-    if not issue_type:
-        logger.warning(f"Could not detect issue_type for issue_id '{issue_id}'. Assuming 'Rights issue'.")
-        issue_type = "Rights issue"
-    else:
-        logger.info(f"Detected issue_type: '{issue_type}'")
+    pdf_matches, html_matches = find_sources_by_issue_id(issue_id)
 
     if target_document:
         target_filename = os.path.basename(target_document)
@@ -213,6 +263,21 @@ def extract_command(args):
         logger.error(f"No source documents found for issue_id '{issue_id}'" + (f" and document '{target_document}'" if target_document else "") + ". Aborting.")
         sys.exit(1)
     
+    # Detect the issue type
+    issue_type = None
+    all_matches = pdf_matches + html_matches
+    if all_matches:
+        for m in all_matches:
+            if m.get("issue_type"):
+                issue_type = m.get("issue_type")
+                break
+    
+    if not issue_type:
+        logger.warning(f"Could not detect issue_type for issue_id '{issue_id}'. Assuming 'Rights issue'.")
+        issue_type = "Rights issue"
+    else:
+        logger.info(f"Detected issue_type: '{issue_type}'")
+
     logger.info(f"Found {len(pdf_matches)} PDF(s) and {len(html_matches)} HTML document(s) for the issue.")
 
     # --- Step 2: Determine fields to process (Smart Filtering) ---
@@ -257,39 +322,82 @@ def extract_command(args):
             logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for issue_type '{issue_type}': {', '.join(fields_to_process)}")
 
     if not fields_to_process:
-        logger.warning(f"No relevant fields found for processing with source types: {target_source_types}")
+        logger.warning(f"No relevant fields found for processing.")
         return
 
     for field in fields_to_process:
         logger.info(f"Processing field: '{field}'")
-        run_single_extraction(issue_id, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type)
+        run_single_extraction(issue_id, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False)
 
     logger.info(f"All processing for issue '{issue_id}' complete.")
 
-# --- Developer Utilities (formerly in cli.py) ---
+def extract_new_command(args):
+    """Handles the 'extract-new' command for zero-context extraction on new documents."""
+    source_link = args.source_link
+    extraction_field = args.extraction_field
 
-def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
-    pdf_filename = os.path.basename(pdf_path)
-    index_name = os.path.splitext(pdf_filename)[0]
-    return os.path.join(index_dir, index_name)
+    if not source_link:
+        logger.error("Please provide a document link or URL.")
+        return
+
+    logger.info(f"New Document Mode: '{source_link}'")
+
+    # Determine if it's a PDF or HTML based on extension
+    pdf_matches = []
+    html_matches = []
+    if source_link.lower().endswith(".pdf"):
+        pdf_matches = [{"source_url": source_link, "id": "new_pdf", "source_type": "Prospectus"}]
+    else:
+        html_matches = [{"source_url": source_link, "id": "new_html", "source_type": "Press release"}]
+
+    # --- Step 2: Determine fields to process ---
+    definitions_obj = load_extraction_definitions()
+    definitions = definitions_obj.field_definitions
+    fields_to_process = []
+    
+    if extraction_field:
+        if extraction_field in definitions:
+            fields_to_process = [extraction_field]
+        else:
+            logger.error(f"Extraction field '{extraction_field}' not found in definitions.")
+            sys.exit(1)
+    else:
+        fields_to_process = list(definitions.keys())
+    
+    logger.info(f"Forcing processing of fields: {', '.join(fields_to_process)}")
+
+    for field in fields_to_process:
+        logger.info(f"Processing field: '{field}'")
+        # issue_id is None, force_unlinked is True
+        run_single_extraction(None, field, definitions_obj, pdf_matches, html_matches, issue_type=None, force_unlinked=True)
+
+    logger.info(f"All processing for new document complete.")
 
 def index_command(args):
     pdf_path = args.pdf_path
     
-    # Check if file exists, if not try to find it in manifests
+    # Check if file exists, if not try to find it in database
     if not os.path.exists(pdf_path):
         pdf_filename = os.path.basename(pdf_path)
-        pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
+        from utils import get_db
+        db = get_db()
+        from sqlalchemy import text
+        query = text("SELECT * FROM sources WHERE source_url LIKE :filename")
+        import pandas as pd
+        df = pd.read_sql(query, db.engine, params={"filename": f"%{pdf_filename}%"})
         
-        # Look for the filename in the manifest
-        match = next((m for m in pdf_sources_data if m.get("source_url") == pdf_filename), None)
-        if match and match.get("full_url"):
-            logger.info(f"PDF {pdf_filename} not found locally. Attempting to download from manifest...")
-            if not download_pdf(match["full_url"], pdf_path):
-                logger.error(f"Failed to download {pdf_filename}.")
+        if not df.empty:
+            match = df.iloc[0]
+            if match.get("source_url") and match.get("source_url").startswith("http"):
+                logger.info(f"PDF {pdf_filename} not found locally. Attempting to download from database record...")
+                if not download_pdf(match["source_url"], pdf_path):
+                    logger.error(f"Failed to download {pdf_filename}.")
+                    return
+            else:
+                logger.error(f"PDF file not found: {pdf_path} (and no download URL found in database)")
                 return
         else:
-            logger.error(f"PDF file not found: {pdf_path} (and no download URL found in manifests)")
+            logger.error(f"PDF file not found: {pdf_path} (and not found in database)")
             return
 
     logger.info(f"Indexing PDF Document: {pdf_path}")
@@ -300,14 +408,24 @@ def index_command(args):
 def query_command(args):
     pdf_path = args.pdf_path
     if not os.path.exists(pdf_path):
-        # Try to find it in manifests if it's just a filename
+        # Try to find it in database if it's just a filename
         pdf_filename = os.path.basename(pdf_path)
-        pdf_sources_data = load_json_file(config.PDF_SOURCES_FILE)
-        match = next((m for m in pdf_sources_data if m.get("source_url") == pdf_filename), None)
-        if match and match.get("full_url"):
-            logger.info(f"PDF {pdf_filename} not found locally. Attempting to download from manifest...")
-            if not download_pdf(match["full_url"], pdf_path):
-                logger.error(f"Failed to download {pdf_filename}.")
+        from utils import get_db
+        db = get_db()
+        from sqlalchemy import text
+        query = text("SELECT * FROM sources WHERE source_url LIKE :filename")
+        import pandas as pd
+        df = pd.read_sql(query, db.engine, params={"filename": f"%{pdf_filename}%"})
+        
+        if not df.empty:
+            match = df.iloc[0]
+            if match.get("source_url") and match.get("source_url").startswith("http"):
+                logger.info(f"PDF {pdf_filename} not found locally. Attempting to download from database record...")
+                if not download_pdf(match["source_url"], pdf_path):
+                    logger.error(f"Failed to download {pdf_filename}.")
+                    return
+            else:
+                logger.error(f"PDF file not found: {pdf_path}")
                 return
         else:
             logger.error(f"PDF file not found: {pdf_path}")
@@ -373,18 +491,36 @@ def batch_test_command(args):
         sys.argv.extend(['--exclude-fields'] + args.exclude_fields)
     run_batch_test()
 
+def get_index_path_for_pdf(pdf_path: str, index_dir: str) -> str:
+    pdf_filename = os.path.basename(pdf_path)
+    index_name = os.path.splitext(pdf_filename)[0]
+    return os.path.join(index_dir, index_name)
+
 # --- Main CLI Entry Point ---
 
 def main():
     parser = argparse.ArgumentParser(description="Finance Lab Data Extraction & Developer Toolkit")
     subparsers = parser.add_subparsers(dest='command', help='Command to run')
     
-    # Extract
-    extract_parser = subparsers.add_parser('extract', help='Run production data extraction')
+    # Extract Historical
+    hist_parser = subparsers.add_parser('extract-historical', help='Run context-aware extraction on existing documents')
+    hist_parser.add_argument('source_link', nargs='?', help='Document filename or URL')
+    hist_parser.add_argument('--issue-id', help='Issue ID (auto-detected if link provided)')
+    hist_parser.add_argument('--extraction-field', help='Specific field to extract')
+    hist_parser.set_defaults(func=extract_historical_command)
+
+    # Extract New
+    new_parser = subparsers.add_parser('extract-new', help='Run zero-context extraction on new documents')
+    new_parser.add_argument('source_link', help='Document filename or URL')
+    new_parser.add_argument('--extraction-field', help='Specific field to extract')
+    new_parser.set_defaults(func=extract_new_command)
+    
+    # Extract (Legacy/Alias for Historical)
+    extract_parser = subparsers.add_parser('extract', help='Alias for extract-historical')
     extract_parser.add_argument('source_link', nargs='?', help='Document filename or URL')
     extract_parser.add_argument('--issue-id', help='Issue ID (auto-detected if link provided)')
     extract_parser.add_argument('--extraction-field', help='Specific field to extract')
-    extract_parser.set_defaults(func=extract_command)
+    extract_parser.set_defaults(func=extract_historical_command)
     
     # Index
     index_parser = subparsers.add_parser('index', help='Index a PDF file')
@@ -438,4 +574,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

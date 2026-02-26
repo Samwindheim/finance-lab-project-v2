@@ -9,7 +9,7 @@
 #   ./run.sh query <pdf_path> <query>
 #   ./run.sh batch_test -n <number>
 
-# Get the directory where the script is located
+# Get the directory where the script is located∆
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Path to the virtual environment
@@ -34,7 +34,7 @@ fi
 
 # Main script logic
 case "$1" in
-  extract|index|query|clear|html-text|test|batch_test)
+  extract|extract-historical|extract-new|index|query|clear|html-text|test|batch_test)
     python3 src/main.py "$@"
     ;;
   *)
@@ -43,10 +43,11 @@ case "$1" in
     if [[ "$1" == http* ]] || [[ "$1" == --issue-id* ]]; then
       python3 src/main.py extract "$@"
     else
-      echo "Usage: $0 {extract|index|query|clear|html-text|test|batch_test}"
+      echo "Usage: $0 {extract|extract-historical|extract-new|index|query|clear|html-text|test|batch_test}"
       echo ""
       echo "Example:"
-      echo "  $0 extract https://example.com/doc.pdf"
+      echo "  $0 extract-historical https://example.com/doc.pdf"
+      echo "  $0 extract-new https://example.com/new_doc.pdf"
       echo "  $0 index pdfs/document.pdf"
       exit 1
     fi

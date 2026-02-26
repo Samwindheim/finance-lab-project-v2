@@ -19,6 +19,7 @@ import config
 from utils import find_issue_id, find_document_info, clean_and_parse_json
 from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, GeneralInfo, FinalOutput, DocumentEntry
 from logger import setup_logger
+from database import FinanceDB
 
 logger = setup_logger(__name__)
 
@@ -26,16 +27,19 @@ logger = setup_logger(__name__)
 # This data is needed for `find_issue_id` in the post-processing step.
 SOURCES_DATA = None
 HTML_SOURCES_DATA = None
+DB = None
 
 def _load_sources_data():
     """Lazy loader for the sources data to avoid loading it if not needed."""
-    global SOURCES_DATA, HTML_SOURCES_DATA
+    global SOURCES_DATA, HTML_SOURCES_DATA, DB
     if SOURCES_DATA is None:
         from utils import load_json_file
         SOURCES_DATA = load_json_file(config.PDF_SOURCES_FILE)
     if HTML_SOURCES_DATA is None:
         from utils import load_json_file
         HTML_SOURCES_DATA = load_json_file(config.HTML_SOURCES_FILE)
+    if DB is None:
+        DB = FinanceDB()
 
 
 def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[int]:
@@ -106,11 +110,13 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     """Post-processes and saves the extracted JSON data to a specified file path."""
     _load_sources_data() # Ensure source data is loaded
     
-    doc_info = find_document_info(source_path, SOURCES_DATA, HTML_SOURCES_DATA, issue_id=issue_id)
+    doc_info = find_document_info(source_path, issue_id=issue_id)
     # Use the issue_id from doc_info if we didn't have one passed in
     if not issue_id:
         issue_id = doc_info.get("issue_id")
     doc_id = doc_info.get("doc_id")
+    # Use the source_url from the database if available, otherwise fallback to the path
+    source_url = doc_info.get("source_url") or source_path
     
     if not issue_id:
         logger.warning(f"Could not find issue_id for '{os.path.basename(source_path)}'.")
@@ -121,6 +127,7 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     final_output = {
         "issue_id": issue_id,
         "doc_id": doc_id,
+        "source_url": source_url,
         "source_document": os.path.basename(source_path),
         "source_pages": source_pages,
         extraction_field: field_value
@@ -254,12 +261,13 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
 
     # 2. Process each temporary result file
     for file_path in temp_files:
-        # ... existing logic for processing temp files ...
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 temp_result = json.load(f)
             
             doc_name = temp_result.get("source_document")
+            doc_id = temp_result.get("doc_id")
+            source_url = temp_result.get("source_url")
             if not doc_name:
                 continue
 
@@ -268,6 +276,25 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             source_pages = temp_result.get("source_pages", [])
             if field_value is None:
                 continue
+
+            # Save to AI extractions database table
+            _load_sources_data()
+            if DB:
+                try:
+                    db_data = {
+                        extraction_field: field_value,
+                        "source_pages": source_pages
+                    }
+                    DB.save_ai_extraction(
+                        issue_id=issue_id, 
+                        doc_id=doc_id, 
+                        extraction_field=extraction_field, 
+                        data=db_data, 
+                        source_url=source_url
+                    )
+                    logger.info(f"Saved AI extraction for {extraction_field} in {doc_name} to database.")
+                except Exception as e:
+                    logger.error(f"Failed to save AI extraction to database: {e}")
 
             # Ensure document entry exists
             if doc_name not in all_data:

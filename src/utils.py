@@ -12,9 +12,22 @@ Centralizing these functions here helps to reduce code duplication and improve m
 import json
 import os
 import requests
+import pandas as pd
+from typing import Optional, Tuple, List, Dict
+from sqlalchemy import text
 from logger import setup_logger
 
 logger = setup_logger(__name__)
+
+# Lazy-loaded DB instance to avoid circular imports or early connection
+_db = None
+
+def get_db():
+    global _db
+    if _db is None:
+        from database import FinanceDB
+        _db = FinanceDB()
+    return _db
 
 def load_json_file(file_path: str) -> list:
     """Loads a JSON file and returns its content."""
@@ -28,10 +41,14 @@ def load_json_file(file_path: str) -> list:
         logger.error(f"Could not decode JSON from {file_path}")
         return []
 
-def find_sources_by_issue_id(issue_id: str, pdf_sources: list, html_sources: list) -> tuple[list, list]:
-    """Finds all sources matching a given issue_id."""
-    pdf_matches = [s for s in pdf_sources if s.get("issue_id") == issue_id]
-    html_matches = [s for s in html_sources if s.get("issue_id") == issue_id]
+def find_sources_by_issue_id(issue_id: str) -> Tuple[List[Dict], List[Dict]]:
+    """Finds all sources matching a given issue_id from the database."""
+    db = get_db()
+    df = db.find_sources_by_issue(issue_id)
+    
+    pdf_matches = df[df['source_url'].str.lower().str.endswith('.pdf', na=False)].to_dict('records')
+    html_matches = df[~df['source_url'].str.lower().str.endswith('.pdf', na=False)].to_dict('records')
+    
     return pdf_matches, html_matches
 
 def clean_and_parse_json(json_string: str) -> dict | None:
@@ -47,79 +64,65 @@ def clean_and_parse_json(json_string: str) -> dict | None:
         logger.error(f"Failed to decode JSON from model response: {json_string}")
         return None
 
-def find_document_info(source_path: str, pdf_sources: list, html_sources: list, issue_id: str = None) -> dict:
+def find_document_info(source_path: str, issue_id: str = None) -> dict:
     """
-    Finds document-related information (issue_id, id, etc.) for a given source path.
-    If issue_id is provided, prioritizes matches for that specific issue when multiple sources share the same URL.
-    Returns a dictionary with the info.
+    Finds document-related information (issue_id, id, etc.) for a given source path using the database.
+    If issue_id is provided, prioritizes matches for that specific issue.
     """
-    info = {"issue_id": None, "doc_id": None}
+    db = get_db()
+    info = {"issue_id": None, "doc_id": None, "source_url": None}
     
-    # Helper function to check if source matches the issue_id filter
-    def matches_issue(source):
-        if not issue_id:
-            return True
-        source_issue_id = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-        return source_issue_id == issue_id
-    
-    # Check for document ID matches first (if source_path is already an ID)
-    for source in html_sources + pdf_sources:
-        if source.get("id") == source_path:
-            if matches_issue(source):
-                info["doc_id"] = source.get("id")
-                info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-                return info
+    # 1. Try direct ID lookup
+    source = db.find_source_by_id(source_path)
+    if source:
+        if not issue_id or source.get("issue_id") == issue_id:
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id")
+            info["source_url"] = source.get("source_url")
+            return info
 
-    # HTML/URL check
-    for source in html_sources:
-        if source.get("source_url") == source_path:
-            if matches_issue(source):
-                info["doc_id"] = source.get("id")
-                info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-                return info
-    
-    # PDF check
-    pdf_filename = os.path.basename(source_path)
-    for source in pdf_sources:
-        if source.get("source_url") == pdf_filename:
-            if matches_issue(source):
-                info["doc_id"] = source.get("id")
-                info["issue_id"] = source.get("issue_id")
-                return info
+    # 2. Try direct URL lookup
+    source = db.find_source_by_url(source_path)
+    if source:
+        if not issue_id or source.get("issue_id") == issue_id:
+            info["doc_id"] = source.get("id")
+            info["issue_id"] = source.get("issue_id")
+            info["source_url"] = source.get("source_url")
+            return info
 
-    # Partial matches
-    for source in html_sources:
-        if source_path in (source.get("source_url") or ""):
-            if matches_issue(source):
-                info["doc_id"] = source.get("id")
-                info["issue_id"] = source.get("issue_id") or source.get("warrant_id") or source.get("convertible_id")
-                return info
+    # 3. Try filename lookup (for PDFs)
+    filename = os.path.basename(source_path)
+    if filename.lower().endswith(".pdf"):
+        # We might need a more flexible query for filenames if they aren't full URLs in DB
+        query = text("SELECT * FROM sources WHERE source_url LIKE :filename")
+        df = pd.read_sql(query, db.engine, params={"filename": f"%{filename}%"})
+        if not df.empty:
+            # Filter by issue_id if provided
+            if issue_id:
+                filtered = df[df['issue_id'] == issue_id]
+                if not filtered.empty:
+                    match = filtered.iloc[0]
+                else:
+                    match = df.iloc[0] # Fallback to first match if issue_id doesn't match
+            else:
+                match = df.iloc[0]
             
-    for source in pdf_sources:
-        if source_path in (source.get("source_url") or ""):
-            if matches_issue(source):
-                info["doc_id"] = source.get("id")
-                info["issue_id"] = source.get("issue_id")
-                return info
-    
-    # If we didn't find a match with the issue_id filter, try without it as fallback
-    if issue_id:
-        logger.warning(f"No document found for '{source_path}' with issue_id '{issue_id}'. Trying without filter...")
-        return find_document_info(source_path, pdf_sources, html_sources, issue_id=None)
-            
+            info["doc_id"] = match.get("id")
+            info["issue_id"] = match.get("issue_id")
+            info["source_url"] = match.get("source_url")
+            return info
+
     return info
 
-def find_issue_id(source_path: str, pdf_sources: list, html_sources: list) -> str | None:
-    """Finds the issue_id for a given source path or document ID."""
-    info = find_document_info(source_path, pdf_sources, html_sources)
+def find_issue_id(source_path: str) -> str | None:
+    """Finds the issue_id for a given source path or document ID using the database."""
+    info = find_document_info(source_path)
     return info["issue_id"]
 
-def find_source_by_doc_id(doc_id: str, pdf_sources: list, html_sources: list) -> dict | None:
-    """Finds a specific source document entry by its unique ID."""
-    for source in html_sources + pdf_sources:
-        if source.get("id") == doc_id:
-            return source
-    return None
+def find_source_by_doc_id(doc_id: str) -> dict | None:
+    """Finds a specific source document entry by its unique ID from the database."""
+    db = get_db()
+    return db.find_source_by_id(doc_id)
 
 def download_pdf(url: str, save_path: str) -> bool:
     """
