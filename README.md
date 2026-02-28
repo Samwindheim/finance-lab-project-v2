@@ -4,12 +4,11 @@ A RAG pipeline for extracting structured financial data from PDF documents and H
 
 ## Features
 
-- Multi-format support (PDF and HTML)
-- Semantic search with FAISS vector indexing
-- Vision models (Google Gemini) for PDF extraction
-- Smart field filtering based on document/issue type
-- Database integration for accuracy evaluation
-- Handles shared sources across multiple issues
+- **Dual Extraction Modes**: Context-aware (Historical) and Zero-context (New).
+- **Multi-format support**: PDF (Gemini Vision) and HTML (Gemini Text).
+- **Semantic Search**: FAISS vector indexing for precise page selection.
+- **Database Staging**: Saves extractions to a staging table (`ai_extractions`) for admin review.
+- **Smart Filtering**: Automatically selects relevant fields based on document and issue types.
 
 ## Setup
 
@@ -29,27 +28,35 @@ A RAG pipeline for extracting structured financial data from PDF documents and H
 
 ## Usage
 
-### Extract Data
+### 1. Historical Mode (Context-Aware)
+Use this for documents already registered in the database. It uses existing metadata for smart filtering.
 ```bash
 # Extract from document URL or ID
-./run.sh extract "https://example.com/prospectus.pdf"
-./run.sh extract "1420d1bf-9f8e-4f35-b140-76806484c99a"
+./run.sh extract-historical "https://example.com/prospectus.pdf"
 
-# Extract for entire issue, processes each doc linked to that issue 1 at a time
-./run.sh extract --issue-id "50898375-798c-4242-bcde-1aeddd914a55"
+# Extract for entire issue
+./run.sh extract-historical --issue-id "50898375-798c-4242-bcde-1aeddd914a55"
 
 # Extract specific field
-./run.sh extract --issue-id "..." --extraction-field investors
+./run.sh extract-historical --issue-id "..." --extraction-field investors
 ```
 
-**Extraction Fields:** `investors`, `important_dates`, `offering_terms`, `offering_outcome`
+### 2. New Mode (Zero-Context)
+Use this for entirely new documents not yet in the database.
+```bash
+./run.sh extract-new "https://example.com/new_doc.pdf" --extraction-field important_dates
+```
 
-### Evaluate Accuracy
+**Extraction Fields:** `investors`, `important_dates`, `offering_terms`, `offering_outcome`, `general_info`
+
+### 3. Evaluate Accuracy
+Compare AI results against ground truth in the database.
 ```bash
 ./run.sh test --issue-id "50898375-798c-4242-bcde-1aeddd914a55"
+./run.sh batch_test -n 10 --exclude-fields general_info
 ```
 
-### Developer Utilities
+### 4. Developer Utilities
 ```bash
 ./run.sh index pdfs/document.pdf              # Index PDF
 ./run.sh query pdfs/document.pdf "query" -n 5  # Semantic search
@@ -59,13 +66,15 @@ A RAG pipeline for extracting structured financial data from PDF documents and H
 
 ## How It Works
 
-1. **Document Identification**: Identifies `issue_id` and `source_type` from manifests in `reference_files/`
-2. **Field Filtering**: Selects relevant fields based on document/issue type from `extraction_definitions.json`
+1. **Identification**: Resolves documents against the database `sources` table or treats as "New".
+2. **Field Filtering**: Selects fields from `extraction_definitions.json` based on document/issue context.
 3. **RAG Extraction**:
-   - PDFs: Semantic search → page selection → image + text → Gemini vision model
-   - HTML: Full text extraction → Gemini text model
-4. **Validation**: Validates against Pydantic models in `src/models.py`
-5. **Merging**: Combines results from multiple documents into `{issue_id}_extraction.json`
+   - **PDFs**: Semantic search → page selection → image + text → Gemini vision model.
+   - **HTML**: Full text extraction → Gemini text model.
+4. **Validation**: Validates output against Pydantic models in `src/models.py`.
+5. **Storage**: 
+   - Saves JSON results to `output_json/`.
+   - **UPSERTs** data into the `ai_extractions` staging table (keyed by `source_url` and `extraction_field`).
 
 ## Project Structure
 
@@ -76,39 +85,16 @@ A RAG pipeline for extracting structured financial data from PDF documents and H
 │   ├── extraction_logic.py
 │   ├── models.py        # Pydantic models
 │   ├── pdf_indexer.py   # FAISS indexing
-│   ├── database.py      # SQL connection
+│   ├── database.py      # SQL connection & Staging
 │   └── extraction_definitions.json
 ├── prompts/             # Field-specific prompts
-├── reference_files/     # Source manifests (pdf/html-sources.json)
 ├── output_json/         # Extraction results
 ├── tests/               # Evaluation tools
 └── run.sh               # CLI wrapper
 ```
 
-## Configuration
-
-- **Extraction Definitions** (`src/extraction_definitions.json`): Maps fields to source types and search queries
-- **Prompts** (`prompts/*.txt`): Field-specific LLM instructions
-- **Models** (`src/models.py`): Pydantic schemas for validation
-
-## Output Format
-
-Results saved to `output_json/{issue_id}_extraction.json`:
-```json
-{
-  "document-name.pdf": {
-    "issue_id": "...",
-    "id": "...",
-    "investors": [...],
-    "important_dates": {...},
-    "offering_terms": {...},
-    "offering_outcome": {...}
-  }
-}
-```
-
 ## Notes
 
-- Prioritizes accuracy over completeness (missing data preferred over incorrect calculations)
-- Prompts explicitly forbid calculations - only explicitly stated values extracted
-- Database evaluation compares AI results against ground truth for accuracy measurement
+- **Uniqueness**: The database staging area guarantees one entry per `(source_url, extraction_field)` pair.
+- **Source Pages**: Extractions include `source_pages` at the field level for easy verification.
+- **Accuracy**: Prioritizes explicit data points; prompts forbid LLM-side calculations.
