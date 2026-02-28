@@ -115,37 +115,36 @@ class FinanceDB:
                 except Exception:
                     pass
             
-            # Migration: Clean up duplicates based on URL and Field
-            # We keep the entry with the highest ID (most recent)
-            cleanup_query = """
-            DELETE t1 FROM ai_extractions t1
-            INNER JOIN ai_extractions t2 
-            WHERE t1.id < t2.id 
-            AND t1.source_url = t2.source_url 
-            AND t1.extraction_field = t2.extraction_field;
-            """
-            try:
-                conn.execute(text(cleanup_query))
-            except Exception as e:
-                logger.warning(f"Failed to cleanup duplicates: {e}")
-
-            # Migration: Ensure source_url is NOT NULL for the unique key
+            # Migration: Ensure source_url and extraction_field are NOT NULL for the unique key
             try:
                 conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN source_url VARCHAR(767) NOT NULL"))
+                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN extraction_field VARCHAR(255) NOT NULL"))
             except Exception:
                 pass
 
-            # Migration: Ensure doc_id is NULLable (fix for previous NOT NULL DEFAULT '')
+            # Migration: Ensure doc_id is NULLable
             try:
                 conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN doc_id VARCHAR(255) NULL"))
             except Exception:
                 pass
 
-            # Migration: Add new unique key if it doesn't exist
+            # Migration: Clean up duplicates based on URL and Field
+            # We keep the entry with the highest ID (most recent)
+            cleanup_query = """
+            DELETE t1 FROM ai_extractions t1
+            INNER JOIN ai_extractions t2 
+            ON t1.source_url = t2.source_url 
+            AND t1.extraction_field = t2.extraction_field
+            WHERE t1.id < t2.id;
+            """
             try:
-                conn.execute(text("ALTER TABLE ai_extractions ADD UNIQUE KEY unique_url_field (source_url, extraction_field)"))
-            except Exception:
-                pass
+                # First, run the cleanup query to remove duplicates
+                conn.execute(text(cleanup_query))
+                # Then, try to add the unique key with a prefix for source_url
+                # (512 chars * 4 bytes = 2048 bytes, 255 chars * 4 bytes = 1020 bytes, total < 3072)
+                conn.execute(text("ALTER TABLE ai_extractions ADD UNIQUE KEY unique_url_field (source_url(512), extraction_field)"))
+            except Exception as e:
+                logger.debug(f"Migration step (unique key) skipped or failed: {e}")
             
             # Migration: Remove source_anchor column if it exists
             try:
