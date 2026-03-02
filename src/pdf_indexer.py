@@ -1,42 +1,27 @@
 """
 PDF Document Indexing and Retrieval.
 
-This module provides the `PDFIndexer` class, which is responsible for the "Retrieval" part
-of the Retrieval-Augmented Generation (RAG) pipeline. It handles all operations related
-to processing PDF files for semantic search.
-
-Key Responsibilities:
-- Extracting raw text from PDF documents.
-- Splitting text into manageable, overlapping chunks.
-- Generating vector embeddings for each text chunk using an external API.
-- Storing and managing these embeddings in a FAISS vector index.
-- Performing semantic searches to find text chunks relevant to a query.
-"""
-"""
-The PDFIndexer class powers the retrieval component of the RAG pipeline, handling:
-
-- Text Extraction: Loads PDFs with PyMuPDF, extracts text, and splits it into token-based chunks.
-- Embedding Generation: Converts text chunks into vector embeddings via the OpenAI API.
-- Vector Storage: Builds, saves, and loads FAISS indexes with metadata for fast retrieval.
-- Semantic Search: Generates embeddings for queries and finds the most similar text chunks.
-- Utilities: Provides page image extraction and index reset functions.
+Provides the `PDFIndexer` class which handles the retrieval component of the RAG pipeline:
+- Text extraction and token-based chunking via PyMuPDF
+- Embedding generation via the OpenAI API
+- FAISS vector index storage and semantic search
+- Page image and text extraction utilities
 """
 
 import os
-import fitz  # PyMuPDF
-import pickle # for saving and loading the index and metadata
+import pickle
 from typing import List, Dict
-import numpy as np # for storing the embeddings
+import numpy as np
+import fitz
+import faiss
+from openai import OpenAI
+from dotenv import load_dotenv
+from tqdm import tqdm
+import tiktoken
+import config
 from logger import setup_logger
 
 logger = setup_logger(__name__)
-
-import faiss # for storing the index
-from openai import OpenAI
-from dotenv import load_dotenv
-from tqdm import tqdm # for progress bar
-import tiktoken # for tokenizing the text
-import config
 
 # Load environment variables
 load_dotenv()
@@ -192,16 +177,12 @@ class PDFIndexer:
         embedding = np.array(response.data[0].embedding, dtype='float32')
         return embedding
     
-    # *** Complete indexing pipeline: extract text, generate embeddings, and store in FAISS ***
     def index_pdf(self, pdf_path: str) -> int:
         """
         Complete indexing pipeline: extract text, generate embeddings, and store in FAISS.
-        
-        Args:
-            pdf_path: Path to the PDF file
-            
+
         Returns:
-            Number of pages indexed
+            Number of text chunks indexed.
         """
         # If the index is not empty, it implies a re-indexing operation.
         # We clear it to ensure a fresh start.
@@ -252,7 +233,6 @@ class PDFIndexer:
         
         return len(chunks_data)
     
-    # *** Query the vector database for pages most relevant to the query ***
     def query(self, query_text: str, top_k: int = 3) -> List[Dict[str, any]]:
         """
         Search the vector database for pages most relevant to the query.
@@ -309,19 +289,6 @@ class PDFIndexer:
         
         logger.info(f"Index reset for {self.index_path}")
 
-    def get_text_for_page(self, pdf_path: str, page_number: int) -> str:
-        """Extracts the full text from a single page of a PDF."""
-        try:
-            pdf_document = fitz.open(pdf_path)
-            # page_number is 1-indexed, but PyMuPDF is 0-indexed
-            page = pdf_document.load_page(page_number - 1)
-            text = page.get_text("text")
-            pdf_document.close()
-            return text.strip()
-        except Exception as e:
-            logger.error(f"Error extracting text from page {page_number} of {os.path.basename(pdf_path)}: {e}")
-            return ""
-
     def get_page_count(self, pdf_path: str) -> int:
         """Returns the number of pages in a PDF document."""
         try:
@@ -333,46 +300,71 @@ class PDFIndexer:
             logger.warning(f"Could not get page count for {os.path.basename(pdf_path)}: {e}")
             return 0
 
+    def get_text_for_page(self, pdf_path: str, page_number: int) -> str:
+        """Extracts the full text from a single page of a PDF (1-indexed)."""
+        try:
+            doc = fitz.open(pdf_path)
+            text = doc.load_page(page_number - 1).get_text("text")
+            doc.close()
+            return text.strip()
+        except Exception as e:
+            logger.error(f"Error extracting text from page {page_number} of {os.path.basename(pdf_path)}: {e}")
+            return ""
+
     def extract_page_as_image(self, pdf_path: str, page_number: int, output_dir: str = config.OUTPUT_IMAGE_DIR, zoom: int = 2) -> str:
-        """
-        Extracts a specific page from a PDF as a high-resolution image.
-
-        Args:
-            pdf_path: The path to the PDF document.
-            page_number: The 1-indexed page number to extract.
-            output_dir: The directory to save the image in.
-            zoom: The zoom factor for rendering (higher zoom = higher resolution).
-
-        Returns:
-            The path to the saved image file, or an empty string on failure.
-        """
+        """Extracts a single page as a high-resolution image (1-indexed). Returns the saved path or empty string."""
         if not os.path.exists(pdf_path):
             logger.error(f"PDF file not found at {pdf_path}")
             return ""
-
-        # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-
         try:
-            pdf_document = fitz.open(pdf_path)
-            # page_number is 1-indexed, but PyMuPDF is 0-indexed
-            page = pdf_document.load_page(page_number - 1)
-
-            # Render page to a pixmap using a zoom factor for higher resolution
-            mat = fitz.Matrix(zoom, zoom)
-            pix = page.get_pixmap(matrix=mat)
-
-            # Define output path
-            document_id = os.path.basename(pdf_path)
-            output_filename = f"{os.path.splitext(document_id)[0]}_page_{page_number}.png"
-            output_path = os.path.join(output_dir, output_filename)
-            
-            # Save the image
+            doc = fitz.open(pdf_path)
+            pix = doc.load_page(page_number - 1).get_pixmap(matrix=fitz.Matrix(zoom, zoom))
+            stem = os.path.splitext(os.path.basename(pdf_path))[0]
+            output_path = os.path.join(output_dir, f"{stem}_page_{page_number}.png")
             pix.save(output_path)
-            
-            pdf_document.close()
+            doc.close()
             return output_path
-
         except Exception as e:
             logger.error(f"Error extracting image from page {page_number}: {e}")
             return ""
+
+    def extract_pages(self, pdf_path: str, page_numbers: List[int], output_dir: str = config.OUTPUT_IMAGE_DIR, zoom: int = 2) -> tuple[List[str], List[str]]:
+        """
+        Opens the PDF once and extracts images and text for all requested pages.
+
+        Returns:
+            (image_paths, page_texts) — parallel lists of saved image paths and page text strings.
+        """
+        if not os.path.exists(pdf_path):
+            logger.error(f"PDF file not found at {pdf_path}")
+            return [], []
+
+        os.makedirs(output_dir, exist_ok=True)
+        stem = os.path.splitext(os.path.basename(pdf_path))[0]
+        image_paths, page_texts = [], []
+
+        try:
+            doc = fitz.open(pdf_path)
+            page_count = len(doc)
+            for page_num in page_numbers:
+                if not (0 < page_num <= page_count):
+                    continue
+                page = doc.load_page(page_num - 1)
+
+                # Image
+                pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom))
+                img_path = os.path.join(output_dir, f"{stem}_page_{page_num}.png")
+                pix.save(img_path)
+                image_paths.append(img_path)
+
+                # Text
+                text = page.get_text("text").strip()
+                if text:
+                    page_texts.append(text)
+
+            doc.close()
+        except Exception as e:
+            logger.error(f"Error extracting pages from {os.path.basename(pdf_path)}: {e}")
+
+        return image_paths, page_texts

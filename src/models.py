@@ -1,9 +1,12 @@
 """
-This file defines the Pydantic models used for data validation across the extraction pipeline.
+Pydantic Data Models.
+
+Defines the schema and validation logic for extraction definitions,
+LLM outputs, and the final merged JSON structure.
 """
 
 from typing import List, Optional, Dict, Union, get_args, get_origin
-from pydantic import BaseModel, Field, RootModel
+from pydantic import BaseModel, RootModel
 
 # --- Extraction Definitions (src/extraction_definitions.json) ---
 

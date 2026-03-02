@@ -1,17 +1,8 @@
 """
-Large Language Model (LLM) Interface.
+LLM Interface.
 
-This module is the primary interface for communicating with the generative AI model (Gemini).
-It abstracts the details of the API calls for both multi-modal (image + text) and text-only
-prompts.
-
-Key Functions:
-- `get_json_from_image`: Sends images and accompanying text to the model and requests
-  structured JSON output.
-- `get_json_from_text`: Sends only text to the model for extraction tasks.
-
-This module handles the construction of the API payload, communication with the model,
-and returns the raw JSON string for further processing.
+Handles communication with the Gemini API for both text and multi-modal
+(image + text) extraction tasks.
 """
 import os
 import base64

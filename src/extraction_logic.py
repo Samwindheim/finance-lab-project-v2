@@ -4,9 +4,6 @@ Core Data Extraction and Processing Logic.
 This module contains the primary functions for performing the Retrieval-Augmented Generation (RAG)
 extraction from various document types. It encapsulates the logic for querying the vector index,
 selecting relevant pages, calling the vision/language models, and post-processing the results.
-
-These functions are designed to be reusable and are orchestrated by higher-level scripts
-like `run_extraction.py`.
 """
 import os
 import json
@@ -16,20 +13,11 @@ from pdf_indexer import PDFIndexer
 from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
-from utils import find_document_info, clean_and_parse_json
-from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, GeneralInfo, FinalOutput, DocumentEntry
+from utils import find_document_info, clean_and_parse_json, get_db
+from models import ExtractionResult, Investor, ImportantDates, FinalOutput, DocumentEntry
 from logger import setup_logger
-from database import FinanceDB
 
 logger = setup_logger(__name__)
-
-_db = None
-
-def _get_db() -> FinanceDB:
-    global _db
-    if _db is None:
-        _db = FinanceDB()
-    return _db
 
 
 def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[int]:
@@ -129,17 +117,26 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     return output_path
 
 
-def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive", issue_id: str = None, source_url: str = None):
-    """
-    Reusable logic to perform a full RAG extraction on a single PDF document.
-    """
-    logger.info(f"Processing PDF: {os.path.basename(pdf_path)}")
-    
-    # Simplified index path generation
-    index_name = os.path.splitext(os.path.basename(pdf_path))[0]
-    index_path = os.path.join(config.FAISS_INDEX_DIR, index_name)
+def _validate_and_save(json_data: str, source_path: str, extraction_field: str, source_pages: list, output_path: str, issue_id: str = None, source_url: str = None) -> str | None:
+    """Parses, validates, and saves LLM output. Returns the saved path on success, None on failure."""
+    parsed_json = clean_and_parse_json(json_data)
+    if not parsed_json:
+        return None
+    try:
+        ExtractionResult.model_validate(parsed_json)
+        return post_process_and_save(parsed_json, source_path, extraction_field, source_pages, output_path, issue_id=issue_id, source_url=source_url)
+    except Exception as e:
+        logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
+        post_process_and_save(parsed_json, source_path, extraction_field, source_pages, output_path, issue_id=issue_id, source_url=source_url)
+        return None
 
-    indexer = PDFIndexer(index_path=index_path)
+
+def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive", issue_id: str = None, source_url: str = None):
+    """Performs a full RAG extraction on a single PDF document."""
+    logger.info(f"Processing PDF: {os.path.basename(pdf_path)}")
+
+    index_name = os.path.splitext(os.path.basename(pdf_path))[0]
+    indexer = PDFIndexer(index_path=os.path.join(config.FAISS_INDEX_DIR, index_name))
     if indexer.index.ntotal == 0:
         logger.info(f"Index not found for {os.path.basename(pdf_path)}. Building it now...")
         indexer.index_pdf(pdf_path)
@@ -147,80 +144,44 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
     # 1. Query the index
     logger.info(f"Querying for relevant pages (strategy: {page_selection_strategy})...")
     results = indexer.query(search_query, top_k=6)
-
     if not results:
         logger.warning(f"Could not find any relevant pages for field '{extraction_field}' in {os.path.basename(pdf_path)}.")
         return None
 
-    # 2. Select pages based on the specified strategy
-    page_numbers = []
+    # 2. Select pages
     if page_selection_strategy == "top_hit":
-        # For simple fields, just take the page from the single best result.
         page_numbers = [results[0]['page_number']]
-    else: # Default to "consecutive"
+    else:
         page_numbers = select_consecutive_pages(results)
-        
     logger.info(f"Selected {len(page_numbers)} pages to analyze: {page_numbers}")
 
-    # 3. Extract images and text for context
-    saved_image_paths = []
-    page_texts = []
-    for page_num in page_numbers:
-        # Check if the page exists in the document before trying to extract
-        if page_num > 0 and page_num <= indexer.get_page_count(pdf_path):
-            img_path = indexer.extract_page_as_image(pdf_path, page_num)
-            if img_path:
-                saved_image_paths.append(img_path)
-            
-            text = indexer.get_text_for_page(pdf_path, page_num)
-            if text:
-                page_texts.append(text)
-    
+    # 3. Extract images and text (single PDF open)
+    saved_image_paths, page_texts = indexer.extract_pages(pdf_path, page_numbers)
+
     if not saved_image_paths:
         logger.error(f"Could not extract any images for the identified pages in {os.path.basename(pdf_path)}.")
         return None
 
-    # 4. Call LLM and save result
+    # 4. Call LLM and save
     combined_text = "\n\n--- Page Separator ---\n\n".join(page_texts)
     json_data = get_json_from_image(saved_image_paths, combined_text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
-        parsed_json = clean_and_parse_json(json_data)
-        if parsed_json:
-            try:
-                # Validate the LLM output against our model
-                ExtractionResult.model_validate(parsed_json)
-                return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id, source_url=source_url)
-            except Exception as e:
-                logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
-                post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id, source_url=source_url)
+        return _validate_and_save(json_data, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id, source_url=source_url)
     return None
 
 
 def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: str, output_path: str, issue_id: str = None):
-    """
-    Reusable logic to perform a full-text extraction on a single HTML document.
-    """
+    """Performs a full-text extraction on a single HTML document."""
     logger.info(f"Processing HTML: {os.path.basename(html_path)}")
-    
-    # 1. Extract text
+
     text = extract_text_from_html(html_path, preserve_tables=True)
     if not text:
         logger.error(f"Could not extract any text from the HTML file: {html_path}")
         return None
 
-    # 2. Call LLM and save result
     json_data = get_json_from_text(text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
-        parsed_json = clean_and_parse_json(json_data)
-        if parsed_json:
-            try:
-                # Validate the LLM output against our model
-                ExtractionResult.model_validate(parsed_json)
-                # For HTML, we consider it as a single "page"
-                return post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path, issue_id=issue_id)
-            except Exception as e:
-                logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
-                post_process_and_save(parsed_json, html_path, extraction_field, [1], output_path, issue_id=issue_id)
+        return _validate_and_save(json_data, html_path, extraction_field, [1], output_path, issue_id=issue_id)
     return None
 
 
@@ -266,7 +227,7 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             # Save to AI extractions database table
             try:
                 db_data = {extraction_field: field_value, "source_pages": source_pages}
-                _get_db().save_ai_extraction(
+                get_db().save_ai_extraction(
                     issue_id=issue_id,
                     doc_id=doc_id,
                     extraction_field=extraction_field,
@@ -279,16 +240,9 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
 
             # Ensure document entry exists
             if doc_name not in all_data:
-                all_data[doc_name] = DocumentEntry(
-                    issue_id=issue_id, 
-                    id=temp_result.get("doc_id")
-                )
-            
+                all_data[doc_name] = DocumentEntry(issue_id=issue_id, id=doc_id)
+
             doc_entry = all_data[doc_name]
-            
-            # Update doc_id if it's missing but present in temp_result
-            if not doc_entry.id and temp_result.get("doc_id"):
-                doc_entry.id = temp_result.get("doc_id")
             
             # --- Dynamic field handling based on DocumentEntry model ---
             field_info = DocumentEntry.model_fields.get(extraction_field)

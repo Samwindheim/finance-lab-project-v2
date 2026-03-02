@@ -1,14 +1,17 @@
+"""
+Database Interface.
+
+Handles SQL connections and operations for the issues, sources, and ai_extractions tables.
+Includes automated schema setup and migration logic for the staging area.
+"""
 import os
 import json
+from typing import Optional, Dict, Any
 import pandas as pd
 from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
-from typing import Optional, Dict, Any
 from logger import setup_logger
 
 logger = setup_logger(__name__)
-
-load_dotenv()
 
 class FinanceDB:
     _schema_ready = False

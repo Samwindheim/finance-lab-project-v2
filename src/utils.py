@@ -1,12 +1,8 @@
 """
-General Utility Functions.
+General Utilities.
 
-This module provides a collection of helper functions that are used across various parts
-of the data extraction pipeline. These functions handle common, reusable tasks such as
-loading and parsing JSON files, finding data in source manifests, and cleaning up raw
-output from language models.
-
-Centralizing these functions here helps to reduce code duplication and improve maintainability.
+Helper functions for database access, document identification,
+and PDF downloading used across the pipeline.
 """
 
 import json

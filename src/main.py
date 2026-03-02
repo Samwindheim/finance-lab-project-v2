@@ -1,8 +1,8 @@
 """
-Unified Command-Line Interface for the Finance Lab Project.
+Unified Command-Line Interface.
 
-This script combines the production extraction pipeline with development utilities 
-(indexing, querying, etc.) into a single entry point.
+Combines production extraction (historical/new modes) with developer utilities
+(indexing, querying, testing) into a single entry point.
 """
 
 import argparse
