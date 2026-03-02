@@ -29,17 +29,6 @@ def get_db():
         _db = FinanceDB()
     return _db
 
-def load_json_file(file_path: str) -> list:
-    """Loads a JSON file and returns its content."""
-    if not os.path.exists(file_path):
-        logger.error(f"File not found at {file_path}")
-        return []
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        logger.error(f"Could not decode JSON from {file_path}")
-        return []
 
 def find_sources_by_issue_id(issue_id: str) -> Tuple[List[Dict], List[Dict]]:
     """Finds all sources matching a given issue_id from the database."""
@@ -119,10 +108,6 @@ def find_issue_id(source_path: str) -> str | None:
     info = find_document_info(source_path)
     return info["issue_id"]
 
-def find_source_by_doc_id(doc_id: str) -> dict | None:
-    """Finds a specific source document entry by its unique ID from the database."""
-    db = get_db()
-    return db.find_source_by_id(doc_id)
 
 def download_pdf(url: str, save_path: str) -> bool:
     """

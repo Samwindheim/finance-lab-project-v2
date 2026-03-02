@@ -16,30 +16,20 @@ from pdf_indexer import PDFIndexer
 from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
-from utils import find_issue_id, find_document_info, clean_and_parse_json
+from utils import find_document_info, clean_and_parse_json
 from models import ExtractionResult, Investor, ImportantDates, OfferingTerms, OfferingOutcome, GeneralInfo, FinalOutput, DocumentEntry
 from logger import setup_logger
 from database import FinanceDB
 
 logger = setup_logger(__name__)
 
-# --- Load sources data once for performance ---
-# This data is needed for `find_issue_id` in the post-processing step.
-SOURCES_DATA = None
-HTML_SOURCES_DATA = None
-DB = None
+_db = None
 
-def _load_sources_data():
-    """Lazy loader for the sources data to avoid loading it if not needed."""
-    global SOURCES_DATA, HTML_SOURCES_DATA, DB
-    if SOURCES_DATA is None:
-        from utils import load_json_file
-        SOURCES_DATA = load_json_file(config.PDF_SOURCES_FILE)
-    if HTML_SOURCES_DATA is None:
-        from utils import load_json_file
-        HTML_SOURCES_DATA = load_json_file(config.HTML_SOURCES_FILE)
-    if DB is None:
-        DB = FinanceDB()
+def _get_db() -> FinanceDB:
+    global _db
+    if _db is None:
+        _db = FinanceDB()
+    return _db
 
 
 def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[int]:
@@ -106,17 +96,14 @@ def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[in
     return [p['page_number'] for p in unique_pages]
 
 
-def post_process_and_save(parsed_json: dict, source_path: str, extraction_field: str, source_pages: list, output_path: str, issue_id: str = None):
+def post_process_and_save(parsed_json: dict, source_path: str, extraction_field: str, source_pages: list, output_path: str, issue_id: str = None, source_url: str = None):
     """Post-processes and saves the extracted JSON data to a specified file path."""
-    _load_sources_data() # Ensure source data is loaded
-    
     doc_info = find_document_info(source_path, issue_id=issue_id)
-    # Use the issue_id from doc_info if we didn't have one passed in
     if not issue_id:
         issue_id = doc_info.get("issue_id")
     doc_id = doc_info.get("doc_id")
-    # Use the source_url from the database if available, otherwise fallback to the path
-    source_url = doc_info.get("source_url") or source_path
+    # Prefer DB value, then caller-supplied URL, then local path as last resort
+    source_url = doc_info.get("source_url") or source_url or source_path
     
     if not issue_id:
         logger.warning(f"Could not find issue_id for '{os.path.basename(source_path)}'.")
@@ -142,7 +129,7 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     return output_path
 
 
-def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive", issue_id: str = None):
+def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive", issue_id: str = None, source_url: str = None):
     """
     Reusable logic to perform a full RAG extraction on a single PDF document.
     """
@@ -202,11 +189,10 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
             try:
                 # Validate the LLM output against our model
                 ExtractionResult.model_validate(parsed_json)
-                return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id)
+                return post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id, source_url=source_url)
             except Exception as e:
                 logger.warning(f"LLM output for {extraction_field} failed validation: {e}")
-                # We'll still save it for debugging, but return None to indicate failure
-                post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id)
+                post_process_and_save(parsed_json, pdf_path, extraction_field, page_numbers, output_path, issue_id=issue_id, source_url=source_url)
     return None
 
 
@@ -278,23 +264,18 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                 continue
 
             # Save to AI extractions database table
-            _load_sources_data()
-            if DB:
-                try:
-                    db_data = {
-                        extraction_field: field_value,
-                        "source_pages": source_pages
-                    }
-                    DB.save_ai_extraction(
-                        issue_id=issue_id, 
-                        doc_id=doc_id, 
-                        extraction_field=extraction_field, 
-                        data=db_data, 
-                        source_url=source_url
-                    )
-                    logger.info(f"Saved AI extraction for {extraction_field} in {doc_name} to database.")
-                except Exception as e:
-                    logger.error(f"Failed to save AI extraction to database: {e}")
+            try:
+                db_data = {extraction_field: field_value, "source_pages": source_pages}
+                _get_db().save_ai_extraction(
+                    issue_id=issue_id,
+                    doc_id=doc_id,
+                    extraction_field=extraction_field,
+                    data=db_data,
+                    source_url=source_url
+                )
+                logger.info(f"Saved AI extraction for {extraction_field} in {doc_name} to database.")
+            except Exception as e:
+                logger.error(f"Failed to save AI extraction to database: {e}")
 
             # Ensure document entry exists
             if doc_name not in all_data:

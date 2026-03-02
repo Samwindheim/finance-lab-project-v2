@@ -31,7 +31,7 @@
     },
     "issue_type_guidance": {
         "Rights issue": "This is a RIGHTS ISSUE (Företrädesemission). Only grab data related to the rights issue.",
-        "Direct issue": "This is a DIRECT ISSUE (Riktad emission). Only grab data related to the direct issue.",
+        "Directed issue": "This is a DIRECTED ISSUE (Riktad emission). Only grab data related to the directed issue.",
         "IPO": "This is an INITIAL PUBLIC OFFERING (Börsnotering). Only grab data related to the IPO.",
         "Warrant": "This is a WARRANT EXERCISE (Teckningsoptioner). Only grab data related to the warrant exercise.",
         "Non-cash issue": "This is a NON-CASH ISSUE (Apportemission). Only grab data related to the non-cash issue."

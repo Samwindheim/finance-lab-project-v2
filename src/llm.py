@@ -25,6 +25,8 @@ import mimetypes
 import config
 from typing import List
 
+load_dotenv()
+
 # --- Constants ---
 PROMPTS_DIR = config.PROMPTS_DIR
 GEMINI_MODEL = config.GEMINI_MODEL
@@ -60,7 +62,6 @@ def get_json_from_image(image_paths: List[str], page_texts: str, extraction_type
 
 def get_json_from_text(text: str, extraction_type: str = None, additional_content: List[dict] = None, prompt_text: str = None):
     """Sends a text-focused request to Gemini to extract structured JSON data."""
-    load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         logger.error("GEMINI_API_KEY not found in .env file.")

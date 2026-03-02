@@ -19,8 +19,6 @@ EMBEDDING_BATCH_SIZE = 100 # Number of chunks to process in a single API call
 
 # Vision settings
 GEMINI_MODEL = "models/gemini-2.5-flash"
-# or models/gemini-1.5-flash
-PROMPT_FILE = "prompt.txt"
 GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 
 # Directory settings
@@ -33,10 +31,6 @@ FAISS_INDEX_DIR = BASE_DIR / "faiss_index"
 OUTPUT_IMAGE_DIR = BASE_DIR / "output_images"
 OUTPUT_JSON_DIR = BASE_DIR / "output_json"
 PROMPTS_DIR = BASE_DIR / "prompts"
-
-# --- Source File Paths ---
-PDF_SOURCES_FILE = BASE_DIR / "reference_files" / "pdf-sources.json"
-HTML_SOURCES_FILE = BASE_DIR / "reference_files" / "html-sources.json"
 
 # --- Logging settings ---
 LOG_LEVEL = "INFO" # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL

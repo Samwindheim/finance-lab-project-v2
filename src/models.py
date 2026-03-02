@@ -91,7 +91,7 @@ class ExtractionResult(BaseModel):
 # --- Final Output Structure (output_json/ISSUE_ID_extraction.json) ---
 
 class DocumentEntry(BaseModel):
-    issue_id: str
+    issue_id: Optional[str] = None
     id: Optional[str] = None
     investors: Optional[List[Investor]] = None
     investors_source_pages: Optional[List[int]] = None

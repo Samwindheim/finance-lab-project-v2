@@ -11,24 +11,78 @@ logger = setup_logger(__name__)
 load_dotenv()
 
 class FinanceDB:
+    _schema_ready = False
+
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
         if not self.db_url:
             raise ValueError("DATABASE_URL not found in .env")
         self.engine = create_engine(self.db_url)
 
+    def _ensure_schema(self):
+        """Creates the ai_extractions table and runs one-time migrations if not already done."""
+        if FinanceDB._schema_ready:
+            return
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS ai_extractions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            issue_id VARCHAR(255) NULL,
+            doc_id VARCHAR(255) NULL,
+            source_url VARCHAR(767) NOT NULL,
+            extraction_field VARCHAR(255) NOT NULL,
+            data JSON,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_url_field (source_url, extraction_field)
+        );
+        """
+        with self.engine.begin() as conn:
+            conn.execute(text(create_table_query))
+            for old_key in ["unique_doc_field", "unique_anchor_field", "unique_doc_url_field"]:
+                try:
+                    conn.execute(text(f"ALTER TABLE ai_extractions DROP INDEX {old_key}"))
+                except Exception:
+                    pass
+            try:
+                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN source_url VARCHAR(767) NOT NULL"))
+                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN extraction_field VARCHAR(255) NOT NULL"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN doc_id VARCHAR(255) NULL"))
+            except Exception:
+                pass
+            cleanup_query = """
+            DELETE t1 FROM ai_extractions t1
+            INNER JOIN ai_extractions t2
+            ON t1.source_url = t2.source_url
+            AND t1.extraction_field = t2.extraction_field
+            WHERE t1.id < t2.id;
+            """
+            try:
+                conn.execute(text(cleanup_query))
+                conn.execute(text("ALTER TABLE ai_extractions ADD UNIQUE KEY unique_url_field (source_url(512), extraction_field)"))
+            except Exception as e:
+                logger.debug(f"Migration step (unique key) skipped or failed: {e}")
+            try:
+                conn.execute(text("ALTER TABLE ai_extractions DROP COLUMN source_anchor"))
+            except Exception:
+                pass
+        FinanceDB._schema_ready = True
+
     def get_issue_data(self, issue_id: str) -> Optional[Dict[str, Any]]:
         """Fetch all terms, dates, and outcomes for an issue from the 'issues' table."""
-        query = f"SELECT * FROM issues WHERE id = '{issue_id}'"
-        df = pd.read_sql(query, self.engine)
+        query = text("SELECT * FROM issues WHERE id = :issue_id")
+        df = pd.read_sql(query, self.engine, params={"issue_id": issue_id})
         if df.empty:
             return None
         return df.iloc[0].to_dict()
 
     def get_investors_data(self, issue_id: str) -> pd.DataFrame:
         """Fetch individual investor commitments with names (using aliases if available) for an issue."""
-        query = f"""
-            SELECT 
+        query = text("""
+            SELECT
                 COALESCE(ia.name_alias, i.name) as name,
                 ii.amount_in_cash,
                 ii.amount_in_percentage,
@@ -36,19 +90,14 @@ class FinanceDB:
             FROM investors_issues ii
             JOIN investors i ON ii.investor_id = i.id
             LEFT JOIN investor_aliases ia ON ii.investor_alias_id = ia.id
-            WHERE ii.issue_id = '{issue_id}'
-        """
-        return pd.read_sql(query, self.engine)
-
-    def get_all_sources(self) -> pd.DataFrame:
-        """Fetch all source documents from the database."""
-        query = "SELECT * FROM sources"
-        return pd.read_sql(query, self.engine)
+            WHERE ii.issue_id = :issue_id
+        """)
+        return pd.read_sql(query, self.engine, params={"issue_id": issue_id})
 
     def find_sources_by_issue(self, issue_id: str) -> pd.DataFrame:
         """Fetch all source documents for a specific issue."""
-        query = f"SELECT * FROM sources WHERE issue_id = '{issue_id}'"
-        return pd.read_sql(query, self.engine)
+        query = text("SELECT * FROM sources WHERE issue_id = :issue_id")
+        return pd.read_sql(query, self.engine, params={"issue_id": issue_id})
 
     def find_source_by_url(self, url: str) -> Optional[Dict[str, Any]]:
         """Find a source document by its URL."""
@@ -68,32 +117,15 @@ class FinanceDB:
 
     def save_ai_extraction(self, issue_id: Optional[str], doc_id: Optional[str], extraction_field: str, data: Dict[str, Any], source_url: Optional[str] = None):
         """
-        Saves an AI extraction to the 'ai_extractions' table.
-        Creates the table if it doesn't exist.
-        Uses UPSERT logic to update existing entries for the same source_url and field.
+        Saves an AI extraction to the 'ai_extractions' table using UPSERT logic
+        keyed on (source_url, extraction_field).
         """
         if not source_url:
             logger.error("Cannot save AI extraction: source_url is missing.")
             return
 
-        # Ensure the table exists (Using MySQL compatible syntax)
-        # source_url and extraction_field are the unique identifiers for a draft.
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS ai_extractions (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            issue_id VARCHAR(255) NULL,
-            doc_id VARCHAR(255) NULL,
-            source_url VARCHAR(767) NOT NULL,
-            extraction_field VARCHAR(255) NOT NULL,
-            data JSON,
-            status VARCHAR(50) DEFAULT 'pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY unique_url_field (source_url, extraction_field)
-        );
-        """
-        
-        # MySQL UPSERT (INSERT ... ON DUPLICATE KEY UPDATE)
+        self._ensure_schema()
+
         insert_query = text("""
         INSERT INTO ai_extractions (issue_id, doc_id, source_url, extraction_field, data, status)
         VALUES (:issue_id, :doc_id, :source_url, :extraction_field, :data, 'pending')
@@ -106,52 +138,6 @@ class FinanceDB:
         """)
 
         with self.engine.begin() as conn:
-            conn.execute(text(create_table_query))
-            
-            # Migration: Drop old unique keys if they exist
-            for old_key in ["unique_doc_field", "unique_anchor_field", "unique_doc_url_field"]:
-                try:
-                    conn.execute(text(f"ALTER TABLE ai_extractions DROP INDEX {old_key}"))
-                except Exception:
-                    pass
-            
-            # Migration: Ensure source_url and extraction_field are NOT NULL for the unique key
-            try:
-                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN source_url VARCHAR(767) NOT NULL"))
-                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN extraction_field VARCHAR(255) NOT NULL"))
-            except Exception:
-                pass
-
-            # Migration: Ensure doc_id is NULLable
-            try:
-                conn.execute(text("ALTER TABLE ai_extractions MODIFY COLUMN doc_id VARCHAR(255) NULL"))
-            except Exception:
-                pass
-
-            # Migration: Clean up duplicates based on URL and Field
-            # We keep the entry with the highest ID (most recent)
-            cleanup_query = """
-            DELETE t1 FROM ai_extractions t1
-            INNER JOIN ai_extractions t2 
-            ON t1.source_url = t2.source_url 
-            AND t1.extraction_field = t2.extraction_field
-            WHERE t1.id < t2.id;
-            """
-            try:
-                # First, run the cleanup query to remove duplicates
-                conn.execute(text(cleanup_query))
-                # Then, try to add the unique key with a prefix for source_url
-                # (512 chars * 4 bytes = 2048 bytes, 255 chars * 4 bytes = 1020 bytes, total < 3072)
-                conn.execute(text("ALTER TABLE ai_extractions ADD UNIQUE KEY unique_url_field (source_url(512), extraction_field)"))
-            except Exception as e:
-                logger.debug(f"Migration step (unique key) skipped or failed: {e}")
-            
-            # Migration: Remove source_anchor column if it exists
-            try:
-                conn.execute(text("ALTER TABLE ai_extractions DROP COLUMN source_anchor"))
-            except Exception:
-                pass
-
             conn.execute(insert_query, {
                 "issue_id": issue_id,
                 "doc_id": doc_id,
