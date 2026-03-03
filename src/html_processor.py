@@ -29,54 +29,75 @@ def _table_to_markdown(table):
     markdown = []
     # Header row
     if rows:
-        markdown.append('| ' + ' | '.join(rows[0]) + ' |')
-        markdown.append('| ' + ' | '.join(['---'] * len(rows[0])) + ' |')
+        # Clean up cell text to prevent markdown table breakage
+        def clean_cell(text):
+            return text.replace('|', '\\|').replace('\n', ' ').strip()
+
+        header = [clean_cell(cell) for cell in rows[0]]
+        markdown.append('| ' + ' | '.join(header) + ' |')
+        markdown.append('| ' + ' | '.join(['---'] * len(header)) + ' |')
+        
         # Data rows
         for row in rows[1:]:
             # Pad row if needed
-            while len(row) < len(rows[0]):
+            while len(row) < len(header):
                 row.append('')
-            markdown.append('| ' + ' | '.join(row) + ' |')
+            
+            cleaned_row = [clean_cell(cell) for cell in row]
+            markdown.append('| ' + ' | '.join(cleaned_row) + ' |')
     
     return '\n'.join(markdown)
 
-def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True) -> str:
+def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True, raw_html: bool = False) -> str:
     """
-    Extracts the main text content from an HTML file or URL.
+    Extracts the main text content from an HTML file, URL, or raw HTML string.
     
     Args:
-        html_path_or_url: The path to the HTML file or a URL.
+        html_path_or_url: A URL, file path, or raw HTML string.
         preserve_tables: If True, converts tables to markdown format. Default is True.
+        raw_html: If True, treats the first argument as a raw HTML string directly.
     
     Returns:
         A string containing the extracted text with tables preserved if requested.
     """
-    html_content = ""
-    if html_path_or_url.startswith('http'):
-        try:
-            response = requests.get(html_path_or_url)
-            response.raise_for_status()  # Raise an exception for bad status codes
-            html_content = response.text
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error fetching URL {html_path_or_url}: {e}")
-            return ""
+    if raw_html:
+        html_content = html_path_or_url
     else:
         try:
-            with open(html_path_or_url, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-        except FileNotFoundError:
-            logger.error(f"File not found at {html_path_or_url}")
-            return ""
+            if html_path_or_url.startswith('http'):
+                response = requests.get(html_path_or_url, timeout=15)
+                response.raise_for_status()
+                html_content = response.text
+            else:
+                with open(html_path_or_url, 'r', encoding='utf-8') as f:
+                    html_content = f.read()
         except Exception as e:
-            logger.error(f"Error reading file {html_path_or_url}: {e}")
+            logger.error(f"Error reading HTML from {html_path_or_url}: {e}")
             return ""
 
     try:
         soup = BeautifulSoup(html_content, 'html.parser')
 
-        # Remove script and style elements
-        for script_or_style in soup(["script", "style"]):
-            script_or_style.decompose()
+        # Target the specific content div for MFN if it exists
+        # Based on the user's provided XPath: /html/body/div[3]/div[3]/div[1]/div[2]/div/div[1]/a
+        # This corresponds to the 'full-item' container and its 'title' div.
+        
+        # 1. Try to find the headline specifically
+        headline_div = soup.find('div', class_='title')
+        headline_text = ""
+        if headline_div:
+            headline_text = headline_div.get_text(strip=True)
+
+        # 2. Try to find the main content container
+        main_content = soup.find('div', class_='full-item') or soup.find('div', class_='content') or soup.find('article')
+        
+        if main_content:
+            # If we found a specific content container, use only that
+            soup = BeautifulSoup(str(main_content), 'html.parser')
+        else:
+            # Fallback: Remove script, style, and navigation/header/footer elements
+            for element in soup(["script", "style", "nav", "footer", "header", "aside"]):
+                element.decompose()
 
         # Extract tables first if preserving them
         if preserve_tables:
@@ -91,14 +112,20 @@ def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True) 
                     table.replace_with(placeholder)
 
         # Get text (now with tables as markdown)
-        text = soup.get_text()
+        # Use separator to prevent merging text from different tags
+        text = soup.get_text(separator="\n")
 
-        # Break into lines and remove leading/trailing space on each
-        lines = (line.strip() for line in text.splitlines())
-        # Break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        # Drop blank lines
-        text = '\n'.join(chunk for chunk in chunks if chunk)
+        # Clean up the text:
+        # 1. Strip whitespace from each line
+        # 2. Filter out empty lines
+        # 3. Join with single newlines
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        
+        # If we found a headline earlier, make sure it's at the very top
+        if headline_text and (not lines or headline_text not in lines[0]):
+            lines.insert(0, headline_text)
+            
+        text = '\n'.join(lines)
 
         return text
     except Exception as e:

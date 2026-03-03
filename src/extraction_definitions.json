@@ -14,19 +14,11 @@
         },
         "offering_terms": {
             "description": "Extracts financial terms, ratios, price, and volume.",
-            "source_types": ["Publication", "Terms"],
-            "semantic_search_query": "Villkor för erbjudandet (teckningskurs, teckningsrelation, erbjuden volym, interval, over-allotment, non-cash consideration)",
-            "page_selection_strategy": "consecutive"
+            "source_types": ["Publication", "Terms"]
         },
         "offering_outcome": {
             "description": "Extracts the outcome of the offering, including subscription percentages and final amounts.",
-            "source_types": ["Outcome"],
-            "semantic_search_query": "Slutgiltigt utfall i erbjudandet eller börsnoteringen (tecknat med stöd av rätter, utan stöd av rätter, garanter, total teckning, over-allotment allocation)",
-            "page_selection_strategy": "consecutive"
-        },
-        "flag_investors_changed": {
-            "description": "Flag if there have been changes to investors since the initial announcement.",
-            "source_types": ["Update", "New commitments"]
+            "source_types": ["Outcome"]
         }
     },
     "issue_type_guidance": {

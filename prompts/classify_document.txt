@@ -1,0 +1,23 @@
+You are classifying a Swedish financial document. Based on the text provided, determine two things:
+
+1. SOURCE TYPE — what kind of document this is. Choose exactly one from:
+   - Publication   (press release announcing an offering, e.g. "Oncopeptides genomför en företrädesemission")
+   - Terms         (separate terms sheet with offering price/ratio/volume)
+   - Outcome       (final outcome/utfall press release, e.g. "Oncopeptides offentliggör utfall")
+   - Update        (update to previously announced investors or commitments)
+   - New commitments (announcement of new investor commitments added after initial announcement)
+
+2. ISSUE TYPE — what kind of capital raise this document describes. Choose exactly one from:
+   - Rights issue   (Företrädesemission)
+   - Directed issue (Riktad emission)
+   - IPO            (Börsnotering)
+   - Warrant        (Teckningsoptioner)
+   - Non-cash issue (Apportemission)
+
+If you cannot confidently determine a value, return null for that field.
+
+Respond with a JSON object only, no explanation:
+{
+  "source_type": "<value or null>",
+  "issue_type": "<value or null>"
+}

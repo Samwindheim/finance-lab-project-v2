@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
 from utils import find_sources_by_issue_id, find_issue_id, download_pdf, get_db
-from extraction_logic import extract_from_pdf, extract_from_html, merge_and_finalize_outputs
+from extraction_logic import extract_from_pdf, extract_from_html, merge_and_finalize_outputs, classify_html_document
 from models import ExtractionDefinitions
 from pdf_indexer import PDFIndexer
 from html_processor import extract_text_from_html
@@ -109,8 +109,14 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
     os.makedirs(temp_dir, exist_ok=True)
 
     # Filter by source_type unless in unlinked (zero-context) mode
-    active_pdfs = pdf_matches if force_unlinked else [m for m in pdf_matches if m.get("source_type") in source_types]
-    active_htmls = html_matches if force_unlinked else [m for m in html_matches if m.get("source_type") in source_types]
+    if force_unlinked:
+        # In unlinked mode, we still want to respect the source_type filter
+        # if it was explicitly detected/provided.
+        active_pdfs = [m for m in pdf_matches if not m.get("source_type") or m.get("source_type") in source_types]
+        active_htmls = [m for m in html_matches if not m.get("source_type") or m.get("source_type") in source_types]
+    else:
+        active_pdfs = [m for m in pdf_matches if m.get("source_type") in source_types]
+        active_htmls = [m for m in html_matches if m.get("source_type") in source_types]
 
     if not force_unlinked:
         logger.info(f"Looking for source types {source_types} for field '{extraction_field}'...")
@@ -260,18 +266,38 @@ def extract_new_command(args):
     if source_link.lower().endswith(".pdf"):
         pdf_matches = [{"source_url": source_link, "id": "new_pdf", "source_type": "Prospectus"}]
         html_matches = []
+        issue_type = None
     else:
+        logger.info("Classifying HTML document via LLM...")
+        classification = classify_html_document(source_link)
+        source_type = classification.source_type or "Publication"
+        issue_type = classification.issue_type
+        logger.info(f"Classification result — source_type: '{source_type}', issue_type: '{issue_type}'")
         pdf_matches = []
-        html_matches = [{"source_url": source_link, "id": "new_html", "source_type": "Press release"}]
+        html_matches = [{"source_url": source_link, "id": "new_html", "source_type": source_type}]
 
     definitions_obj = load_extraction_definitions()
-    fields_to_process = _resolve_fields(args.extraction_field, definitions_obj.field_definitions)
-    logger.info(f"Forcing processing of fields: {', '.join(fields_to_process)}")
+    definitions = definitions_obj.field_definitions
+    target_source_types = {m["source_type"] for m in pdf_matches + html_matches if m.get("source_type")}
+
+    if args.extraction_field:
+        fields_to_process = _resolve_fields(args.extraction_field, definitions)
+    else:
+        fields_to_process = []
+        for field_name, field_def in definitions.items():
+            if field_def.issue_types and issue_type not in field_def.issue_types:
+                logger.debug(f"Skipping field '{field_name}' - not relevant for issue_type: {issue_type}")
+                continue
+            if not any(st in field_def.source_types for st in target_source_types):
+                logger.debug(f"Skipping field '{field_name}' - not relevant for source types: {target_source_types}")
+                continue
+            fields_to_process.append(field_name)
+
+        logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for source types {target_source_types} and issue_type '{issue_type}': {', '.join(fields_to_process)}")
 
     for field in fields_to_process:
         logger.info(f"Processing field: '{field}'")
-        # issue_id is None, force_unlinked is True
-        run_single_extraction(None, field, definitions_obj, pdf_matches, html_matches, issue_type=None, force_unlinked=True)
+        run_single_extraction(None, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False)
 
     logger.info(f"All processing for new document complete.")
 

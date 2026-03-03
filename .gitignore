@@ -123,3 +123,6 @@ tests/accuracy_report.json
 tests/accuracy_summary.md
 tests/summary_reasons.md
 notes/
+
+classification_input_temp.txt
+html_input_temp.txt

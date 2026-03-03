@@ -78,13 +78,17 @@ class GeneralInfo(BaseModel):
     legalradgivare: Optional[str] = None
     emissionsinstitut: Optional[str] = None
 
+class DocumentClassification(BaseModel):
+    source_type: Optional[str] = None  # e.g. Publication, Terms, Outcome, Update, New commitments
+    issue_type: Optional[str] = None   # e.g. Rights issue, IPO, Directed issue
+
+
 class ExtractionResult(BaseModel):
     investors: Optional[List[Investor]] = None
     investors_source_pages: Optional[List[int]] = None
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    flag_investors_changed: Optional[bool] = None
 
     # Add other fields as needed, or use an extra field for flexibility
     # For now, we'll allow extra fields since the definitions are dynamic
@@ -101,7 +105,6 @@ class DocumentEntry(BaseModel):
     important_dates: Optional[ImportantDates] = None
     offering_terms: Optional[OfferingTerms] = None
     offering_outcome: Optional[OfferingOutcome] = None
-    flag_investors_changed: Optional[bool] = None
 
     class Config:
         extra = "allow"

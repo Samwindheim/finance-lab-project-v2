@@ -14,10 +14,43 @@ from llm import get_json_from_image, get_json_from_text
 from html_processor import extract_text_from_html
 import config
 from utils import find_document_info, clean_and_parse_json, get_db
-from models import ExtractionResult, Investor, ImportantDates, FinalOutput, DocumentEntry
+from models import ExtractionResult, Investor, ImportantDates, FinalOutput, DocumentEntry, DocumentClassification
 from logger import setup_logger
 
 logger = setup_logger(__name__)
+
+
+def classify_html_document(url: str) -> DocumentClassification:
+    """
+    Fetches the first ~3000 chars of an HTML document and asks the LLM to
+    classify its source_type and issue_type. Falls back to None values on failure.
+    Only pass the first 3000 characters of the HTML to the LLM.
+    """
+    import requests
+    text = ""
+    try:
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        # Pass the raw HTML directly to the processor (not as a path/URL)
+        text = extract_text_from_html(resp.text, raw_html=True)[:800]
+    except Exception as e:
+        logger.warning(f"Could not fetch HTML for classification: {e}")
+        
+    if not text:
+        return DocumentClassification()
+
+    with open("classification_input_temp.txt", "w", encoding="utf-8") as f:
+        f.write(text)
+
+    raw = get_json_from_text(text, extraction_type="classify_document")
+    parsed = clean_and_parse_json(raw)
+    if not parsed:
+        return DocumentClassification()
+
+    try:
+        return DocumentClassification(**parsed)
+    except Exception:
+        return DocumentClassification()
 
 
 def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[int]:
@@ -178,6 +211,9 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     if not text:
         logger.error(f"Could not extract any text from the HTML file: {html_path}")
         return None
+
+    with open(f"html_input_temp.txt", "w", encoding="utf-8") as f:
+        f.write(text)
 
     json_data = get_json_from_text(text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
