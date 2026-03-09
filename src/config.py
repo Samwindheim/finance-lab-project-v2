@@ -30,4 +30,4 @@ PROMPTS_DIR = BASE_DIR / "prompts"
 
 # --- Logging settings ---
 LOG_LEVEL = "INFO" # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOG_FORMAT = "  %(levelname)-7s | %(message)s"

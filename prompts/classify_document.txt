@@ -1,4 +1,4 @@
-You are classifying a Swedish financial document. Based on the text provided, determine two things:
+You are classifying a Swedish financial document. Based on the text provided, determine the following:
 
 1. SOURCE TYPE — what kind of document this is. Choose exactly one from:
    - Publication   (press release announcing an offering, e.g. "Oncopeptides genomför en företrädesemission")
@@ -14,10 +14,18 @@ You are classifying a Swedish financial document. Based on the text provided, de
    - Warrant        (Teckningsoptioner)
    - Non-cash issue (Apportemission)
 
-If you cannot confidently determine a value, return null for that field.
+3. FLAGS — reliability signals that indicate extracted data may be ambiguous:
+   - multiple_transaction_types: true if the document describes more than one distinct transaction type
+     (e.g. a directed issue AND a subsequent repair/rights issue announced in the same press release).
+     This is a signal that the extractor may accidentally capture data from the wrong transaction.
+
+If you cannot confidently determine source_type or issue_type, return null for that field.
 
 Respond with a JSON object only, no explanation:
 {
   "source_type": "<value or null>",
-  "issue_type": "<value or null>"
+  "issue_type": "<value or null>",
+  "flags": {
+    "multiple_transaction_types": <true | false>
+  }
 }

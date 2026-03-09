@@ -78,9 +78,13 @@ class GeneralInfo(BaseModel):
     legalradgivare: Optional[str] = None
     emissionsinstitut: Optional[str] = None
 
+class DocumentClassificationFlags(BaseModel):
+    multiple_transaction_types: Optional[bool] = None  # Document describes more than one transaction type (e.g. directed + repair issue)
+
 class DocumentClassification(BaseModel):
     source_type: Optional[str] = None  # e.g. Publication, Terms, Outcome, Update, New commitments
     issue_type: Optional[str] = None   # e.g. Rights issue, IPO, Directed issue
+    flags: Optional[DocumentClassificationFlags] = None
 
 
 class ExtractionResult(BaseModel):

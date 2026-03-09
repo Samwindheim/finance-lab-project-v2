@@ -87,8 +87,6 @@ def get_json_from_text(text: str, extraction_type: str = None, additional_conten
     if additional_content:
         content.extend(additional_content)
     
-    logger.info(f"Sending request to Gemini for field '{extraction_type}'...")
-
     response = client.chat.completions.create(
         model=GEMINI_MODEL,
         messages=[

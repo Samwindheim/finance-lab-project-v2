@@ -81,8 +81,6 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
     issue_guidance = ""
     if issue_type and definitions_obj.issue_type_guidance:
         issue_guidance = definitions_obj.issue_type_guidance.get(issue_type, "")
-        if issue_guidance:
-            logger.info(f"Applying guidance for issue type: '{issue_type}'")
 
     # --- Step 1: Load the Prompt Text from its File ---
     prompt_filename = f"{extraction_field}.txt"
@@ -101,8 +99,6 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
     semantic_search_query = field_definition.semantic_search_query
     page_selection_strategy = field_definition.page_selection_strategy
 
-    logger.info(f"Loaded definition for '{extraction_field}'. Target source types: {source_types}")
-
     # --- Step 3: Source-Specific Extraction ---
     temp_output_files = []
     temp_dir = os.path.join(config.OUTPUT_JSON_DIR, 'temp', f"{issue_id}_{extraction_field}")
@@ -118,8 +114,9 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
         active_pdfs = [m for m in pdf_matches if m.get("source_type") in source_types]
         active_htmls = [m for m in html_matches if m.get("source_type") in source_types]
 
-    if not force_unlinked:
-        logger.info(f"Looking for source types {source_types} for field '{extraction_field}'...")
+    if active_pdfs or active_htmls:
+        print("")
+        logger.info(f"Extracting field: '{extraction_field}'")
 
     for pdf_info in active_pdfs:
         pdf_path = _resolve_pdf_path(pdf_info)
@@ -153,12 +150,11 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
             output_path=temp_output_path,
             issue_id=issue_id
         )
-        if result_path:
-            temp_output_files.append(result_path)
+    if result_path:
+        temp_output_files.append(result_path)
 
     # --- Step 4: Merging and Finalization ---
     if temp_output_files:
-        logger.info(f"Merging {len(temp_output_files)} extraction output(s) for '{extraction_field}'...")
         # Use 'unlinked' for the filename if issue_id is None
         final_filename = f"{issue_id or 'unlinked'}_extraction.json"
         final_output_path = os.path.join(config.OUTPUT_JSON_DIR, final_filename)
@@ -172,8 +168,6 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
         
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
-    else:
-        logger.info(f"No results to merge for field '{extraction_field}'.")
 
 def extract_historical_command(args):
     """Handles the 'extract-historical' command for production data extraction."""
@@ -181,6 +175,7 @@ def extract_historical_command(args):
     issue_id = args.issue_id
     extraction_field = args.extraction_field
 
+    print("  --------------------------------")
     if source_link:
         detected_id = find_issue_id(source_link)
         if not detected_id and not issue_id:
@@ -256,11 +251,12 @@ def extract_historical_command(args):
         logger.info(f"Processing field: '{field}'")
         run_single_extraction(issue_id, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False)
 
+    print("")
     logger.info(f"All processing for issue '{issue_id}' complete.")
-
 def extract_new_command(args):
     """Handles the 'extract-new' command for zero-context extraction on new documents."""
     source_link = args.source_link
+    print("  --------------------------------")
     logger.info(f"New Document Mode: '{source_link}'")
 
     if source_link.lower().endswith(".pdf"):
@@ -268,11 +264,18 @@ def extract_new_command(args):
         html_matches = []
         issue_type = None
     else:
-        logger.info("Classifying HTML document via LLM...")
+        logger.info(f"Classifying document...")
         classification = classify_html_document(source_link)
         source_type = classification.source_type or "Publication"
         issue_type = classification.issue_type
-        logger.info(f"Classification result — source_type: '{source_type}', issue_type: '{issue_type}'")
+        logger.info(f"Classification: {source_type} | Issue: {issue_type}")
+        if classification.flags:
+            active_flags = [k for k, v in classification.flags.model_dump().items() if v]
+            if active_flags:
+                logger.warning(f"Flags raised: {', '.join(active_flags)}")
+                logger.warning("Aborting extraction")
+                print("  --------------------------------")
+                return
         pdf_matches = []
         html_matches = [{"source_url": source_link, "id": "new_html", "source_type": source_type}]
 
@@ -286,21 +289,18 @@ def extract_new_command(args):
         fields_to_process = []
         for field_name, field_def in definitions.items():
             if field_def.issue_types and issue_type not in field_def.issue_types:
-                logger.debug(f"Skipping field '{field_name}' - not relevant for issue_type: {issue_type}")
                 continue
             if not any(st in field_def.source_types for st in target_source_types):
-                logger.debug(f"Skipping field '{field_name}' - not relevant for source types: {target_source_types}")
                 continue
             fields_to_process.append(field_name)
 
-        logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for source types {target_source_types} and issue_type '{issue_type}': {', '.join(fields_to_process)}")
+        logger.info(f"Identified {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
 
     for field in fields_to_process:
-        logger.info(f"Processing field: '{field}'")
         run_single_extraction(None, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False)
 
     logger.info(f"All processing for new document complete.")
-
+    print("  --------------------------------")
 def _ensure_pdf_available(pdf_path: str) -> bool:
     """Ensures a PDF exists locally, downloading from the database record if needed."""
     if os.path.exists(pdf_path):

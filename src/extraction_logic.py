@@ -32,7 +32,7 @@ def classify_html_document(url: str) -> DocumentClassification:
         resp = requests.get(url, timeout=15)
         resp.raise_for_status()
         # Pass the raw HTML directly to the processor (not as a path/URL)
-        text = extract_text_from_html(resp.text, raw_html=True)[:800]
+        text = extract_text_from_html(resp.text, raw_html=True)
     except Exception as e:
         logger.warning(f"Could not fetch HTML for classification: {e}")
         
@@ -146,7 +146,6 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2, ensure_ascii=False)
-    logger.info(f"Successfully extracted and saved data to: {output_path}")
     return output_path
 
 
@@ -166,7 +165,6 @@ def _validate_and_save(json_data: str, source_path: str, extraction_field: str, 
 
 def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, extraction_field: str, output_path: str, page_selection_strategy: str = "consecutive", issue_id: str = None, source_url: str = None):
     """Performs a full RAG extraction on a single PDF document."""
-    logger.info(f"Processing PDF: {os.path.basename(pdf_path)}")
 
     index_name = os.path.splitext(os.path.basename(pdf_path))[0]
     indexer = PDFIndexer(index_path=os.path.join(config.FAISS_INDEX_DIR, index_name))
@@ -205,7 +203,6 @@ def extract_from_pdf(pdf_path: str, search_query: str, extraction_prompt: str, e
 
 def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: str, output_path: str, issue_id: str = None):
     """Performs a full-text extraction on a single HTML document."""
-    logger.info(f"Processing HTML: {os.path.basename(html_path)}")
 
     text = extract_text_from_html(html_path, preserve_tables=True)
     if not text:
@@ -270,7 +267,7 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                     data=db_data,
                     source_url=source_url
                 )
-                logger.info(f"Saved AI extraction for {extraction_field} in {doc_name} to database.")
+                logger.info(f"Saved {extraction_field} to database.")
             except Exception as e:
                 logger.error(f"Failed to save AI extraction to database: {e}")
 
@@ -389,4 +386,4 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
     with open(final_output_path, 'w', encoding='utf-8') as f:
         json.dump(sorted_output, f, indent=2, ensure_ascii=False)
         
-    logger.info(f"Successfully updated results in: {final_output_path}")
+    logger.info(f"Updated results locally to: {final_output_path}")
