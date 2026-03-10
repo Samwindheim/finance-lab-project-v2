@@ -82,20 +82,17 @@ def extract_text_from_html(html_path_or_url: str, preserve_tables: bool = True, 
         # Based on the user's provided XPath: /html/body/div[3]/div[3]/div[1]/div[2]/div/div[1]/a
         # This corresponds to the 'full-item' container and its 'title' div.
         
-        # 1. Try to find the headline specifically
+        # 1. Try to find the headline specifically (MFN-specific)
         headline_div = soup.find('div', class_='title')
         headline_text = ""
         if headline_div:
             headline_text = headline_div.get_text(strip=True)
 
-        # 2. Try to find the main content container
-        main_content = soup.find('div', class_='full-item') or soup.find('div', class_='content') or soup.find('article')
-        
+        # 2. Try MFN-specific container; otherwise fall back to full page with junk stripped
+        main_content = soup.find('div', class_='full-item')
         if main_content:
-            # If we found a specific content container, use only that
             soup = BeautifulSoup(str(main_content), 'html.parser')
         else:
-            # Fallback: Remove script, style, and navigation/header/footer elements
             for element in soup(["script", "style", "nav", "footer", "header", "aside"]):
                 element.decompose()
 

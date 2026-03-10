@@ -15,8 +15,7 @@ You are classifying a Swedish financial document. Based on the text provided, de
    - Non-cash issue (Apportemission)
 
 3. FLAGS — reliability signals that indicate extracted data may be ambiguous:
-   - multiple_transaction_types: true if the document describes more than one distinct transaction type
-     (e.g. a directed issue AND a subsequent repair/rights issue announced in the same press release).
+   - multiple_transaction_types: true only if there are two or more separate offerings (e.g., a Rights Issue and a Directed Issue).
      This is a signal that the extractor may accidentally capture data from the wrong transaction.
 
 If you cannot confidently determine source_type or issue_type, return null for that field.

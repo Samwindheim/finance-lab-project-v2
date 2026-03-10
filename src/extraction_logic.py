@@ -126,9 +126,6 @@ def post_process_and_save(parsed_json: dict, source_path: str, extraction_field:
     # Prefer DB value, then caller-supplied URL, then local path as last resort
     source_url = doc_info.get("source_url") or source_url or source_path
     
-    if not issue_id:
-        logger.warning(f"Could not find issue_id for '{os.path.basename(source_path)}'.")
-
     # The parsed_json from the model should contain the extraction_field as a key
     field_value = parsed_json.get(extraction_field)
     

@@ -150,8 +150,8 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
             output_path=temp_output_path,
             issue_id=issue_id
         )
-    if result_path:
-        temp_output_files.append(result_path)
+        if result_path:
+            temp_output_files.append(result_path)
 
     # --- Step 4: Merging and Finalization ---
     if temp_output_files:
@@ -268,7 +268,6 @@ def extract_new_command(args):
         classification = classify_html_document(source_link)
         source_type = classification.source_type or "Publication"
         issue_type = classification.issue_type
-        logger.info(f"Classification: {source_type} | Issue: {issue_type}")
         if classification.flags:
             active_flags = [k for k, v in classification.flags.model_dump().items() if v]
             if active_flags:
@@ -276,6 +275,7 @@ def extract_new_command(args):
                 logger.warning("Aborting extraction")
                 print("  --------------------------------")
                 return
+        logger.info(f"Classification: {source_type} | Issue: {issue_type}")
         pdf_matches = []
         html_matches = [{"source_url": source_link, "id": "new_html", "source_type": source_type}]
 
