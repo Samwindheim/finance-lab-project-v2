@@ -9,10 +9,10 @@ You are classifying a Swedish financial document. Based on the text provided, de
 
 2. ISSUE TYPE — what kind of capital raise this document describes. Choose exactly one from:
    - Rights issue   (Företrädesemission)
-   - Directed issue (Riktad emission)
+   - Directed issue (Riktad emission): Use this for cash raises to specific investors OR when shares are issued to settle/offset debt
    - IPO            (Börsnotering)
    - Warrant        (Teckningsoptioner)
-   - Non-cash issue (Apportemission)
+   - Non-cash issue (Apportemission): Use ONLY if the company is receiving a physical or intangible asset (e.g., shares in another company, patents, or machinery) as payment for the shares.
 
 3. FLAGS — reliability signals that indicate extracted data may be ambiguous:
    - multiple_transaction_types: true only if there are two or more separate offerings (e.g., a Rights Issue and a Directed Issue).

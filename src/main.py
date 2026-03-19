@@ -192,7 +192,6 @@ def extract_historical_command(args):
         return
 
     # --- Step 1: Identify source documents ---
-    logger.info("Identifying source documents...")
     pdf_matches, html_matches = find_sources_by_issue_id(issue_id)
 
     if target_document:
@@ -240,19 +239,18 @@ def extract_historical_command(args):
                 continue
             fields_to_process.append(field_name)
 
-        filter_desc = f"source types {target_source_types} and " if target_document else ""
-        logger.info(f"Smart Filter: Identified {len(fields_to_process)} relevant fields for {filter_desc}issue_type '{issue_type}': {', '.join(fields_to_process)}")
+        logger.info(f"Fields to extract: {', '.join(fields_to_process)}")
 
     if not fields_to_process:
         logger.warning(f"No relevant fields found for processing.")
         return
 
     for field in fields_to_process:
-        logger.info(f"Processing field: '{field}'")
         run_single_extraction(issue_id, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False)
 
     print("")
     logger.info(f"All processing for issue '{issue_id}' complete.")
+    print("  --------------------------------")
 def extract_new_command(args):
     """Handles the 'extract-new' command for zero-context extraction on new documents."""
     source_link = args.source_link
