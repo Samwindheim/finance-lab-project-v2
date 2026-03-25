@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Finance Lab Lambda (container image, extract-new MVP)
+
+Resources:
+  FinanceLabExtractNewFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: finance-lab-extract-new
+      PackageType: Image
+      Timeout: 300
+      MemorySize: 2048
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          LOG_LEVEL: INFO
+          ENABLE_DB_SAVE: "false"
+          ENABLE_RESULT_LOG: "true"
+          GEMINI_API_KEY: ""
+          OPENAI_API_KEY: ""
+          DATABASE_URL: ""
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: .
+      DockerTag: latest

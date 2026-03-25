@@ -1,0 +1,13 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "finance-lab-extract-new"
+resolve_s3 = true
+s3_prefix = "finance-lab-extract-new"
+region = "eu-north-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["FinanceLabExtractNewFunction=618893294162.dkr.ecr.eu-north-1.amazonaws.com/financelabextractnew77ba3893/financelabextractnewfunctionb46e9485repo"]
+
+[default.global.parameters]
+region = "eu-north-1"

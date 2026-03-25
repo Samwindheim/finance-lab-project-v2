@@ -18,12 +18,12 @@ class FinanceDB:
 
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
-        if not self.db_url:
-            raise ValueError("DATABASE_URL not found in .env")
-        self.engine = create_engine(self.db_url)
+        self.engine = create_engine(self.db_url) if self.db_url else None
 
     def _ensure_schema(self):
         """Creates the ai_extractions table and runs one-time migrations if not already done."""
+        if not self.engine:
+            raise ValueError("DATABASE_URL is not configured.")
         if FinanceDB._schema_ready:
             return
         create_table_query = """

@@ -1,5 +1,5 @@
-# Use the official AWS Lambda Python base image
-FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.11
+# Command: docker build --platform linux/amd64 --provenance=false -t finance-lab-extract-new:latest .
+FROM public.ecr.aws/lambda/python:3.11
 
 # Install system dependencies needed for some python packages
 RUN yum install -y gcc gcc-c++ make

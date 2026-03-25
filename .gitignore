@@ -112,6 +112,9 @@ cython_debug/
 .DS_Store
 Thumbs.db
 
+# SAM build artifacts
+.aws-sam/
+
 # Project-specific ignores
 faiss_index/
 output_images/

@@ -20,6 +20,11 @@ from logger import setup_logger
 logger = setup_logger(__name__)
 
 
+def _db_save_enabled() -> bool:
+    """Controls whether AI extraction rows are persisted to the database."""
+    return os.getenv("ENABLE_DB_SAVE", "true").lower() == "true"
+
+
 def classify_html_document(url: str) -> DocumentClassification:
     """
     Fetches the first ~3000 chars of an HTML document and asks the LLM to
@@ -39,8 +44,6 @@ def classify_html_document(url: str) -> DocumentClassification:
     if not text:
         return DocumentClassification()
 
-    with open("classification_input_temp.txt", "w", encoding="utf-8") as f:
-        f.write(text)
 
     raw = get_json_from_text(text, extraction_type="classify_document")
     parsed = clean_and_parse_json(raw)
@@ -119,7 +122,14 @@ def select_consecutive_pages(results: List[Dict], max_pages: int = 4) -> List[in
 
 def post_process_and_save(parsed_json: dict, source_path: str, extraction_field: str, source_pages: list, output_path: str, issue_id: str = None, source_url: str = None):
     """Post-processes and saves the extracted JSON data to a specified file path."""
-    doc_info = find_document_info(source_path, issue_id=issue_id)
+    doc_info = {}
+    try:
+        db = get_db()
+        if getattr(db, "engine", None):
+            doc_info = find_document_info(source_path, issue_id=issue_id)
+    except Exception:
+        doc_info = {}
+
     if not issue_id:
         issue_id = doc_info.get("issue_id")
     doc_id = doc_info.get("doc_id")
@@ -206,9 +216,6 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
         logger.error(f"Could not extract any text from the HTML file: {html_path}")
         return None
 
-    with open(f"html_input_temp.txt", "w", encoding="utf-8") as f:
-        f.write(text)
-
     json_data = get_json_from_text(text, prompt_text=extraction_prompt, extraction_type=extraction_field)
     if json_data:
         return _validate_and_save(json_data, html_path, extraction_field, [1], output_path, issue_id=issue_id)
@@ -254,19 +261,22 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
             if field_value is None:
                 continue
 
-            # Save to AI extractions database table
-            try:
-                db_data = {extraction_field: field_value, "source_pages": source_pages}
-                get_db().save_ai_extraction(
-                    issue_id=issue_id,
-                    doc_id=doc_id,
-                    extraction_field=extraction_field,
-                    data=db_data,
-                    source_url=source_url
-                )
-                logger.info(f"Saved {extraction_field} to database.")
-            except Exception as e:
-                logger.error(f"Failed to save AI extraction to database: {e}")
+            # Save to AI extractions database table (toggleable for Lambda MVP)
+            if _db_save_enabled():
+                try:
+                    db_data = {extraction_field: field_value, "source_pages": source_pages}
+                    get_db().save_ai_extraction(
+                        issue_id=issue_id,
+                        doc_id=doc_id,
+                        extraction_field=extraction_field,
+                        data=db_data,
+                        source_url=source_url
+                    )
+                    logger.info(f"Saved {extraction_field} to database.")
+                except Exception as e:
+                    logger.error(f"Failed to save AI extraction to database: {e}")
+            else:
+                logger.info("DB save disabled (ENABLE_DB_SAVE=false).")
 
             # Ensure document entry exists
             if doc_name not in all_data:
@@ -384,3 +394,8 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
         json.dump(sorted_output, f, indent=2, ensure_ascii=False)
         
     logger.info(f"Updated results locally to: {final_output_path}")
+
+    if os.getenv("ENABLE_RESULT_LOG", "false").lower() == "true":
+        logger.info("--- EXTRACTION RESULT ---")
+        logger.info(json.dumps(sorted_output, indent=2, ensure_ascii=False))
+        logger.info("--- END RESULT ---")
