@@ -70,7 +70,7 @@ def _resolve_pdf_path(pdf_info: dict) -> str | None:
     return pdf_path
 
 
-def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj: ExtractionDefinitions, pdf_matches: list, html_matches: list, issue_type: str = None, force_unlinked: bool = False):
+def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj: ExtractionDefinitions, pdf_matches: list, html_matches: list, issue_type: str = None, force_unlinked: bool = False, warnings: list = None):
     """Runs the full extraction and merge pipeline for a single field."""
     field_definition = definitions_obj.field_definitions.get(extraction_field)
     if not field_definition:
@@ -163,7 +163,8 @@ def run_single_extraction(issue_id: str, extraction_field: str, definitions_obj:
             issue_id=issue_id,
             extraction_field=extraction_field,
             temp_files=temp_output_files,
-            final_output_path=final_output_path
+            final_output_path=final_output_path,
+            warnings=warnings
         )
         
         if os.path.exists(temp_dir):
@@ -257,6 +258,7 @@ def extract_new_command(args):
     print("  --------------------------------")
     logger.info(f"New Document Mode: '{source_link}'")
 
+    active_flags = []
     if source_link.lower().endswith(".pdf"):
         pdf_matches = [{"source_url": source_link, "id": "new_pdf", "source_type": "Prospectus"}]
         html_matches = []
@@ -269,10 +271,7 @@ def extract_new_command(args):
         if classification.flags:
             active_flags = [k for k, v in classification.flags.model_dump().items() if v]
             if active_flags:
-                logger.warning(f"Flags raised: {', '.join(active_flags)}")
-                logger.warning("Aborting extraction")
-                print("  --------------------------------")
-                return
+                logger.warning(f"Flags raised: {', '.join(active_flags)} — proceeding with caution")
         logger.info(f"Classification: {source_type} | Issue: {issue_type}")
         pdf_matches = []
         html_matches = [{"source_url": source_link, "id": "new_html", "source_type": source_type}]
@@ -295,10 +294,21 @@ def extract_new_command(args):
         logger.info(f"Identified {len(fields_to_process)} fields to extract: {', '.join(fields_to_process)}")
 
     for field in fields_to_process:
-        run_single_extraction(None, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False)
+        run_single_extraction(None, field, definitions_obj, pdf_matches, html_matches, issue_type=issue_type, force_unlinked=False, warnings=active_flags)
+
+    if active_flags:
+        final_output_path = os.path.join(config.OUTPUT_JSON_DIR, "unlinked_extraction.json")
+        if os.path.exists(final_output_path):
+            with open(final_output_path, 'r', encoding='utf-8') as f:
+                output = json.load(f)
+            for doc in output.values():
+                doc["warnings"] = active_flags
+            with open(final_output_path, 'w', encoding='utf-8') as f:
+                json.dump(output, f, indent=2, ensure_ascii=False)
 
     logger.info(f"All processing for new document complete.")
     print("  --------------------------------")
+
 def _ensure_pdf_available(pdf_path: str) -> bool:
     """Ensures a PDF exists locally, downloading from the database record if needed."""
     if os.path.exists(pdf_path):

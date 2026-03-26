@@ -34,6 +34,7 @@ class FinanceDB:
             source_url VARCHAR(767) NOT NULL,
             extraction_field VARCHAR(255) NOT NULL,
             data JSON,
+            warnings JSON,
             status VARCHAR(50) DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -70,6 +71,10 @@ class FinanceDB:
                 logger.debug(f"Migration step (unique key) skipped or failed: {e}")
             try:
                 conn.execute(text("ALTER TABLE ai_extractions DROP COLUMN source_anchor"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE ai_extractions ADD COLUMN warnings JSON NULL"))
             except Exception:
                 pass
         FinanceDB._schema_ready = True
@@ -118,7 +123,7 @@ class FinanceDB:
             return None
         return df.iloc[0].to_dict()
 
-    def save_ai_extraction(self, issue_id: Optional[str], doc_id: Optional[str], extraction_field: str, data: Dict[str, Any], source_url: Optional[str] = None):
+    def save_ai_extraction(self, issue_id: Optional[str], doc_id: Optional[str], extraction_field: str, data: Dict[str, Any], source_url: Optional[str] = None, warnings: Optional[list] = None):
         """
         Saves an AI extraction to the 'ai_extractions' table using UPSERT logic
         keyed on (source_url, extraction_field).
@@ -130,12 +135,13 @@ class FinanceDB:
         self._ensure_schema()
 
         insert_query = text("""
-        INSERT INTO ai_extractions (issue_id, doc_id, source_url, extraction_field, data, status)
-        VALUES (:issue_id, :doc_id, :source_url, :extraction_field, :data, 'pending')
+        INSERT INTO ai_extractions (issue_id, doc_id, source_url, extraction_field, data, warnings, status)
+        VALUES (:issue_id, :doc_id, :source_url, :extraction_field, :data, :warnings, 'pending')
         ON DUPLICATE KEY UPDATE
             issue_id = VALUES(issue_id),
             doc_id = VALUES(doc_id),
             data = VALUES(data),
+            warnings = VALUES(warnings),
             status = 'pending',
             updated_at = CURRENT_TIMESTAMP
         """)
@@ -146,5 +152,6 @@ class FinanceDB:
                 "doc_id": doc_id,
                 "source_url": source_url,
                 "extraction_field": extraction_field,
-                "data": json.dumps(data)
+                "data": json.dumps(data),
+                "warnings": json.dumps(warnings) if warnings else None
             })

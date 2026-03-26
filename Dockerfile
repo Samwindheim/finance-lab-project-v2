@@ -11,7 +11,7 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}
 RUN pip install --upgrade pip
 
 # Install the specified packages
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
 # Copy all files from the current directory to the container
 # This includes src/, prompts/, and handler.py

@@ -33,11 +33,14 @@ def classify_html_document(url: str) -> DocumentClassification:
     """
     import requests
     text = ""
+    # print input text to classification_input.txt
     try:
         resp = requests.get(url, timeout=15)
         resp.raise_for_status()
         # Pass the raw HTML directly to the processor (not as a path/URL)
         text = extract_text_from_html(resp.text, raw_html=True)
+        with open("classification_input.txt", "w") as f:
+            f.write(text)
     except Exception as e:
         logger.warning(f"Could not fetch HTML for classification: {e}")
         
@@ -222,7 +225,7 @@ def extract_from_html(html_path: str, extraction_prompt: str, extraction_field: 
     return None
 
 
-def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str):
+def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files: List[str], final_output_path: str, warnings: List[str] = None):
     """
     Merges data from multiple temporary files and saves them to a final output file
     grouped by document name using Pydantic models for validation.
@@ -270,7 +273,8 @@ def merge_and_finalize_outputs(issue_id: str, extraction_field: str, temp_files:
                         doc_id=doc_id,
                         extraction_field=extraction_field,
                         data=db_data,
-                        source_url=source_url
+                        source_url=source_url,
+                        warnings=warnings or []
                     )
                     logger.info(f"Saved {extraction_field} to database.")
                 except Exception as e:

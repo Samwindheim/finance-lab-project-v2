@@ -104,6 +104,7 @@ class ExtractionResult(BaseModel):
 class DocumentEntry(BaseModel):
     issue_id: Optional[str] = None
     id: Optional[str] = None
+    warnings: Optional[List[str]] = None
     investors: Optional[List[Investor]] = None
     investors_source_pages: Optional[List[int]] = None
     important_dates: Optional[ImportantDates] = None
