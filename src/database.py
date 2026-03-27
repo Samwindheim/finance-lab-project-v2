@@ -115,6 +115,24 @@ class FinanceDB:
             return None
         return df.iloc[0].to_dict()
 
+    def get_source_type_map(self, issue_id: str) -> Dict[str, str]:
+        """Returns mappings keyed by both source_url and id for all sources in an issue.
+
+        Extraction JSON keys may be filenames, slugs, or full URLs, so we index
+        by both to maximise match coverage.
+        """
+        df = self.find_sources_by_issue(issue_id)
+        if df.empty or "source_type" not in df.columns:
+            return {}
+        result = {}
+        for _, row in df.iterrows():
+            st = row["source_type"] if row["source_type"] else "Unknown"
+            if "source_url" in df.columns and row.get("source_url"):
+                result[row["source_url"]] = st
+            if "id" in df.columns and row.get("id"):
+                result[str(row["id"])] = st
+        return result
+
     def find_source_by_id(self, doc_id: str) -> Optional[Dict[str, Any]]:
         """Find a source document by its unique ID."""
         query = text("SELECT * FROM sources WHERE id = :id")

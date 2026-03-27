@@ -1,15 +1,75 @@
 import os
 import json
 import argparse
-import pandas as pd
 from decimal import Decimal
 from src.database import FinanceDB
 from tests.evaluator import Evaluator
 from tabulate import tabulate
 from src.models import get_fields_for_category, ExtractionResult
+from tests.batch_test import load_source_type_categories, NEVER_EVALUATE
 
 def log_header(text):
     print(f"\n{'='*20} {text} {'='*20}")
+
+def format_val(val):
+    if val is None or str(val).strip() == "":
+        return "-"
+    try:
+        s_val = str(val).replace(" ", "").replace(",", "")
+        num = Decimal(s_val)
+        if num == num.to_integral_value():
+            return f"{num:,.0f}".replace(",", " ")
+        return f"{num:f}".rstrip("0").rstrip(".")
+    except Exception:
+        return str(val)
+
+
+def _is_extracted(val) -> bool:
+    return val is not None and str(val).strip() not in ("", "None")
+
+
+def evaluate_document(doc_url, doc_data, source_type, categories, db_issue, db, evaluator):
+    """Evaluate a single document. Only counts/displays fields where AI extracted a value."""
+    field_details = []
+    investor_report = None
+    counts = {"correct": 0, "incorrect": 0}
+
+    for category in ExtractionResult.model_fields.keys():
+        if category not in categories:
+            continue
+
+        if category == "investors":
+            ai_investors = doc_data.get("investors", [])
+            if ai_investors:
+                gt_investors = db.get_investors_data(db_issue["id"]).to_dict("records")
+                investor_report = evaluator.compare_investors(ai_investors, gt_investors)
+            continue
+
+        fields = [f for f in get_fields_for_category(category) if f not in NEVER_EVALUATE]
+        if not fields:
+            continue
+
+        ai_cat_data = doc_data.get(category, {})
+        ai_eval_data = ai_cat_data if isinstance(ai_cat_data, dict) else {category: ai_cat_data}
+
+        for r in evaluator.compare_fields(ai_eval_data, db_issue, fields):
+            if not _is_extracted(r["predicted"]):
+                continue  # AI didn't extract — skip
+            if r.get("needs_manual_check"):
+                continue  # Can't auto-score — skip
+
+            if r["is_match"]:
+                counts["correct"] += 1
+            else:
+                counts["incorrect"] += 1
+                field_details.append([
+                    "❌", category, r["field"],
+                    format_val(r["predicted"]),
+                    format_val(r["ground_truth"]),
+                ])
+
+    return counts, field_details, investor_report
+
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate AI extraction against SQL Database Ground Truth")
@@ -19,7 +79,8 @@ def main():
 
     db = FinanceDB()
     evaluator = Evaluator()
-    
+    source_type_categories = load_source_type_categories()
+
     issue_id = args.issue_id
     ai_file = os.path.join(args.output_dir, f"{issue_id}_extraction.json")
 
@@ -27,22 +88,16 @@ def main():
         print(f"Error: AI extraction file not found: {ai_file}")
         return
 
-    # 1. Load AI Data
-    with open(ai_file, 'r') as f:
+    with open(ai_file) as f:
         ai_data_full = json.load(f)
-    
-    # AI data is organized by document key, we merge them for evaluation
-    merged_ai_data = {}
-    for doc_key, data in ai_data_full.items():
-        for field, value in data.items():
-            if isinstance(value, dict):
-                merged_ai_data.setdefault(field, {}).update(value)
-            elif isinstance(value, list):
-                merged_ai_data.setdefault(field, []).extend(value)
-            else:
-                merged_ai_data[field] = value
 
-    # 2. Detect Conflicts Across Documents
+    db_issue = db.get_issue_data(issue_id)
+    if not db_issue:
+        print(f"Error: No data found in 'issues' table for ID: {issue_id}")
+        return
+
+    source_type_map = db.get_source_type_map(issue_id)
+
     conflicts = evaluator.detect_conflicts(ai_data_full)
     if conflicts:
         log_header("MULTI-DOCUMENT CONFLICTS DETECTED")
@@ -50,161 +105,87 @@ def main():
         for category, fields in conflicts.items():
             for field, instances in fields.items():
                 for inst in instances:
+                    doc = inst["doc"]
                     conflict_table.append([
-                        category, 
-                        field, 
-                        inst['doc'][:30] + "..." if len(inst['doc']) > 30 else inst['doc'], 
-                        inst['val']
+                        category,
+                        field,
+                        doc[:40] + "..." if len(doc) > 40 else doc,
+                        inst["val"],
                     ])
         print(tabulate(conflict_table, headers=["Category", "Field", "Source Document", "Conflicting Value"], tablefmt="grid"))
-        print("\nNOTE: The evaluation below uses the 'latest' value seen for each field.")
 
-    # 3. Load DB Ground Truth
-    db_issue = db.get_issue_data(issue_id)
-    db_investors = db.get_investors_data(issue_id)
+    issue_counts = {"correct": 0, "incorrect": 0}
+    issue_investor_totals = {"correct": 0, "incorrect": 0, "false_positives": 0, "missing": 0}
 
-    if not db_issue:
-        print(f"Error: No data found in 'issues' table for ID: {issue_id}")
-        return
+    for doc_url, doc_data in ai_data_full.items():
+        doc_id = str(doc_data.get("id", ""))
+        source_type = source_type_map.get(doc_url) or source_type_map.get(doc_id, "Unknown")
+        categories = source_type_categories.get(source_type, [])
 
-    # --- EVALUATE INVESTORS ---
-    log_header("INVESTOR EVALUATION")
-    ai_investors = merged_ai_data.get("investors", [])
-    gt_investors = db_investors.to_dict('records')
-    
-    inv_report = evaluator.compare_investors(ai_investors, gt_investors)
-    
-    print(f"Summary: {inv_report['correct']} Correct, {inv_report['incorrect']} Incorrect, "
-          f"{inv_report['missing']} Missing, {inv_report['false_positives']} False Positives")
+        short_url = doc_url[-60:] if len(doc_url) > 60 else doc_url
+        log_header(f"DOC: ...{short_url} [{source_type}]")
 
-    if inv_report['details']:
-        table_data = []
-        # Sort details so Correct matches are together, etc.
-        sorted_details = sorted(inv_report['details'], key=lambda x: x['type'])
-        for d in sorted_details:
-            name = d['predicted'].get('name', '') if d['predicted'] else ''
-            level = d['predicted'].get('level') if d['predicted'] else None
-            norm_name = evaluator.normalize_name(name)
-            
-            # Check for conflict using name and level
-            inv_key = f"{norm_name}.{level}"
-            has_conflict = "investors" in conflicts and inv_key in conflicts["investors"]
-            
-            # Skip matches that have no conflicts to keep output focused on issues
-            if d['type'] == "Correct" and not has_conflict:
-                continue
+        if not categories:
+            print(f"  No categories mapped for source_type={source_type!r} — skipping evaluation.")
+            continue
 
-            status_icon = "⚠️" if has_conflict else ("✅" if d['type'] == "Correct" else "❌")
-            row = [
-                f"{status_icon} {d['type']}",
-                d['predicted'].get('name') if d['predicted'] else "N/A",
-                d['ground_truth'].get('name') if d['ground_truth'] else "N/A",
-                ", ".join(d.get('errors', [])) if 'errors' in d else ""
-            ]
-            table_data.append(row)
-        print(tabulate(table_data, headers=["Status/Type", "AI Found", "DB Ground Truth", "Errors"], tablefmt="grid"))
+        print(f"  Evaluating categories: {', '.join(categories)}")
 
-    # --- EVALUATE TERMS, OUTCOME & DATES ---
-    log_header("TERMS, OUTCOME & DATES EVALUATION")
-    
-    # Format values for display to avoid scientific notation
-    def format_val(val):
-        if val is None or str(val).strip() == "":
-            return "-"
-        try:
-            # If it's a number, format without scientific notation
-            # First convert to string and remove any existing formatting
-            s_val = str(val).replace(" ", "").replace(",", "")
-            num = Decimal(s_val)
-            if num == num.to_integral_value():
-                return f"{num:,.0f}".replace(",", " ") # Use space as thousands separator
-            # For percentages/decimals, keep up to 2 decimal places if needed, but no scientific notation
-            return f"{num:f}".rstrip('0').rstrip('.')
-        except:
-            return str(val)
+        counts, field_details, investor_report = evaluate_document(
+            doc_url, doc_data, source_type, categories, db_issue, db, evaluator
+        )
 
-    # Dynamically build fields to check from ExtractionResult model
-    # Exclude investors and general_info and isin_units and isin_rights as requested
-    # exclude general meeting date as it is not always present
-    fields_to_check = {
-        field_name: get_fields_for_category(field_name)
-        for field_name in ExtractionResult.model_fields.keys()
-        if field_name not in ["investors", "general_meeting_date"]
-    }
+        if investor_report:
+            extracted = investor_report["correct"] + investor_report["incorrect"] + investor_report["false_positives"]
+            print(f"\n  Investors: {investor_report['correct']} Correct, "
+                  f"{investor_report['incorrect'] + investor_report['false_positives']} Incorrect, "
+                  f"{investor_report['missing']} Missing "
+                  f"(of {extracted} extracted)")
+            for k in ("correct", "incorrect", "false_positives", "missing"):
+                issue_investor_totals[k] += investor_report.get(k, 0)
 
-    all_field_details = []
-    terms_correct = 0
-    terms_share_matches = 0
-    terms_incorrect = 0
-    terms_missing = 0
-    terms_conflicts = 0
-    terms_manual_check = 0
+            non_correct = [d for d in investor_report["details"] if d["type"] != "Correct"]
+            if non_correct:
+                inv_table = []
+                for d in sorted(non_correct, key=lambda x: x["type"]):
+                    if d["type"] == "Missing":
+                        icon = "⭕"
+                    elif d["type"] == "Incorrect Value":
+                        icon = "❌"
+                    else:
+                        icon = "➕"
+                    inv_table.append([
+                        f"{icon} {d['type']}",
+                        d["predicted"].get("name") if d["predicted"] else "N/A",
+                        d["ground_truth"].get("name") if d["ground_truth"] else "N/A",
+                        ", ".join(d.get("errors", [])),
+                    ])
+                print(tabulate(inv_table, headers=["Status", "AI Found", "DB Ground Truth", "Errors"], tablefmt="grid"))
 
-    for model_group, fields in fields_to_check.items():
-        ai_group_data = merged_ai_data.get(model_group, {})
-        
-        if not isinstance(ai_group_data, dict):
-            ai_eval_data = {model_group: ai_group_data}
-        else:
-            ai_eval_data = ai_group_data
+        total_extracted = counts["correct"] + counts["incorrect"]
+        acc = f"{100*counts['correct']/total_extracted:.1f}%" if total_extracted else "N/A"
+        print(f"\n  Fields: {counts['correct']} Correct, {counts['incorrect']} Incorrect "
+              f"(of {total_extracted} extracted) — {acc}")
 
-        field_results = evaluator.compare_fields(ai_eval_data, db_issue, fields)
-        
-        for r in field_results:
-            has_conflict = model_group in conflicts and r['field'] in conflicts[model_group]
-            
-            # Handle manual check flag (mutually exclusive pairs)
-            if r.get('needs_manual_check'):
-                terms_manual_check += 1
-                status_icon = "🔍"  # Magnifying glass icon for manual check
-                
-                all_field_details.append([
-                    status_icon,
-                    model_group,
-                    r['field'],
-                    format_val(r['predicted']),
-                    f"NULL (Manually check)"
-                ])
-                continue
-            
-            if r['is_match'] and not has_conflict:
-                if r.get('is_share_match'):
-                    terms_share_matches += 1
-                else:
-                    terms_correct += 1
-                continue
+        if field_details:
+            print(tabulate(field_details, headers=["", "Category", "Field", "AI Value", "DB Value"], tablefmt="grid", disable_numparse=True))
 
-            # Determine if it's Missing or Incorrect
-            # Missing: DB has a value, but AI does not.
-            is_missing = (r['predicted'] is None or str(r['predicted']).strip() == "") and \
-                         (r['ground_truth'] is not None and str(r['ground_truth']).strip() != "")
+        for k in issue_counts:
+            issue_counts[k] += counts.get(k, 0)
 
-            if has_conflict:
-                terms_conflicts += 1
-                status_icon = "⚠️"
-            elif is_missing:
-                terms_missing += 1
-                status_icon = "⭕" # Circle icon for Missing
-            else:
-                terms_incorrect += 1
-                status_icon = "❌" # X icon for Incorrect
+    log_header(f"ISSUE SUMMARY: {issue_id}")
+    total_extracted = issue_counts["correct"] + issue_counts["incorrect"]
+    acc = f"{100*issue_counts['correct']/total_extracted:.1f}%" if total_extracted else "N/A"
+    print(f"Fields    — {issue_counts['correct']} Correct, {issue_counts['incorrect']} Incorrect "
+          f"/ {total_extracted} extracted ({acc})")
+    if any(issue_investor_totals.values()):
+        inv_extracted = issue_investor_totals["correct"] + issue_investor_totals["incorrect"] + issue_investor_totals["false_positives"]
+        inv_acc = f"{100*issue_investor_totals['correct']/inv_extracted:.1f}%" if inv_extracted else "N/A"
+        print(f"Investors — {issue_investor_totals['correct']} Correct, "
+              f"{issue_investor_totals['incorrect'] + issue_investor_totals['false_positives']} Incorrect, "
+              f"{issue_investor_totals['missing']} Missing "
+              f"/ {inv_extracted} extracted ({inv_acc})")
 
-            all_field_details.append([
-                status_icon,
-                model_group,
-                r['field'],
-                format_val(r['predicted']),
-                format_val(r['ground_truth'])
-            ])
-
-    print(f"Summary: {terms_correct} Correct, {terms_share_matches} Matched (as Shares), {terms_incorrect} Incorrect, {terms_missing} Missing, {terms_conflicts} Conflicts, {terms_manual_check} Manual Check")
-
-    if all_field_details:
-        # Prevent tabulate from formatting numbers automatically (which causes scientific notation)
-        # Also use colalign to keep things neat
-        print(tabulate(all_field_details, headers=["Match", "Group", "Field", "AI Value", "DB Value"], tablefmt="grid", disable_numparse=True))
-    else:
-        print("All Terms, Outcome & Dates match perfectly!")
 
 if __name__ == "__main__":
     main()

@@ -86,7 +86,6 @@ class DocumentClassification(BaseModel):
     issue_type: Optional[str] = None   # e.g. Rights issue, IPO, Directed issue
     flags: Optional[DocumentClassificationFlags] = None
 
-
 class ExtractionResult(BaseModel):
     investors: Optional[List[Investor]] = None
     investors_source_pages: Optional[List[int]] = None

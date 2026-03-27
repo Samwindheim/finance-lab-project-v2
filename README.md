@@ -82,16 +82,11 @@ Compare AI results against ground truth in the database.
   - Saves JSON results to `output_json/`.
   - **UPSERTs** data into the `ai_extractions` staging table (keyed by `source_url` and `extraction_field`).
 
-## Project Structure
+## Main Project Structure
 
 ```
 .
-├── src/                  # Core logic
-│   ├── main.py          # CLI entry point
-│   ├── extraction_logic.py
-│   ├── models.py        # Pydantic models
-│   ├── pdf_indexer.py   # FAISS indexing
-│   ├── database.py      # SQL connection & Staging
+├── src/                  # Core python logic
 │   └── extraction_definitions.json
 ├── prompts/             # Field-specific prompts
 ├── output_json/         # Extraction results

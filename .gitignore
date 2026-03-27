@@ -119,6 +119,7 @@ Thumbs.db
 faiss_index/
 output_images/
 output_json/
+new_outputs_json/
 pdfs/
 
 # Test results
