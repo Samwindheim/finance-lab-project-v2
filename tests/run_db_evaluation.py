@@ -138,7 +138,8 @@ def main():
         if investor_report:
             extracted = investor_report["correct"] + investor_report["incorrect"] + investor_report["false_positives"]
             print(f"\n  Investors: {investor_report['correct']} Correct, "
-                  f"{investor_report['incorrect'] + investor_report['false_positives']} Incorrect, "
+                  f"{investor_report['incorrect']} Incorrect, "
+                  f"{investor_report['false_positives']} False Positives, "
                   f"{investor_report['missing']} Missing "
                   f"(of {extracted} extracted)")
             for k in ("correct", "incorrect", "false_positives", "missing"):
@@ -182,7 +183,8 @@ def main():
         inv_extracted = issue_investor_totals["correct"] + issue_investor_totals["incorrect"] + issue_investor_totals["false_positives"]
         inv_acc = f"{100*issue_investor_totals['correct']/inv_extracted:.1f}%" if inv_extracted else "N/A"
         print(f"Investors — {issue_investor_totals['correct']} Correct, "
-              f"{issue_investor_totals['incorrect'] + issue_investor_totals['false_positives']} Incorrect, "
+              f"{issue_investor_totals['incorrect']} Incorrect, "
+              f"{issue_investor_totals['false_positives']} False Positives, "
               f"{issue_investor_totals['missing']} Missing "
               f"/ {inv_extracted} extracted ({inv_acc})")
 

@@ -35,6 +35,7 @@ You will be given one or more images of a document page and the raw text extract
   - Remove spaces, currency symbols, letters
   - Ranges → keep as strings (apply unit multiplication if numeric)
   - Commas in decimals → convert to periods (e.g., “123 456,10” → 123456.10)
+  - MSEK → multiply by 1000000
 - amount_in_percentage:
   - Remove % symbol, replace commas with periods, store as float
 - Names:

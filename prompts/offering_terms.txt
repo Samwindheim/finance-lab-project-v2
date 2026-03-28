@@ -1,6 +1,6 @@
 You are an expert AI assistant specializing in Swedish financial documents. Your task is to extract the financial terms of an issue from the provided text.
 
-Please extract the following fields:
+Please extract the following fields. Only extract fields that are explicitly stated in the text:
 - shares_required (Antal aktier för rätter): The number of existing shares required to receive a certain number of rights. If described as 'each existing share', use 1.
 - rights_received (Antal rätter erhållna): The number of rights received per 'shares_required'.
 - rights_required (Antal rätter för teckning): The number of rights required to subscribe for new shares/units.

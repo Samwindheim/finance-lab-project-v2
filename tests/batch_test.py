@@ -72,9 +72,11 @@ def evaluate_single_document(
             inv = evaluator.compare_investors(ai_investors, gt_investors)
             result["investors"] = {
                 "correct": inv["correct"],
-                "incorrect": inv["incorrect"] + inv["false_positives"],
+                "incorrect": inv["incorrect"],
+                "false_positives": inv["false_positives"],
                 "missing": inv["missing"],
                 "total": inv["correct"] + inv["incorrect"] + inv["false_positives"],
+                "details": inv["details"],
             }
             continue
 
@@ -126,10 +128,14 @@ def aggregate_results(doc_results: list[dict]) -> dict:
         if inv and inv["total"] > 0:
             by_source_type[st]["total"] += inv["total"]
             by_source_type[st]["correct"] += inv["correct"]
-            by_source_type[st]["incorrect"] += inv["incorrect"]
+            by_source_type[st]["incorrect"] += inv["incorrect"] + inv["false_positives"]
             by_field["investors"]["total"] += inv["total"]
             by_field["investors"]["correct"] += inv["correct"]
             by_field["investors"]["incorrect"] += inv["incorrect"]
+            by_field["investors"].setdefault("false_positives", 0)
+            by_field["investors"]["false_positives"] += inv["false_positives"]
+            by_field["investors"].setdefault("missing", 0)
+            by_field["investors"]["missing"] += inv["missing"]
 
     return {
         "by_source_type": {st: _with_accuracy(dict(c)) for st, c in by_source_type.items()},
@@ -150,7 +156,13 @@ def build_issue_debug(doc_results: list[dict]) -> dict:
 
         issue_id = doc["issue_id"]
         if issue_id not in issues:
-            issues[issue_id] = {"correct": 0, "incorrect": 0, "total": 0, "accuracy": None, "incorrect_fields": [], "missing_investors": []}
+            issues[issue_id] = {
+                "correct": 0, "incorrect": 0, "total": 0, "accuracy": None,
+                "incorrect_fields": [],
+                "missing_investors": [],
+                "incorrect_investors": [],
+                "false_positive_investors": [],
+            }
 
         entry = issues[issue_id]
 
@@ -172,7 +184,18 @@ def build_issue_debug(doc_results: list[dict]) -> dict:
         if inv:
             entry["total"] += inv["total"]
             entry["correct"] += inv["correct"]
-            entry["incorrect"] += inv["incorrect"]
+            entry["incorrect"] += inv["incorrect"] + inv["false_positives"]
+            for d in inv.get("details", []):
+                if d["type"] == "Missing":
+                    entry["missing_investors"].append(d["ground_truth"].get("name"))
+                elif d["type"] == "False Positive":
+                    entry.setdefault("false_positive_investors", []).append(d["predicted"].get("name"))
+                elif d["type"] == "Incorrect Value":
+                    entry.setdefault("incorrect_investors", []).append({
+                        "predicted": d["predicted"].get("name"),
+                        "ground_truth": d["ground_truth"].get("name"),
+                        "errors": d.get("errors", []),
+                    })
 
     for entry in issues.values():
         total = entry.get("total", 0)
@@ -193,7 +216,7 @@ def compute_totals(doc_results: list[dict]) -> dict:
         if inv and inv["total"] > 0:
             c["total"] += inv["total"]
             c["correct"] += inv["correct"]
-            c["incorrect"] += inv["incorrect"]
+            c["incorrect"] += inv["incorrect"] + inv["false_positives"]
     return {
         "total_documents": len(valid),
         "total_issues": len({r["issue_id"] for r in valid}),
