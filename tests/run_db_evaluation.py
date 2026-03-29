@@ -55,8 +55,16 @@ def evaluate_document(doc_url, doc_data, source_type, categories, db_issue, db, 
         for r in evaluator.compare_fields(ai_eval_data, db_issue, fields):
             if not _is_extracted(r["predicted"]):
                 continue  # AI didn't extract — skip
+
             if r.get("needs_manual_check"):
-                continue  # Can't auto-score — skip
+                counts.setdefault("manual_check", 0)
+                counts["manual_check"] += 1
+                field_details.append([
+                    "🔍", category, r["field"],
+                    format_val(r["predicted"]),
+                    f"DB has {r['counterpart_field']}={format_val(r['counterpart_value'])}",
+                ])
+                continue
 
             if r["is_match"]:
                 counts["correct"] += 1
@@ -99,19 +107,21 @@ def main():
     source_type_map = db.get_source_type_map(issue_id)
 
     conflicts = evaluator.detect_conflicts(ai_data_full)
-    if conflicts:
+    conflict_table = []
+    for category, fields in conflicts.items():
+        for field, instances in fields.items():
+            if field in NEVER_EVALUATE:
+                continue
+            for inst in instances:
+                doc = inst["doc"]
+                conflict_table.append([
+                    category,
+                    field,
+                    doc[:40] + "..." if len(doc) > 40 else doc,
+                    inst["val"],
+                ])
+    if conflict_table:
         log_header("MULTI-DOCUMENT CONFLICTS DETECTED")
-        conflict_table = []
-        for category, fields in conflicts.items():
-            for field, instances in fields.items():
-                for inst in instances:
-                    doc = inst["doc"]
-                    conflict_table.append([
-                        category,
-                        field,
-                        doc[:40] + "..." if len(doc) > 40 else doc,
-                        inst["val"],
-                    ])
         print(tabulate(conflict_table, headers=["Category", "Field", "Source Document", "Conflicting Value"], tablefmt="grid"))
 
     issue_counts = {"correct": 0, "incorrect": 0}
@@ -163,10 +173,12 @@ def main():
                     ])
                 print(tabulate(inv_table, headers=["Status", "AI Found", "DB Ground Truth", "Errors"], tablefmt="grid"))
 
+        manual = counts.get("manual_check", 0)
         total_extracted = counts["correct"] + counts["incorrect"]
         acc = f"{100*counts['correct']/total_extracted:.1f}%" if total_extracted else "N/A"
-        print(f"\n  Fields: {counts['correct']} Correct, {counts['incorrect']} Incorrect "
-              f"(of {total_extracted} extracted) — {acc}")
+        manual_str = f", {manual} Manual check" if manual else ""
+        print(f"\n  Fields: {counts['correct']} Correct, {counts['incorrect']} Incorrect{manual_str} "
+              f"(of {total_extracted} scored) — {acc}")
 
         if field_details:
             print(tabulate(field_details, headers=["", "Category", "Field", "AI Value", "DB Value"], tablefmt="grid", disable_numparse=True))
