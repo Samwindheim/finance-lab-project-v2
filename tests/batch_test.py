@@ -58,6 +58,7 @@ def evaluate_single_document(
         "source_type": source_type,
         "fields": {},
         "investors": None,
+        "retrieval": {"db_total": 0, "ai_extracted": 0},
     }
 
     for category in ExtractionResult.model_fields.keys():
@@ -65,11 +66,13 @@ def evaluate_single_document(
             continue
 
         if category == "investors":
+            gt_investors = db.get_investors_data(issue_id).to_dict("records")
+            result["retrieval"]["db_total"] += len(gt_investors)
             ai_investors = doc_data.get("investors", [])
             if not ai_investors:
                 continue
-            gt_investors = db.get_investors_data(issue_id).to_dict("records")
             inv = evaluator.compare_investors(ai_investors, gt_investors)
+            result["retrieval"]["ai_extracted"] += inv["correct"] + inv["incorrect"]
             result["investors"] = {
                 "correct": inv["correct"],
                 "incorrect": inv["incorrect"],
@@ -88,10 +91,14 @@ def evaluate_single_document(
         ai_eval_data = ai_cat_data if isinstance(ai_cat_data, dict) else {category: ai_cat_data}
 
         for r in evaluator.compare_fields(ai_eval_data, db_issue, fields):
-            if not _is_extracted(r["predicted"]):
-                continue  # AI didn't extract this — skip
             if r.get("needs_manual_check"):
-                continue  # Can't auto-score — skip
+                continue
+            if _is_extracted(r["ground_truth"]):
+                result["retrieval"]["db_total"] += 1
+                if _is_extracted(r["predicted"]):
+                    result["retrieval"]["ai_extracted"] += 1
+            if not _is_extracted(r["predicted"]):
+                continue  # AI didn't extract — skip scoring
             result["fields"][r["field"]] = {
                 "category": category,
                 "is_match": r.get("is_match", False),
@@ -208,6 +215,8 @@ def build_issue_debug(doc_results: list[dict]) -> dict:
 def compute_totals(doc_results: list[dict]) -> dict:
     valid = [r for r in doc_results if "error" not in r]
     c = _counts()
+    db_total = 0
+    ai_extracted = 0
     for doc in valid:
         for _, fr in doc.get("fields", {}).items():
             c["total"] += 1
@@ -217,10 +226,16 @@ def compute_totals(doc_results: list[dict]) -> dict:
             c["total"] += inv["total"]
             c["correct"] += inv["correct"]
             c["incorrect"] += inv["incorrect"] + inv["false_positives"]
+        ret = doc.get("retrieval", {})
+        db_total += ret.get("db_total", 0)
+        ai_extracted += ret.get("ai_extracted", 0)
     return {
         "total_documents": len(valid),
         "total_issues": len({r["issue_id"] for r in valid}),
         "errors": len(doc_results) - len(valid),
+        "db_total": db_total,
+        "ai_extracted": ai_extracted,
+        "retrieval_rate": round(ai_extracted / db_total, 4) if db_total else None,
         **_with_accuracy(c),
     }
 
@@ -305,7 +320,9 @@ def main():
     print(f"\nResults saved to {output_path}")
     print(f"Debug breakdown saved to {debug_path}")
     acc_pct = f"{totals['accuracy']*100:.1f}%" if totals["accuracy"] is not None else "N/A"
-    print(f"Overall accuracy: {totals['correct']}/{totals['total']} ({acc_pct}) across {totals['total_documents']} documents, {totals['total_issues']} issues\n")
+    ret_pct = f"{totals['retrieval_rate']*100:.1f}%" if totals["retrieval_rate"] is not None else "N/A"
+    print(f"Overall accuracy:       {totals['correct']}/{totals['total']} ({acc_pct})")
+    print(f"Overall retrieval rate: {totals['ai_extracted']}/{totals['db_total']} ({ret_pct}) across {totals['total_documents']} documents, {totals['total_issues']} issues\n")
 
     print("--- Accuracy by Source Type ---")
     for st, c in sorted(aggregated["by_source_type"].items(), key=lambda x: -(x[1]["accuracy"] or 0)):
