@@ -199,7 +199,8 @@ def extract_historical_command(args):
         target_filename = os.path.basename(target_document)
         filtered_pdfs = []
         for m in pdf_matches:
-            if target_document == m.get("id") or target_filename == m.get("source_url") or target_document in m.get("source_url", ""):
+            source_url = m.get("source_url") or ""
+            if target_document == m.get("id") or target_filename == source_url or target_document in source_url:
                 # If the DB only stores the bare filename, upgrade to the full URL so it can be downloaded
                 if m.get("source_url") == target_filename and target_document.startswith("http"):
                     m = {**m, "source_url": target_document}
@@ -207,7 +208,7 @@ def extract_historical_command(args):
         pdf_matches = filtered_pdfs
         html_matches = [
             m for m in html_matches
-            if target_document == m.get("id") or target_document == m.get("source_url") or target_document in m.get("source_url", "")
+            if target_document == m.get("id") or target_document == (m.get("source_url") or "") or target_document in (m.get("source_url") or "")
         ]
         logger.info(f"Filtering for document: '{target_document}'")
 

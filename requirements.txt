@@ -14,3 +14,8 @@ tabulate
 sqlalchemy
 mysql-connector-python
 pandas
+# For MCP server
+fastapi
+uvicorn
+pymysql
+fastmcp
