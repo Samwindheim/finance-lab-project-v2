@@ -39,8 +39,8 @@ def classify_html_document(url: str) -> DocumentClassification:
         resp.raise_for_status()
         # Pass the raw HTML directly to the processor (not as a path/URL)
         text = extract_text_from_html(resp.text, raw_html=True)
-        with open("classification_input.txt", "w") as f:
-            f.write(text)
+        #with open("classification_input.txt", "w") as f:
+        #    f.write(text)
     except Exception as e:
         logger.warning(f"Could not fetch HTML for classification: {e}")
         

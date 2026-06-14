@@ -14,26 +14,66 @@ Please extract the following fields. Only extract fields that are explicitly sta
 - secondary_offering (Befintliga aktier som erbjuds): The number of EXISTING shares that are being offered in the secondary offering.
 - minimum_sub_condition (Lägsta teckningsnivå)ß: The minimum subscription threshold required for the rights issue to proceed or be completed. This is a pre-defined condition, not the final result.
 
+For each field:
+- extract the value
+- extract a short verbatim text quote that directly supports the value and its context.
+
 Constraints:
 
 - NO CALCULATIONS: Do not calculate any values. Only extract numbers that are explicitly stated in the text.
 
-Output ONLY a JSON object with the key 'offering_terms' containing these fields. Use null for any values not found.
+Output ONLY a JSON object with the key 'offering_terms' containing these fields. Use null for any values or quotes not found.
 
 Example output:
 {
   "offering_terms": {
-    "shares_required": 0,
-    "rights_received": 0,
-    "rights_required": 0,
-    "units_received": 0,
-    "shares_in_unit": 0,
-    "unit_sub_price": 0.00,
-    "offered_units": 0,
-    "offered_units_unlisted": 0,
-    "over_allotment_size": 0,
-    "over_allotment_size_secondary": 0,
-    "secondary_offering": 0,
-    "minimum_sub_condition": 0.00
+    "shares_required": {
+      "value": 1,
+      "quote": ""
+    },
+    "rights_received": {
+      "value": 0,
+      "quote": ""
+    },
+    "rights_required": {
+      "value": 0,
+      "quote": ""
+    },
+    "units_received": {
+      "value": 0,
+      "quote": ""
+    },
+    "shares_in_unit": {
+      "value": 0,
+      "quote": ""
+    },
+    "unit_sub_price": {
+      "value": 0.00,
+      "quote": ""
+    },
+    "offered_units": {
+      "value": 0,
+      "quote": ""
+    },
+    "offered_units_unlisted": {
+      "value": 0,
+      "quote": ""
+    },
+    "over_allotment_size": {
+      "value": 0,
+      "quote": ""
+    },
+    "over_allotment_size_secondary": {
+      "value": 0,
+      "quote": ""
+    },
+    "secondary_offering": {
+      "value": 0,
+      "quote": ""
+    },
+    "minimum_sub_condition": {
+      "value": 0.00,
+      "quote": ""
+    }
   }
 }

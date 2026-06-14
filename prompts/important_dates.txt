@@ -11,21 +11,52 @@ Please extract the following dates in YYYY-MM-DD format:
 - general_meeting_date (Bolagsstämma): The date of the general meeting where the issue was approved. This should be specific to the issue, not a general date.
 - ipo_trading_date (Första dag för handel): For IPOs, should explicitly mention "IPO" the first day of trading on the exchange.
 
+For each date:
+- extract the value in YYYY-MM-DD format
+- extract a short verbatim text quote that directly supports the date value and its context.
+
 Important: Do not infer any dates, only extract the dates that are explicitly stated in the text.
 
-Output ONLY a JSON object with the key 'important_dates' containing these sub-keys. Use null for any dates not found.
+Output ONLY a JSON object with the key 'important_dates' containing these sub-keys. Use null for any dates or quotes not found.
 
 Example output:
 {
   "important_dates": {
-    "record_date": "2024-06-03",
-    "sub_start_date": "2024-06-07",
-    "sub_end_date": "2024-06-21",
-    "inc_rights_date": "2024-05-30",
-    "ex_rights_date": "2024-05-31",
-    "rights_start_date": "2024-06-07",
-    "rights_end_date": "2024-06-17",
-    "general_meeting_date": "2024-05-15",
-    "ipo_trading_date": null
+    "record_date": {
+      "value": "2024-06-05",
+      "quote": ""
+    },
+    "sub_start_date": {
+      "value": "2024-06-07",
+      "quote": ""
+    },
+    "sub_end_date": {
+      "value": "2024-06-21",
+      "quote": ""
+    },
+    "inc_rights_date": {
+      "value": "2024-05-30",
+      "quote": ""
+    },
+    "ex_rights_date": {
+      "value": "2024-05-31",
+      "quote": ""
+    },
+    "rights_start_date": {
+      "value": "2024-06-07",
+      "quote": ""
+    },
+    "rights_end_date": {
+      "value": "2024-06-17",
+      "quote": ""
+    },
+    "general_meeting_date": {
+      "value": "2024-05-15",
+      "quote": ""
+    },
+    "ipo_trading_date": {
+      "value": null,
+      "quote": ""
+    }
   }
 }

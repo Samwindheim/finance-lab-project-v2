@@ -5,7 +5,7 @@ Defines the schema and validation logic for extraction definitions,
 LLM outputs, and the final merged JSON structure.
 """
 
-from typing import List, Optional, Dict, Union, get_args, get_origin
+from typing import Generic, TypeVar, List, Optional, Dict, Union, get_args, get_origin
 from pydantic import BaseModel, RootModel
 
 # --- Extraction Definitions (src/extraction_definitions.json) ---
@@ -21,6 +21,12 @@ class ExtractionDefinitions(BaseModel):
     field_definitions: Dict[str, ExtractionDefinition]
     issue_type_guidance: Optional[Dict[str, str]] = None
 
+T = TypeVar('T');
+
+class FieldDefinition(BaseModel, Generic[T]):
+    value : Optional[T] = None
+    quote : Optional[str] = None
+
 # --- LLM Extraction Outputs ---
 
 class Investor(BaseModel):
@@ -31,32 +37,30 @@ class Investor(BaseModel):
 
 class ImportantDates(BaseModel):
     source_pages: Optional[List[int]] = None
-    record_date: Optional[str] = None
-    sub_start_date: Optional[str] = None
-    sub_end_date: Optional[str] = None
-    inc_rights_date: Optional[str] = None
-    ex_rights_date: Optional[str] = None
-    rights_start_date: Optional[str] = None
-    rights_end_date: Optional[str] = None
-    general_meeting_date: Optional[str] = None
-    ipo_trading_date: Optional[str] = None
+    record_date: Optional[FieldDefinition[str]] = None
+    sub_start_date: Optional[FieldDefinition[str]] = None
+    sub_end_date: Optional[FieldDefinition[str]] = None
+    inc_rights_date: Optional[FieldDefinition[str]] = None
+    ex_rights_date: Optional[FieldDefinition[str]] = None
+    rights_start_date: Optional[FieldDefinition[str]] = None
+    rights_end_date: Optional[FieldDefinition[str]] = None
+    general_meeting_date: Optional[FieldDefinition[str]] = None
+    ipo_trading_date: Optional[FieldDefinition[str]] = None
 
 class OfferingTerms(BaseModel):
     source_pages: Optional[List[int]] = None
-    shares_required: Optional[int] = None
-    rights_received: Optional[int] = None
-    rights_required: Optional[int] = None
-    units_received: Optional[int] = None
-    shares_in_unit: Optional[int] = None
-    unit_sub_price: Optional[Union[float, str]] = None
-    offered_units: Optional[Union[int, str]] = None
-    offered_units_unlisted: Optional[Union[int, str]] = None
-    over_allotment_size: Optional[Union[int, str]] = None
-    over_allotment_size_secondary: Optional[Union[int, str]] = None
-    secondary_offering: Optional[Union[int, str]] = None
-    # new
-    minimum_sub_condition: Optional[Union[float, str]] = None
-
+    shares_required: Optional[FieldDefinition[int]] = None
+    rights_received: Optional[FieldDefinition[int]] = None
+    rights_required: Optional[FieldDefinition[int]] = None
+    units_received: Optional[FieldDefinition[int]] = None
+    shares_in_unit: Optional[FieldDefinition[int]] = None
+    unit_sub_price: Optional[FieldDefinition[Union[float, str]]] = None
+    offered_units: Optional[FieldDefinition[Union[int, str]]] = None
+    offered_units_unlisted: Optional[FieldDefinition[Union[int, str]]] = None
+    over_allotment_size: Optional[FieldDefinition[Union[int, str]]] = None
+    over_allotment_size_secondary: Optional[FieldDefinition[Union[int, str]]] = None
+    secondary_offering: Optional[FieldDefinition[Union[int, str]]] = None
+    minimum_sub_condition: Optional[FieldDefinition[Union[float, str]]] = None
 
 class OfferingOutcome(BaseModel):
     source_pages: Optional[List[int]] = None

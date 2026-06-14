@@ -38,7 +38,7 @@ class FinanceDB:
             status VARCHAR(50) DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY unique_url_field (source_url, extraction_field)
+            UNIQUE KEY unique_url_field (source_url(512), extraction_field)
         );
         """
         with self.engine.begin() as conn:
