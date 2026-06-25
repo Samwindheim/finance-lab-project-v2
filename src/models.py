@@ -64,17 +64,17 @@ class OfferingTerms(BaseModel):
 
 class OfferingOutcome(BaseModel):
     source_pages: Optional[List[int]] = None
-    unit_sub_total: Optional[Union[int, str]] = None
-    unit_sub_with_rights: Optional[Union[int, str]] = None
-    unit_sub_without_rights: Optional[Union[int, str]] = None
-    unit_sub_guarantor: Optional[Union[int, str]] = None
-    unit_pct_sub_with_rights: Optional[Union[float, str]] = None
-    unit_pct_sub_without_rights: Optional[Union[float, str]] = None
-    unit_pct_sub_guarantor: Optional[Union[float, str]] = None
+    unit_sub_total: Optional[FieldDefinition[Union[int, str]]] = None
+    unit_sub_with_rights: Optional[FieldDefinition[Union[int, str]]] = None
+    unit_sub_without_rights: Optional[FieldDefinition[Union[int, str]]] = None
+    unit_sub_guarantor: Optional[FieldDefinition[Union[int, str]]] = None
+    unit_pct_sub_with_rights: Optional[FieldDefinition[Union[float, str]]] = None
+    unit_pct_sub_without_rights: Optional[FieldDefinition[Union[float, str]]] = None
+    unit_pct_sub_guarantor: Optional[FieldDefinition[Union[float, str]]] = None
     # new
-    over_allotment_allocation: Optional[Union[int, str]] = None
-    over_allotment_allocation_secondary: Optional[Union[int, str]] = None
-    secondary_sub: Optional[Union[int, str]] = None
+    over_allotment_allocation: Optional[FieldDefinition[Union[int, str]]] = None
+    over_allotment_allocation_secondary: Optional[FieldDefinition[Union[int, str]]] = None
+    secondary_sub: Optional[FieldDefinition[Union[int, str]]] = None
 
 class GeneralInfo(BaseModel):
     source_pages: Optional[List[int]] = None

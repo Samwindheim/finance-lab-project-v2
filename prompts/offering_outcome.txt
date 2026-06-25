@@ -15,6 +15,10 @@ Extraction Rules:
 - over_allotment_allocation_secondary: Exact number of units allocated via an over-allotment option in the secondary offering.
 - secondary_sub: Number of EXISTING units or shares subscribed in the secondary offering. Extract this ONLY if the exact number is explicitly written in the text.
 
+For each field:
+- extract the value
+- extract a short verbatim text quote from where the value is stated.
+
 Constraints:
 
 - IMPORTANT: DO NOT CALCULATE ANY VALUES. Only extract numbers that are explicitly stated in the text.
@@ -27,15 +31,45 @@ Output ONLY a JSON object with the key 'offering_outcome'.
 Example Output:
 {
   "offering_outcome": {
-    "unit_sub_total": 0,
-    "unit_sub_with_rights": 0,
-    "unit_sub_without_rights": 0,
-    "unit_sub_guarantor": 0,
-    "unit_pct_sub_with_rights": 0.00,
-    "unit_pct_sub_without_rights": 0.00,
-    "unit_pct_sub_guarantor": 0.00,
-    "over_allotment_allocation": 0,
-    "over_allotment_allocation_secondary": 0,
-    "secondary_sub": 0
+    "unit_sub_total": {
+      "value": 0,
+      "quote": ""
+    },
+    "unit_sub_with_rights": {
+      "value": 0,
+      "quote": ""
+    },
+    "unit_sub_without_rights": {
+      "value": 0,
+      "quote": ""
+    },
+    "unit_sub_guarantor": {
+      "value": 0,
+      "quote": ""
+    },
+    "unit_pct_sub_with_rights": {
+      "value": 0.00,
+      "quote": ""
+    },
+    "unit_pct_sub_without_rights": {
+      "value": 0.00,
+      "quote": ""
+    },
+    "unit_pct_sub_guarantor": {
+      "value": 0.00,
+      "quote": ""
+    },
+    "over_allotment_allocation": {
+      "value": 0,
+      "quote": ""
+    },
+    "over_allotment_allocation_secondary": {
+      "value": 0,
+      "quote": ""
+    },
+    "secondary_sub": {
+      "value": 0,
+      "quote": ""
+    }
   }
 }

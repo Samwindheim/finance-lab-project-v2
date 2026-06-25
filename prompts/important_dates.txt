@@ -13,7 +13,7 @@ Please extract the following dates in YYYY-MM-DD format:
 
 For each date:
 - extract the value in YYYY-MM-DD format
-- extract a short verbatim text quote that directly supports the date value and its context.
+- extract a short verbatim text quote from where the date is stated.
 
 Important: Do not infer any dates, only extract the dates that are explicitly stated in the text.
 

@@ -16,7 +16,7 @@ Please extract the following fields. Only extract fields that are explicitly sta
 
 For each field:
 - extract the value
-- extract a short verbatim text quote that directly supports the value and its context.
+- extract a short verbatim text quote from where the value is stated.
 
 Constraints:
 
