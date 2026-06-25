@@ -18,4 +18,3 @@ pandas
 fastapi
 uvicorn
 pymysql
-fastmcp
