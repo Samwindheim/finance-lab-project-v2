@@ -13,21 +13,24 @@ A RAG pipeline for extracting structured financial data from PDF documents and H
 ## Setup
 
 1. **Create virtual environment:**
-  ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-  ```
+
+```bash
+ python3 -m venv venv
+ source venv/bin/activate
+ pip install -r requirements.txt
+```
+
 2. **Configure `.env` file:**
-  ```
-   GEMINI_API_KEY=your_gemini_api_key_here
-   OPENAI_API_KEY=your_openai_api_key_here
-   DATABASE_URL=mysql+pymysql://user:password@host:port/database
-  ```
+
+```
+ GEMINI_API_KEY=your_gemini_api_key_here
+ OPENAI_API_KEY=your_openai_api_key_here
+ DATABASE_URL=mysql+pymysql://user:password@host:port/database
+```
 
 ## Usage
 
-### 1. Historical Mode (Context-Aware)
+### 1. Historical Mode (Context-Aware) - OSCAR NOTE: PROBABLY NOT NEEDED ATM
 
 Use this for documents already registered in the database. It uses existing metadata for smart filtering.
 
@@ -75,12 +78,15 @@ Compare AI results against ground truth in the database.
 1. **Identification**: Resolves documents against the database `sources` table or treats as "New".
 2. **Field Filtering**: Selects fields from `extraction_definitions.json` based on document/issue context.
 3. **RAG Extraction**:
-  - **PDFs**: Semantic search → page selection → image + text → Gemini vision model.
-  - **HTML**: Full text extraction → Gemini text model.
+
+- **PDFs**: Semantic search → page selection → image + text → Gemini vision model.
+- **HTML**: Full text extraction → Gemini text model.
+
 4. **Validation**: Validates output against Pydantic models in `src/models.py`.
 5. **Storage**:
-  - Saves JSON results to `output_json/`.
-  - **UPSERTs** data into the `ai_extractions` staging table (keyed by `source_url` and `extraction_field`).
+
+- Saves JSON results to `output_json/`.
+- **UPSERTs** data into the `ai_extractions` staging table (keyed by `source_url` and `extraction_field`).
 
 ## Main Project Structure
 
@@ -99,4 +105,3 @@ Compare AI results against ground truth in the database.
 - **Uniqueness**: The database staging area guarantees one entry per `(source_url, extraction_field)` pair.
 - **Source Pages**: Extractions include `source_pages` at the field level for easy verification.
 - **Accuracy**: Prioritizes explicit data points; prompts forbid LLM-side calculations.
-
